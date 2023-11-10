@@ -1,7 +1,130 @@
-openapi: "3.0.3"
+openapi: '3.0.3'
 
 info:
   title: e-ten
   version: 1.0.0
 
-paths: {}
+components:
+  schemas:
+    User:
+      properties:
+        id:
+          type: integer
+          format: uuid
+        e-mail:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    Event:
+      properties:
+        id:
+          type: integer
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        image_path:
+          type: string
+        start_at:
+          type: string
+          format: date-time
+        end_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+
+paths:
+  /site-password:
+    post:
+      summary: サイトパスワードの検証
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: password
+      responses:
+        200:
+          description: OK
+
+        401:
+          description: パスワードを間違えています
+  /sign-up:
+    post:
+      summary: アカウントの新規作成
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                e-mail: { type: string }
+                password: { type: string }
+      responses:
+        201:
+          description: OK
+          # TODO: tokenの返却
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: object
+          #       properties:
+          #         token:
+          #           type: string
+        409:
+          description: メールアドレスが既に登録されています
+
+  /sign-in:
+    post:
+      summary: アカウントのログイン
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                e-mail: { type: string }
+                password: { type: string }
+      responses:
+        200:
+          description: OK
+          # TODO: tokenの返却
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: object
+          #       properties:
+          # token:
+          # type: string
+
+        401:
+          description: Client side error
+  /events:
+    get:
+      summary: イベント一覧の取得
+      tags: ['events']
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Event'
