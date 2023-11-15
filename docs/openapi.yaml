@@ -13,6 +13,13 @@ components:
       schema:
         type: integer
         format: uuid
+    work_id:
+      name: work_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: uuid
 
   schemas:
     User:
@@ -100,6 +107,7 @@ paths:
   /site-password:
     post:
       summary: サイトパスワードの検証
+      operationId: sitePassword
       requestBody:
         content:
           application/json:
@@ -118,6 +126,7 @@ paths:
   /sign-up:
     post:
       summary: アカウントの新規作成
+      operationId: signUp
       requestBody:
         required: true
         content:
@@ -144,6 +153,7 @@ paths:
   /sign-in:
     post:
       summary: アカウントのログイン
+      operationId: signIn
       requestBody:
         required: true
         content:
@@ -170,6 +180,7 @@ paths:
   /events:
     get:
       summary: イベント一覧の取得
+      operationId: getEvents
       tags: ['event']
       responses:
         200:
@@ -186,7 +197,8 @@ paths:
   /event/{id}/works:
     get:
       summary: 作品一覧の取得
-      tags: ['events']
+      operationId: getWorks
+      tags: ['event']
 
       # 検索項目
       parameters:
@@ -210,9 +222,10 @@ paths:
   /works/{id}:
     get:
       summary: 作品の詳細の取得
-      tags: ['works']
+      operationId: getWork
+      tags: ['work']
       parameters:
-        - $ref: '#/components/parameters/user_id'
+        - $ref: '#/components/parameters/work_id'
       responses:
         200:
           description: OK
@@ -224,6 +237,7 @@ paths:
                   $ref: '#/components/schemas/Work'
     post:
       summary: 作品の新規作成
+      operationId: createWork
       tags: ['work']
       requestBody:
         content:
@@ -237,6 +251,7 @@ paths:
 
     put:
       summary: 作品の更新
+      operationId: updateWork
       tags: ['work']
       requestBody:
         content:
@@ -250,6 +265,7 @@ paths:
 
     delete:
       summary: 作品の削除
+      operationId: deleteWork
       tags: ['work']
       parameters:
         - $ref: '#/components/parameters/user_id'
