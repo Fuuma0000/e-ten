@@ -89,7 +89,7 @@ components:
             type: string
         movie:
           type: string
-        # user_idの配列
+        # TODO: user_idの配列 -> オブジェクト？
         users:
           type: array
           items:
@@ -123,6 +123,7 @@ paths:
 
         401:
           description: パスワードを間違えています
+
   /sign-up:
     post:
       summary: アカウントの新規作成
@@ -190,9 +191,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  items:
-                    $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/Event'
 
   /event/{id}/works:
     get:
@@ -232,9 +231,8 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                items:
-                  $ref: '#/components/schemas/Work'
+                $ref: '#/components/schemas/Work'
+
     post:
       summary: 作品の新規作成
       operationId: createWork
