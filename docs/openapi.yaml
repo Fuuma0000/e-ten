@@ -5,6 +5,15 @@ info:
   version: 1.0.0
 
 components:
+  parameters:
+    user_id:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: uuid
+
   schemas:
     User:
       properties:
@@ -161,7 +170,7 @@ paths:
   /events:
     get:
       summary: イベント一覧の取得
-      tags: ['events']
+      tags: ['event']
       responses:
         200:
           description: OK
@@ -203,12 +212,7 @@ paths:
       summary: 作品の詳細の取得
       tags: ['works']
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: uuid
+        - $ref: '#/components/parameters/user_id'
       responses:
         200:
           description: OK
@@ -220,7 +224,7 @@ paths:
                   $ref: '#/components/schemas/Work'
     post:
       summary: 作品の新規作成
-      tags: ['works']
+      tags: ['work']
       requestBody:
         content:
           application/json:
@@ -233,7 +237,7 @@ paths:
 
     put:
       summary: 作品の更新
-      tags: ['works']
+      tags: ['work']
       requestBody:
         content:
           application/json:
@@ -246,14 +250,9 @@ paths:
 
     delete:
       summary: 作品の削除
-      tags: ['works']
+      tags: ['work']
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: uuid
+        - $ref: '#/components/parameters/user_id'
       responses:
         200:
           description: OK
