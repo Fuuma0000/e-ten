@@ -69,7 +69,7 @@ erDiagram
 
     works_images {
         id INT PK
-        works_id INT
+        works_data_id INT
         url VARCHAR(255)
         order TINYINT
     }
@@ -85,7 +85,7 @@ erDiagram
     }
 
     works_users {
-        works_id INT
+        works_data_id INT
         users_id INT
         role_explanation VARCHAR(255)
     }
@@ -118,12 +118,12 @@ erDiagram
     }
 
     works_genres {
-        works_id INT
+        works_data_id INT
         genres_id INT
     }
 
     works_technologies {
-        works_id INT
+        works_data_id INT
         technologies_id INT
     }
 
