@@ -41,6 +41,7 @@ erDiagram
         graduation_year INT
         is_job_hunt_completed BOOLEAN
         self_introduction TEXT
+        icon_url VARCHAR(255)
     }
 
     bookmarks {
