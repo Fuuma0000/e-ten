@@ -51,7 +51,7 @@ erDiagram
     }
 
     works {
-        works_id INT PK
+        id INT PK
         events_id INT FK
         latest_reviewed_id INT FK
     }
