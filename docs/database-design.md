@@ -52,7 +52,7 @@ erDiagram
     works {
         events_id INT
         works_id INT
-        latest_link_id INT
+        latest_data_id INT
     }
 
     works_data {
