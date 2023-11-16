@@ -4,20 +4,20 @@ erDiagram
     events ||--o{ events_users_roles : ""
     events ||--o{ works : ""
     works ||--o{ works_data : ""
-    works_data ||--o{ works_genres : ""
-    works_data ||--o{ works_technologies : ""
-    works_data ||--|{ works_images : ""
-    works_data ||--o{ works_users : ""
+    works_data ||--o{ works_data_genres : ""
+    works_data ||--o{ works_data_technologies : ""
+    works_data ||--|{ works_data_images : ""
+    works_data ||--o{ works_data_users : ""
     works ||--o{ bookmarks : ""
-    users ||--o{ works_users : ""
+    users ||--o{ works_data_users : ""
     users ||--o{ bookmarks : ""
     users ||--o{ events_users_roles : ""
     users ||--|| courses : ""
     users ||--o{ users_jobs : ""
     users ||--o{ users_urls : ""
     jobs ||--o{ users_jobs : ""
-    genres ||--o{ works_genres : ""
-    technologies ||--o{ works_technologies : ""
+    genres ||--o{ works_data_genres : ""
+    technologies ||--o{ works_data_technologies : ""
     roles ||--o{ events_users_roles : ""
 
 
@@ -33,7 +33,7 @@ erDiagram
 
     users {
         id INT PK
-        e_mail VARCHAR(255)
+        email VARCHAR(255)
         password VARCHAR(255)
         username VARCHAR(255)
         courses_id INT
@@ -46,19 +46,19 @@ erDiagram
 
     bookmarks {
         id INT PK
-        works_id INT
-        users_id INT
+        works_id INT FK
+        users_id INT FK
     }
 
     works {
-        events_id INT
-        works_id INT
-        latest_data_id INT
+        works_id INT PK
+        events_id INT FK
+        latest_reviewed_id INT FK
     }
 
     works_data {
         id INT PK
-        works_id INT
+        works_id INT FK
         name VARCHAR(255)
         catch_copy VARCHAR(255)
         description VARCHAR(255)
@@ -66,13 +66,6 @@ erDiagram
         movie_url VARCHAR(255)
         system_diagram_url VARCHAR(255)
         detail TEXT
-    }
-
-    works_images {
-        id INT PK
-        works_data_id INT
-        url VARCHAR(255)
-        order TINYINT
     }
 
     genres {
@@ -85,15 +78,15 @@ erDiagram
         name VARCHAR(255)
     }
 
-    works_users {
-        works_data_id INT
-        users_id INT
+    works_data_users {
+        works_data_id INT FK
+        users_id INT FK
         role_explanation VARCHAR(255)
     }
 
     users_jobs {
-        users_id INT
-        jobs_id INT
+        users_id INT FK
+        jobs_id INT FK
     }
 
     jobs {
@@ -113,25 +106,32 @@ erDiagram
 
     users_urls {
         id INT PK
-        users_id INT
+        users_id INT FK
         url_name VARCHAR(255)
         url VARCHAR(255)
     }
 
-    works_genres {
-        works_data_id INT
-        genres_id INT
+    works_data_genres {
+        works_data_id INT FK
+        genres_id INT FK
     }
 
-    works_technologies {
-        works_data_id INT
-        technologies_id INT
+    works_data_technologies {
+        works_data_id INT FK
+        technologies_id INT FK
+    }
+
+    works_data_images {
+        id INT PK
+        works_data_id INT FK
+        url VARCHAR(255)
+        order TINYINT
     }
 
     events_users_roles {
-        events_id INT
-        users_id INT
-        roles_id INT
+        events_id INT FK
+        users_id INT FK
+        roles_id INT FK
     }
 
 ```
