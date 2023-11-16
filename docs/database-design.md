@@ -7,7 +7,7 @@ erDiagram
     works_data ||--o{ works_genres : ""
     works_data ||--o{ works_technologies : ""
     works_data ||--|{ works_images : ""
-    works ||--o{ works_users : ""
+    works_data ||--o{ works_users : ""
     works ||--o{ bookmarks : ""
     users ||--o{ works_users : ""
     users ||--o{ bookmarks : ""
@@ -51,6 +51,7 @@ erDiagram
     works {
         events_id INT
         works_id INT
+        latest_link_id INT
     }
 
     works_data {
@@ -63,7 +64,6 @@ erDiagram
         movie_url VARCHAR(255)
         system_diagram_url VARCHAR(255)
         detail TEXT
-        is_public BOOLEAN
     }
 
     works_images {
@@ -86,7 +86,7 @@ erDiagram
     works_users {
         works_id INT
         users_id INT
-        role VARCHAR(255)
+        role_explanation VARCHAR(255)
     }
 
     users_jobs {
