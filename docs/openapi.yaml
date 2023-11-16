@@ -20,8 +20,16 @@ components:
       schema:
         type: integer
         format: uuid
+    event_id:
+      name: event_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: uuid
 
   schemas:
+    # TODO: userlistとuserdetailに分ける
     User:
       properties:
         id:
@@ -37,6 +45,38 @@ components:
         course_id:
           type: integer
 
+    # Userの一覧用のプロパティ
+    UserList:
+      properties:
+        id:
+          type: integer
+          format: uuid
+        username:
+          type: string
+        e-mail:
+          type: string
+          format: email
+        enrollment_year:
+          type: integer
+          format: date-time
+        graduation_year:
+          type: integer
+          format: date-time
+        job:
+          description: 志望職種
+          type: array
+          items:
+            type: string
+    # Userの詳細用のプロパティ
+    UserDetail:
+      properties:
+        course:
+          type: string
+        is_job_hunt_completed:
+          type: boolean
+        self_introduction:
+          type: string        
+        
     Event:
       properties:
         id:
@@ -275,3 +315,21 @@ paths:
       responses:
         200:
           description: OK
+
+  /events/{id}/students/:
+    get:
+      summary: イベントに参加している学生の一覧
+      tags: ['student']
+      operationId: getStudents
+      parameters:
+        - $ref: '#/components/parameters/event_id'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserList'
+  
