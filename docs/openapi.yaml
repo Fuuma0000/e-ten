@@ -29,7 +29,6 @@ components:
         format: uuid
 
   schemas:
-    # TODO: userlistとuserdetailに分ける
     User:
       properties:
         id:
@@ -67,14 +66,20 @@ components:
           type: array
           items:
             type: string
+        icon_url:
+          description: アイコン画像のURL
+          type: string
     # Userの詳細用のプロパティ
     UserDetail:
       properties:
         course:
+          description: 所属コース(IT/Web/経営情報)
           type: string
         is_job_hunt_completed:
+          description: 就職活動を終えたかどうか
           type: boolean
         self_introduction:
+          description: 自己PR
           type: string        
         
     Event:
@@ -97,7 +102,7 @@ components:
 
     # Workの一覧用のプロパティ
     WorkList:
-      required: [id, name, catch_copy, image_path]
+      required: [id, name, catch_copy, icon_url]
       properties:
         id:
           type: integer
@@ -114,7 +119,7 @@ components:
             type: string
         catch_copy:
           type: string
-        image_path:
+        icon_url:
           type: string
 
     # Workの詳細用のプロパティ
@@ -131,6 +136,7 @@ components:
           type: string
         users:
           type: array
+          description: チームメンバーのidと名前と役割のオブジェクトの配列
           items:
             type: object
             items:
@@ -138,6 +144,8 @@ components:
                 user_id:
                   type: integer
                   format: uuid
+                usernane:
+                  type: string
                 role:
                   type: integer
 
