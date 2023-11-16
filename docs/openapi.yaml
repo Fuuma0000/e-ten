@@ -46,7 +46,7 @@ components:
           type: string
         description:
           type: string
-        image_path:
+        icon_url:
           type: string
         start_at:
           type: string
@@ -89,12 +89,17 @@ components:
             type: string
         movie:
           type: string
-        # TODO: user_idの配列 -> オブジェクト？
         users:
           type: array
           items:
-            type: integer
-            format: uuid
+            type: object
+            items:
+              properties:  
+                user_id:
+                  type: integer
+                  format: uuid
+                role:
+                  type: integer
 
     Work:
       type: object
