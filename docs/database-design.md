@@ -28,6 +28,7 @@ erDiagram
         start_at DATETIME
         end_at DATETIME
         icon_url VARCHAR(255)
+        description TEXT
     }
 
     users {
