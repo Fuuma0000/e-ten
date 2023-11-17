@@ -13,8 +13,13 @@ reup:
 	@make down
 	@make up
 
-rm:
+rmi:
 	$(dc) down --rmi all
+	@make up
+
+rmv:
+	$(dc) down -v
+	@make up
 
 ps:
 	$(dc) ps
@@ -25,9 +30,5 @@ logs:
 logsf:
 	$(dc) logs -f
 
-reset:
-	@make rm
-	@make up
-
 mysql:
-	docker exec -it e-ten-db bash -c "mysql -u root -p e-ten"  
+	docker compose exec -it e-ten-db bash -c "mysql -u root -p e-ten"  
