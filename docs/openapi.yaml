@@ -5,6 +5,10 @@ info:
   version: 1.0.0
 
 components:
+  responses:
+    Created:
+      description: created
+
   parameters:
     user_id:
       name: user_id
@@ -29,32 +33,32 @@ components:
         format: uuid
 
   schemas:
-    User:
+    # TODO: エラーメッセージ考える
+    Error:
+      type: object
       properties:
-        id:
-          type: integer
-          format: uuid
-        role:
-          type: integer
-        e-mail:
+        message:
           type: string
-          format: email
-        name:
-          type: string
-        course_id:
+        code:
           type: integer
+          format: int32
+
+    User:
+      type: object
+      description: ユーザー
+      allOf:
+        - $ref: '#/components/schemas/UserList'
+        - $ref: '#/components/schemas/UserDetail'
 
     # Userの一覧用のプロパティ
     UserList:
+      required: [user_id, username, enrollment_year, graduation_year]
       properties:
-        id:
+        user_id:
           type: integer
           format: uuid
         username:
           type: string
-        e-mail:
-          type: string
-          format: email
         enrollment_year:
           type: integer
           format: date-time
@@ -71,7 +75,11 @@ components:
           type: string
     # Userの詳細用のプロパティ
     UserDetail:
+      required: [e-mail]
       properties:
+        e-mail:
+          type: string
+          format: email
         course:
           description: 所属コース(IT/Web/経営情報)
           type: string
@@ -80,11 +88,11 @@ components:
           type: boolean
         self_introduction:
           description: 自己PR
-          type: string        
-        
+          type: string
+
     Event:
       properties:
-        id:
+        event_id:
           type: integer
           format: uuid
         name:
@@ -104,7 +112,7 @@ components:
     WorkList:
       required: [id, name, catch_copy, icon_url]
       properties:
-        id:
+        work_id:
           type: integer
           format: uuid
         name:
@@ -134,13 +142,16 @@ components:
             type: string
         movie:
           type: string
+        works_url:
+          description: 作品のURL
+          type: string
         users:
           type: array
           description: チームメンバーのidと名前と役割のオブジェクトの配列
           items:
             type: object
             items:
-              properties:  
+              properties:
                 user_id:
                   type: integer
                   format: uuid
@@ -234,7 +245,7 @@ paths:
   /events:
     get:
       summary: イベント一覧の取得
-      operationId: getEvents
+      operationId: getAllEvents
       tags: ['event']
       responses:
         200:
@@ -319,7 +330,7 @@ paths:
       operationId: deleteWork
       tags: ['work']
       parameters:
-        - $ref: '#/components/parameters/user_id'
+        - $ref: '#/components/parameters/work_id'
       responses:
         200:
           description: OK
@@ -328,11 +339,11 @@ paths:
     get:
       summary: イベントに参加している学生の一覧
       tags: ['student']
-      operationId: getStudents
+      operationId: getAllStudents
       parameters:
         - $ref: '#/components/parameters/event_id'
       responses:
-        '200':
+        200:
           description: OK
           content:
             application/json:
@@ -340,4 +351,41 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserList'
-  
+  /profiles/{id}:
+    get:
+      summary: 学生情報の詳細
+      tags: ['student']
+      operationId: getStudent
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+    put:
+      summary: 学生情報の更新
+      tags: ['student']
+      operationId: updateStudent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: OK
+
+    delete:
+      summary: 学生の削除
+      tags: ['student']
+      operationId: deleteStudent
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+      responses:
+        200:
+          description: OK
