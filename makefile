@@ -30,4 +30,4 @@ reset:
 	@make up
 
 mysql:
-	docker exec -it e-ten-db bash -c "mysql -u root -ppassword e-ten"  
+	docker exec -it e-ten-db bash -c "mysql -u root -p e-ten"  
