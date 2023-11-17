@@ -191,3 +191,4 @@ CREATE TABLE `event_users_roles` (
 );
 
 ALTER TABLE `works_data` ADD CONSTRAINT `fk_works_data_works` FOREIGN KEY (`works_id`) REFERENCES works(`id`);
+ALTER TABLE `works` ADD CONSTRAINT `fk_works_works_data` FOREIGN KEY (`latest_reviewed_id`) REFERENCES works_data(`id`);
