@@ -188,7 +188,6 @@ CREATE TABLE `event_users_roles` (
     FOREIGN KEY (`events_id`) REFERENCES events(`id`),
     FOREIGN KEY (`user_id`) REFERENCES users(`id`),
     FOREIGN KEY (`roles_id`) REFERENCES roles(`id`)
-)
+);
 
-ALTER TABLE `works_data`
-ADD CONSTRAINT `fk_works_data_works` FOREIGN KEY (`works_id`) REFERENCES works(`id`);
+ALTER TABLE `works_data` ADD CONSTRAINT `fk_works_data_works` FOREIGN KEY (`works_id`) REFERENCES works(`id`);
