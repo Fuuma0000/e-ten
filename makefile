@@ -31,4 +31,4 @@ logsf:
 	$(dc) logs -f
 
 mysql:
-	docker compose exec -it e-ten-db bash -c "mysql -u root -p e-ten"  
+	$(dc) exec -it db bash -c "mysql -u root -p e-ten"  
