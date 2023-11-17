@@ -24,18 +24,26 @@ erDiagram
 
     events {
         id INT PK
-        name VARCHAR(255)
+        name VARCHAR(50)
         start_at DATETIME
         end_at DATETIME
         icon_url VARCHAR(255)
         description TEXT
+        created_at DATETIME
+        updated_at DATETIME
+        deleted_at DATETIME
+    }
+
+    courses {
+        id INT PK
+        name VARCHAR(30)
     }
 
     users {
         id INT PK
         email VARCHAR(255)
-        password VARCHAR(255)
-        username VARCHAR(255)
+        password VARCHAR(50)
+        username VARCHAR(50)
         courses_id INT
         enrollment_year INT
         graduation_year INT
@@ -44,10 +52,24 @@ erDiagram
         icon_url VARCHAR(255)
     }
 
-    bookmarks {
+    genres {
         id INT PK
-        works_id INT FK
-        users_id INT FK
+        name VARCHAR(30)
+    }
+
+    technologies {
+        id INT PK
+        name VARCHAR(30)
+    }
+
+    jobs {
+        id INT PK
+        name VARCHAR(30)
+    }
+
+    roles {
+        id INT PK
+        name VARCHAR(30)
     }
 
     works {
@@ -59,29 +81,25 @@ erDiagram
     works_data {
         id INT PK
         works_id INT FK
-        name VARCHAR(255)
-        catch_copy VARCHAR(255)
-        description VARCHAR(255)
+        name VARCHAR(100)
+        catch_copy VARCHAR(100)
+        description VARCHAR(500)
         works_url VARCHAR(255)
         movie_url VARCHAR(255)
         system_diagram_url VARCHAR(255)
         detail TEXT
     }
 
-    genres {
+    bookmarks {
         id INT PK
-        name VARCHAR(255)
-    }
-
-    technologies {
-        id INT PK
-        name VARCHAR(255)
+        works_id INT FK
+        users_id INT FK
     }
 
     works_data_users {
         works_data_id INT FK
         users_id INT FK
-        role_explanation VARCHAR(255)
+        role_explanation VARCHAR(50)
     }
 
     users_jobs {
@@ -89,25 +107,10 @@ erDiagram
         jobs_id INT FK
     }
 
-    jobs {
-        id INT PK
-        name VARCHAR(255)
-    }
-
-    courses {
-        id INT PK
-        name VARCHAR(255)
-    }
-
-    roles {
-        id INT PK
-        name VARCHAR(255)
-    }
-
     users_urls {
         id INT PK
         users_id INT FK
-        url_name VARCHAR(255)
+        url_name VARCHAR(30)
         url VARCHAR(255)
     }
 
