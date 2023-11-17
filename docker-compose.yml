@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   app:
@@ -6,7 +6,7 @@ services:
       context: ./front
       dockerfile: Dockerfile
 
-    volumes: 
+    volumes:
       - type: bind
         source: ./front
         target: /app
@@ -19,3 +19,28 @@ services:
       - "3000:3000"
 
     command: bash
+
+  db:
+    build:
+      context: .docker/db/
+    container_name: e-ten-db
+    volumes:
+      - db-data:/var/lib/mysql
+      - type: bind
+        source: ".docker/db/init.sql"
+        target: "/docker-entrypoint-initdb.d/init.sql"
+      - type: bind
+        source: ".docker/db/my.cnf"
+        target: "/etc/mysql/conf.d/my.cnf"
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-e-ten}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-password}
+      MYSQL_USER: ${MYSQL_USER:-user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+      TZ: "Asia/Tokyo"
+
+volumes:
+  db-data:
+    driver: local
