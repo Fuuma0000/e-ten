@@ -16,21 +16,18 @@ components:
       required: true
       schema:
         type: integer
-        format: uuid
     work_id:
       name: work_id
       in: path
       required: true
       schema:
         type: integer
-        format: uuid
     event_id:
       name: event_id
       in: path
       required: true
       schema:
         type: integer
-        format: uuid
 
   schemas:
     # TODO: エラーメッセージ考える
@@ -56,7 +53,6 @@ components:
       properties:
         user_id:
           type: integer
-          format: uuid
         username:
           type: string
         enrollment_year:
@@ -94,7 +90,6 @@ components:
       properties:
         event_id:
           type: integer
-          format: uuid
         name:
           type: string
         description:
@@ -114,7 +109,6 @@ components:
       properties:
         work_id:
           type: integer
-          format: uuid
         name:
           type: string
         genres:
@@ -154,7 +148,6 @@ components:
               properties:
                 user_id:
                   type: integer
-                  format: uuid
                 usernane:
                   type: string
                 role:
@@ -270,7 +263,6 @@ paths:
           required: true
           schema:
             type: integer
-            format: uuid
       responses:
         200:
           description: OK
