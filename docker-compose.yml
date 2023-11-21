@@ -20,6 +20,21 @@ services:
 
     command: bash
 
+  express:
+    container_name: node
+    build:
+      context: .
+      dockerfile: ./back/Dockerfile
+    volumes: 
+      - type: bind
+        source: ./back
+        target: /app
+    ports:
+      - "8000:3000"
+    # stop_grace_period: 0s
+    init: true
+    command: ["npm", "run", "dev-ts"]
+
   db:
     build:
       context: .docker/db/
