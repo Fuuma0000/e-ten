@@ -25,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: ./back/Dockerfile
-    volumes: 
+    volumes:
       - type: bind
         source: ./back
         target: /app
@@ -48,7 +48,7 @@ services:
         source: "docker/db/my.cnf"
         target: "/etc/mysql/conf.d/my.cnf"
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-e-ten}
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-password}
