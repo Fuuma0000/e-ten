@@ -37,15 +37,15 @@ services:
 
   db:
     build:
-      context: .docker/db/
+      context: docker/db/
     container_name: e-ten-db
     volumes:
       - db-data:/var/lib/mysql
       - type: bind
-        source: ".docker/db/init.sql"
+        source: "docker/db/init.sql"
         target: "/docker-entrypoint-initdb.d/init.sql"
       - type: bind
-        source: ".docker/db/my.cnf"
+        source: "docker/db/my.cnf"
         target: "/etc/mysql/conf.d/my.cnf"
     ports:
       - "3306:3306"
