@@ -32,3 +32,9 @@ logsf:
 
 mysql:
 	$(dc) exec -it db bash -c "mysql -u root -p e-ten"  
+
+inapp:
+	$(dc) exec -it app bash
+
+indb:
+	$(dc) exec -it db bash
