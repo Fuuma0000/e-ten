@@ -31,6 +31,7 @@ services:
         target: /app
     ports:
       - "8000:3000"
+    
     # stop_grace_period: 0s
     init: true
     command: ["npm", "run", "dev-ts"]
@@ -40,7 +41,7 @@ services:
       context: docker/db/
     container_name: e-ten-db
     volumes:
-      - db-data:/var/lib/mysql
+      - ./docker/db/db-data:/var/lib/mysql
       - type: bind
         source: "docker/db/init.sql"
         target: "/docker-entrypoint-initdb.d/init.sql"
