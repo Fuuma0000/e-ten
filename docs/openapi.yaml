@@ -335,7 +335,7 @@ paths:
   /events/{id}/students:
     get:
       summary: イベントに参加している学生の一覧
-      tags: ['events']
+      tags: ['event']
       operationId: getAllStudents
       parameters:
         - $ref: '#/components/parameters/event_id'
