@@ -5,7 +5,8 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 import { router as indexRouter } from "./routes/index";
-import { router as usersRouter } from "./routes/users";
+import { router as eventRoute } from "./routes/events";
+import { router as profileRoute } from "./routes/profiles";
 
 const app = express();
 
@@ -21,7 +22,8 @@ app.use(express.static(path.join("public")));//__dirNameと書いてある箇所
 app.use(express.static("public"));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/events", eventRoute);
+app.use("/profiles", profileRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
