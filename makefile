@@ -1,7 +1,7 @@
 dc := docker-compose -f ./docker-compose.yml
 
 up:
-	$(dc) up -d
+	$(dc) up -d	
 
 down:
 	$(dc) down
@@ -16,6 +16,8 @@ reup:
 rmi:
 	$(dc) down --rmi all
 	@make up
+	$(dc) exec -it express bash -c "npm install" 
+	$(dc) exec -it app bash -c "npm install"
 
 rmv:
 	$(dc) down -v
