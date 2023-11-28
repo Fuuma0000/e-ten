@@ -42,10 +42,11 @@ model event_users_roles {
   users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "event_users_roles_ibfk_2")
   roles      roles     @relation(fields: [roles_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "event_users_roles_ibfk_3")
 
+  @@id([events_id, user_id, roles_id])
   @@index([events_id], map: "events_id")
   @@index([roles_id], map: "roles_id")
   @@index([user_id], map: "user_id")
-  @@ignore
+
 }
 
 model events {
@@ -58,7 +59,7 @@ model events {
   created_at        DateTime?           @default(now()) @db.DateTime(0)
   updated_at        DateTime?           @default(now()) @db.DateTime(0)
   deleted_at        DateTime?           @db.DateTime(0)
-  event_users_roles event_users_roles[] @ignore
+  event_users_roles event_users_roles[]
   works             works[]
 }
 
@@ -68,7 +69,7 @@ model genres {
   created_at        DateTime?           @default(now()) @db.DateTime(0)
   updated_at        DateTime?           @default(now()) @db.DateTime(0)
   deleted_at        DateTime?           @db.DateTime(0)
-  works_data_genres works_data_genres[] @ignore
+  works_data_genres works_data_genres[]
 }
 
 model jobs {
@@ -77,7 +78,7 @@ model jobs {
   created_at DateTime?    @default(now()) @db.DateTime(0)
   updated_at DateTime?    @default(now()) @db.DateTime(0)
   deleted_at DateTime?    @db.DateTime(0)
-  users_jobs users_jobs[] @ignore
+  users_jobs users_jobs[]
 }
 
 model roles {
@@ -86,7 +87,7 @@ model roles {
   created_at        DateTime?           @default(now()) @db.DateTime(0)
   updated_at        DateTime?           @default(now()) @db.DateTime(0)
   deleted_at        DateTime?           @db.DateTime(0)
-  event_users_roles event_users_roles[] @ignore
+  event_users_roles event_users_roles[]
 }
 
 model technologies {
@@ -95,7 +96,7 @@ model technologies {
   created_at              DateTime?                 @default(now()) @db.DateTime(0)
   updated_at              DateTime?                 @default(now()) @db.DateTime(0)
   deleted_at              DateTime?                 @db.DateTime(0)
-  works_data_technologies works_data_technologies[] @ignore
+  works_data_technologies works_data_technologies[]
 }
 
 model users {
@@ -113,11 +114,11 @@ model users {
   updated_at            DateTime?           @default(now()) @db.DateTime(0)
   deleted_at            DateTime?           @db.DateTime(0)
   bookmarks             bookmarks[]
-  event_users_roles     event_users_roles[] @ignore
+  event_users_roles     event_users_roles[]
   courses               courses?            @relation(fields: [courses_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
-  users_jobs            users_jobs[]        @ignore
+  users_jobs            users_jobs[]
   users_urls            users_urls[]
-  works_data_users      works_data_users[]  @ignore
+  works_data_users      works_data_users[]
 
   @@index([courses_id], map: "courses_id")
 }
@@ -132,9 +133,9 @@ model users_jobs {
   users      users     @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_jobs_ibfk_1")
   jobs       jobs      @relation(fields: [jobs_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_jobs_ibfk_2")
 
+  @@id([users_id, jobs_id])
   @@index([jobs_id], map: "jobs_id")
   @@index([users_id], map: "users_id")
-  @@ignore
 }
 
 model users_urls {
@@ -181,10 +182,10 @@ model works_data {
   deleted_at                                 DateTime?                 @db.DateTime(0)
   works_works_latest_reviewed_idToworks_data works[]                   @relation("works_latest_reviewed_idToworks_data")
   works_works_data_works_idToworks           works                     @relation("works_data_works_idToworks", fields: [works_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_works_data_works")
-  works_data_genres                          works_data_genres[]       @ignore
+  works_data_genres                          works_data_genres[]
   works_data_images                          works_data_images[]
-  works_data_technologies                    works_data_technologies[] @ignore
-  works_data_users                           works_data_users[]        @ignore
+  works_data_technologies                    works_data_technologies[]
+  works_data_users                           works_data_users[]
 
   @@index([works_id], map: "fk_works_data_works")
 }
@@ -199,9 +200,9 @@ model works_data_genres {
   works_data    works_data @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_genres_ibfk_1")
   genres        genres     @relation(fields: [genres_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_genres_ibfk_2")
 
+  @@id([works_data_id, genres_id])
   @@index([genres_id], map: "genres_id")
   @@index([works_data_id], map: "works_data_id")
-  @@ignore
 }
 
 model works_data_images {
@@ -227,9 +228,9 @@ model works_data_technologies {
   works_data      works_data   @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_technologies_ibfk_1")
   technologies    technologies @relation(fields: [technologies_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_technologies_ibfk_2")
 
+  @@id([works_data_id, technologies_id])
   @@index([technologies_id], map: "technologies_id")
   @@index([works_data_id], map: "works_data_id")
-  @@ignore
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -243,7 +244,7 @@ model works_data_users {
   works_data       works_data @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_users_ibfk_1")
   users            users      @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_users_ibfk_2")
 
+  @@id([works_data_id, users_id])
   @@index([users_id], map: "users_id")
   @@index([works_data_id], map: "works_data_id")
-  @@ignore
 }

@@ -41,6 +41,9 @@ inapp:
 indb:
 	$(dc) exec -it db bash
 
+inexpress:
+	$(dc) exec -it express bash
+
 # appに入ってnpm installするコマンド
 npmia:
 	$(dc) exec -it app bash -c "npm install"
