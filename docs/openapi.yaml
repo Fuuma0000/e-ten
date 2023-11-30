@@ -307,9 +307,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  items:
-                    $ref: "#/components/schemas/WorkList"
+                  $ref: "#/components/schemas/WorkList"
   /works/{id}:
     get:
       summary: 作品の詳細の取得
