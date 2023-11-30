@@ -1,6 +1,9 @@
 {
   "name": "back",
   "version": "0.0.0",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "private": true,
   "scripts": {
     "dev-ts": "ts-node-dev ./src/bin/www",
