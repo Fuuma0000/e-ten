@@ -6,7 +6,7 @@
   },
   "private": true,
   "scripts": {
-    "dev-ts": "ts-node-dev ./src/bin/www",
+    "dev-ts": "ts-node-dev --poll ./src/bin/www",
     "start-ts": "ts-node ./src/bin/www",
     "本番環境用": "どのライブラリで直列実行させるか聞く.後で作る",
     "dev": "nodemon ./src/bin/www",
@@ -21,6 +21,7 @@
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
