@@ -1,4 +1,4 @@
-openapi: '3.0.3'
+openapi: "3.0.3"
 
 info:
   title: e-ten
@@ -44,8 +44,8 @@ components:
       type: object
       description: ユーザー
       allOf:
-        - $ref: '#/components/schemas/UserList'
-        - $ref: '#/components/schemas/UserDetail'
+        - $ref: "#/components/schemas/UserList"
+        - $ref: "#/components/schemas/UserDetail"
 
     # Userの一覧用のプロパティ
     UserList:
@@ -162,8 +162,8 @@ components:
       type: object
       description: 作品
       allOf:
-        - $ref: '#/components/schemas/WorkList'
-        - $ref: '#/components/schemas/WorkDetail'
+        - $ref: "#/components/schemas/WorkList"
+        - $ref: "#/components/schemas/WorkDetail"
 
 paths:
   /site-password:
@@ -213,6 +213,37 @@ paths:
         409:
           description: メールアドレスが既に登録されています
 
+  /verify:
+    get:
+      summary: ユーザーのメール認証
+      description: メール認証のエンドポイント
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: ユーザーID
+          schema:
+            type: string
+        - name: random
+          in: query
+          required: true
+          description: ランダム文字列
+          schema:
+            type: string
+        - name: expires
+          in: query
+          required: true
+          description: 有効期限
+          schema:
+            type: string
+      responses:
+        200:
+          description: 認証成功
+        400:
+          description: 不正なリクエスト
+        404:
+          description: ユーザーが見つかりません
+
   /sign-in:
     post:
       summary: アカウントのログイン
@@ -244,7 +275,7 @@ paths:
     get:
       summary: イベント一覧の取得
       operationId: getAllEvents
-      tags: ['event']
+      tags: ["event"]
       responses:
         200:
           description: OK
@@ -253,13 +284,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: "#/components/schemas/Event"
 
   /event/{id}/works:
     get:
       summary: 作品一覧の取得
       operationId: getWorks
-      tags: ['event']
+      tags: ["event"]
 
       # 検索項目
       parameters:
@@ -278,32 +309,32 @@ paths:
                 items:
                   type: object
                   items:
-                    $ref: '#/components/schemas/WorkList'
+                    $ref: "#/components/schemas/WorkList"
   /works/{id}:
     get:
       summary: 作品の詳細の取得
       operationId: getWork
-      tags: ['work']
+      tags: ["work"]
       parameters:
-        - $ref: '#/components/parameters/work_id'
+        - $ref: "#/components/parameters/work_id"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Work'
+                $ref: "#/components/schemas/Work"
 
     post:
       summary: 作品の新規作成
       operationId: createWork
-      tags: ['work']
+      tags: ["work"]
       requestBody:
         content:
           application/json:
             schema:
               type: object
-              $ref: '#/components/schemas/Work'
+              $ref: "#/components/schemas/Work"
       responses:
         201:
           description: OK
@@ -311,13 +342,13 @@ paths:
     put:
       summary: 作品の更新
       operationId: updateWork
-      tags: ['work']
+      tags: ["work"]
       requestBody:
         content:
           application/json:
             schema:
               type: object
-              $ref: '#/components/schemas/Work'
+              $ref: "#/components/schemas/Work"
       responses:
         200:
           description: OK
@@ -325,20 +356,19 @@ paths:
     delete:
       summary: 作品の削除
       operationId: deleteWork
-      tags: ['work']
+      tags: ["work"]
       parameters:
-        - $ref: '#/components/parameters/work_id'
+        - $ref: "#/components/parameters/work_id"
       responses:
         200:
           description: OK
 
   /events/{id}/students:
     get:
-      summary: イベントに参加している学生の一覧
       tags: ['event']
       operationId: getAllStudents
       parameters:
-        - $ref: '#/components/parameters/event_id'
+        - $ref: "#/components/parameters/event_id"
       responses:
         200:
           description: OK
@@ -347,42 +377,42 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/UserList'
+                  $ref: "#/components/schemas/UserList"
   /profiles/{id}:
     get:
       summary: 学生情報の詳細
-      tags: ['student']
+      tags: ["student"]
       operationId: getStudent
       parameters:
-        - $ref: '#/components/parameters/user_id'
+        - $ref: "#/components/parameters/user_id"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
 
     put:
       summary: 学生情報の更新
-      tags: ['student']
+      tags: ["student"]
       operationId: updateStudent
       requestBody:
         content:
           application/json:
             schema:
               type: object
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
       responses:
         200:
           description: OK
 
     delete:
       summary: 学生の削除
-      tags: ['student']
+      tags: ["student"]
       operationId: deleteStudent
       parameters:
-        - $ref: '#/components/parameters/user_id'
+        - $ref: "#/components/parameters/user_id"
       responses:
         200:
           description: OK

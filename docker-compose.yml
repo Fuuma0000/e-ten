@@ -5,19 +5,18 @@ services:
     build:
       context: ./front
       dockerfile: Dockerfile
+    networks:
+      mynetwork:
+        ipv4_address: 172.16.0.10 # 任意の固定IPアドレス
 
     volumes:
       - type: bind
         source: ./front
         target: /app
-
     working_dir: /app
-
     tty: true
-
     ports:
       - "3000:3000"
-
     command: bash
 
   express:
@@ -25,12 +24,15 @@ services:
     build:
       context: .
       dockerfile: ./back/Dockerfile
+    networks:
+      mynetwork:
+        ipv4_address: 172.16.0.11 # 任意の固定IPアドレス
+
     volumes:
       - type: bind
         source: ./back
         target: /app
     ports:
-      - "8000:3000"
       - "5555:5555"
     # stop_grace_period: 0s
     init: true
@@ -40,6 +42,10 @@ services:
     build:
       context: docker/db/
     container_name: e-ten-db
+    networks:
+      mynetwork:
+        ipv4_address: 172.16.0.12 # 任意の固定IPアドレス
+
     volumes:
       - ./docker/db/db-data:/var/lib/mysql
       - type: bind
@@ -60,3 +66,11 @@ services:
 volumes:
   db-data:
     driver: local
+
+networks:
+  mynetwork:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/24
