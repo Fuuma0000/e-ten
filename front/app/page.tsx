@@ -70,6 +70,7 @@ export default function Index() {
           >
             <Button
               variant="contained"
+              href="./sign/in"
               disableElevation
               sx={{
                 backgroundColor: "#FFF",
