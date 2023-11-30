@@ -24,6 +24,7 @@ app.use(express.static("public"));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
+// jwtテスト用: jwt認証なしver
 app.get("/test", (req, res) => {
   res.status(200).json({
     message: "Hello!",
@@ -31,6 +32,8 @@ app.get("/test", (req, res) => {
   });
 });
 
+// jwtテスト用: jwt認証ありver
+// authenticateを挟むことで、jwt認証が通らないと、このルーティングには到達しない。
 app.get("/test2", authenticate, (req, res) => {
   res.status(200).json({
     message: "Hello!",
