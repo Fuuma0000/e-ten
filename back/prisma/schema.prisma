@@ -1,0 +1,250 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model bookmarks {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  works_id   Int       @db.UnsignedInt
+  users_id   Int       @db.UnsignedInt
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+  works      works     @relation(fields: [works_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "bookmarks_ibfk_1")
+  users      users     @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "bookmarks_ibfk_2")
+
+  @@index([users_id], map: "users_id")
+  @@index([works_id], map: "works_id")
+}
+
+model courses {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  name       String    @db.VarChar(30)
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+  users      users[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model event_users_roles {
+  events_id  Int       @db.UnsignedInt
+  user_id    Int       @db.UnsignedInt
+  roles_id   Int       @db.UnsignedInt
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+  events     events    @relation(fields: [events_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "event_users_roles_ibfk_1")
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "event_users_roles_ibfk_2")
+  roles      roles     @relation(fields: [roles_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "event_users_roles_ibfk_3")
+
+  @@id([events_id, user_id, roles_id])
+  @@index([events_id], map: "events_id")
+  @@index([roles_id], map: "roles_id")
+  @@index([user_id], map: "user_id")
+
+}
+
+model events {
+  id                Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name              String              @db.VarChar(50)
+  start_at          DateTime?           @db.DateTime(0)
+  end_at            DateTime?           @db.DateTime(0)
+  icon_url          String?             @db.VarChar(255)
+  description       String?             @db.Text
+  created_at        DateTime?           @default(now()) @db.DateTime(0)
+  updated_at        DateTime?           @default(now()) @db.DateTime(0)
+  deleted_at        DateTime?           @db.DateTime(0)
+  event_users_roles event_users_roles[]
+  works             works[]
+}
+
+model genres {
+  id                Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name              String              @db.VarChar(30)
+  created_at        DateTime?           @default(now()) @db.DateTime(0)
+  updated_at        DateTime?           @default(now()) @db.DateTime(0)
+  deleted_at        DateTime?           @db.DateTime(0)
+  works_data_genres works_data_genres[]
+}
+
+model jobs {
+  id         Int          @id @default(autoincrement()) @db.UnsignedInt
+  name       String       @db.VarChar(30)
+  created_at DateTime?    @default(now()) @db.DateTime(0)
+  updated_at DateTime?    @default(now()) @db.DateTime(0)
+  deleted_at DateTime?    @db.DateTime(0)
+  users_jobs users_jobs[]
+}
+
+model roles {
+  id                Int                 @id @default(autoincrement()) @db.UnsignedInt
+  name              String              @db.VarChar(30)
+  created_at        DateTime?           @default(now()) @db.DateTime(0)
+  updated_at        DateTime?           @default(now()) @db.DateTime(0)
+  deleted_at        DateTime?           @db.DateTime(0)
+  event_users_roles event_users_roles[]
+}
+
+model technologies {
+  id                      Int                       @id @default(autoincrement()) @db.UnsignedInt
+  name                    String                    @db.VarChar(30)
+  created_at              DateTime?                 @default(now()) @db.DateTime(0)
+  updated_at              DateTime?                 @default(now()) @db.DateTime(0)
+  deleted_at              DateTime?                 @db.DateTime(0)
+  works_data_technologies works_data_technologies[]
+}
+
+model users {
+  id                    Int                 @id @default(autoincrement()) @db.UnsignedInt
+  email                 String              @unique(map: "email") @db.VarChar(255)
+  password              String              @db.VarChar(50)
+  username              String?             @db.VarChar(50)
+  courses_id            Int?                @db.UnsignedInt
+  enrollment_year       Int?
+  graduation_year       Int?
+  is_job_hunt_completed Boolean?            @default(false)
+  self_introduction     String?             @db.Text
+  icon_url              String?             @db.VarChar(255)
+  created_at            DateTime?           @default(now()) @db.DateTime(0)
+  updated_at            DateTime?           @default(now()) @db.DateTime(0)
+  deleted_at            DateTime?           @db.DateTime(0)
+  bookmarks             bookmarks[]
+  event_users_roles     event_users_roles[]
+  courses               courses?            @relation(fields: [courses_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_ibfk_1")
+  users_jobs            users_jobs[]
+  users_urls            users_urls[]
+  works_data_users      works_data_users[]
+
+  @@index([courses_id], map: "courses_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model users_jobs {
+  users_id   Int       @db.UnsignedInt
+  jobs_id    Int       @db.UnsignedInt
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+  users      users     @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_jobs_ibfk_1")
+  jobs       jobs      @relation(fields: [jobs_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_jobs_ibfk_2")
+
+  @@id([users_id, jobs_id])
+  @@index([jobs_id], map: "jobs_id")
+  @@index([users_id], map: "users_id")
+}
+
+model users_urls {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  users_id   Int       @db.UnsignedInt
+  url_name   String    @db.VarChar(30)
+  url        String    @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.DateTime(0)
+  updated_at DateTime? @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+  users      users     @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_urls_ibfk_1")
+
+  @@index([users_id], map: "users_id")
+}
+
+model works {
+  id                                              Int          @id @default(autoincrement()) @db.UnsignedInt
+  events_id                                       Int          @db.UnsignedInt
+  latest_reviewed_id                              Int?         @db.UnsignedInt
+  created_at                                      DateTime?    @default(now()) @db.DateTime(0)
+  updated_at                                      DateTime?    @default(now()) @db.DateTime(0)
+  deleted_at                                      DateTime?    @db.DateTime(0)
+  bookmarks                                       bookmarks[]
+  works_data_works_latest_reviewed_idToworks_data works_data?  @relation("works_latest_reviewed_idToworks_data", fields: [latest_reviewed_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_works_works_data")
+  events                                          events       @relation(fields: [events_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_ibfk_1")
+  works_data_works_data_works_idToworks           works_data[] @relation("works_data_works_idToworks")
+
+  @@index([events_id], map: "events_id")
+  @@index([latest_reviewed_id], map: "fk_works_works_data")
+}
+
+model works_data {
+  id                                         Int                       @id @default(autoincrement()) @db.UnsignedInt
+  works_id                                   Int                       @db.UnsignedInt
+  name                                       String                    @db.VarChar(100)
+  catch_copy                                 String                    @db.VarChar(100)
+  description                                String                    @db.VarChar(500)
+  works_url                                  String?                   @db.VarChar(255)
+  movie_url                                  String?                   @db.VarChar(255)
+  system_diagram_url                         String?                   @db.VarChar(255)
+  detail                                     String?                   @db.Text
+  created_at                                 DateTime?                 @default(now()) @db.DateTime(0)
+  updated_at                                 DateTime?                 @default(now()) @db.DateTime(0)
+  deleted_at                                 DateTime?                 @db.DateTime(0)
+  works_works_latest_reviewed_idToworks_data works[]                   @relation("works_latest_reviewed_idToworks_data")
+  works_works_data_works_idToworks           works                     @relation("works_data_works_idToworks", fields: [works_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_works_data_works")
+  works_data_genres                          works_data_genres[]
+  works_data_images                          works_data_images[]
+  works_data_technologies                    works_data_technologies[]
+  works_data_users                           works_data_users[]
+
+  @@index([works_id], map: "fk_works_data_works")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model works_data_genres {
+  works_data_id Int        @db.UnsignedInt
+  genres_id     Int        @db.UnsignedInt
+  created_at    DateTime?  @default(now()) @db.DateTime(0)
+  updated_at    DateTime?  @default(now()) @db.DateTime(0)
+  deleted_at    DateTime?  @db.DateTime(0)
+  works_data    works_data @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_genres_ibfk_1")
+  genres        genres     @relation(fields: [genres_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_genres_ibfk_2")
+
+  @@id([works_data_id, genres_id])
+  @@index([genres_id], map: "genres_id")
+  @@index([works_data_id], map: "works_data_id")
+}
+
+model works_data_images {
+  id            Int        @id @default(autoincrement()) @db.UnsignedInt
+  works_data_id Int        @db.UnsignedInt
+  url           String?    @db.VarChar(255)
+  order         Int?       @db.TinyInt
+  created_at    DateTime?  @default(now()) @db.DateTime(0)
+  updated_at    DateTime?  @default(now()) @db.DateTime(0)
+  deleted_at    DateTime?  @db.DateTime(0)
+  works_data    works_data @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_images_ibfk_1")
+
+  @@index([works_data_id], map: "works_data_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model works_data_technologies {
+  works_data_id   Int          @db.UnsignedInt
+  technologies_id Int          @db.UnsignedInt
+  created_at      DateTime?    @default(now()) @db.DateTime(0)
+  updated_at      DateTime?    @default(now()) @db.DateTime(0)
+  deleted_at      DateTime?    @db.DateTime(0)
+  works_data      works_data   @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_technologies_ibfk_1")
+  technologies    technologies @relation(fields: [technologies_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_technologies_ibfk_2")
+
+  @@id([works_data_id, technologies_id])
+  @@index([technologies_id], map: "technologies_id")
+  @@index([works_data_id], map: "works_data_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model works_data_users {
+  works_data_id    Int        @db.UnsignedInt
+  users_id         Int        @db.UnsignedInt
+  role_explanation String?    @db.VarChar(50)
+  created_at       DateTime?  @default(now()) @db.DateTime(0)
+  updated_at       DateTime?  @default(now()) @db.DateTime(0)
+  deleted_at       DateTime?  @db.DateTime(0)
+  works_data       works_data @relation(fields: [works_data_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_users_ibfk_1")
+  users            users      @relation(fields: [users_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "works_data_users_ibfk_2")
+
+  @@id([works_data_id, users_id])
+  @@index([users_id], map: "users_id")
+  @@index([works_data_id], map: "works_data_id")
+}

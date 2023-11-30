@@ -15,7 +15,7 @@ RUN npm install -g ts-node-dev
 
 # compose command フィールド -> Docker file CMD命令 -> ベースイメージのデフォルト命令という順で辿る
 
-# CMD npm run dev
+CMD npm run dev
 
 # compose down でメインプロセス殺すようにする.殺せてない
 CMD ["npm", "run", "dev-ts"]

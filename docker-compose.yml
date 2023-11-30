@@ -33,7 +33,8 @@ services:
         source: ./back
         target: /app
     ports:
-      - "8000:3000"
+      - "5555:5555"
+    # stop_grace_period: 0s
     init: true
     command: ["npm", "run", "dev-ts"]
 
@@ -54,7 +55,7 @@ services:
         source: "docker/db/my.cnf"
         target: "/etc/mysql/conf.d/my.cnf"
     ports:
-      - "3307:3306"
+      - "3307:3307"
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-e-ten}
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD:-password}

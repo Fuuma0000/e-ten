@@ -85,6 +85,11 @@ components:
         self_introduction:
           description: 自己PR
           type: string
+        works:
+          description: 作品情報の配列
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkList'
 
     Event:
       properties:
@@ -358,10 +363,9 @@ paths:
         200:
           description: OK
 
-  /events/{id}/students/:
+  /events/{id}/students:
     get:
-      summary: イベントに参加している学生の一覧
-      tags: ["student"]
+      tags: ['event']
       operationId: getAllStudents
       parameters:
         - $ref: "#/components/parameters/event_id"
