@@ -1,13 +1,17 @@
 {
   "name": "back",
   "version": "0.0.0",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "private": true,
   "scripts": {
     "dev-ts": "ts-node-dev --poll ./src/bin/www",
     "start-ts": "ts-node ./src/bin/www",
     "本番環境用": "どのライブラリで直列実行させるか聞く.後で作る",
     "dev": "nodemon ./src/bin/www",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "db:seed-dev": "npx ts-node prisma/seed-dev.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.6.0",
