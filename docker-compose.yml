@@ -33,7 +33,7 @@ services:
         source: ./back
         target: /app
     ports:
-      - "8000:8000"
+      - "8000:3000"
       - "5555:5555"
     # stop_grace_period: 0s
     init: true

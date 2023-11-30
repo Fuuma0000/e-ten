@@ -8,16 +8,17 @@ const prisma = new PrismaClient();
 router.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  // const temp = await prisma.courses.findUnique({
-  //   where: {
-  //     id: parseInt(id),
-  //   },
-  // });
+  const temp = await prisma.users.findUnique({
+    where: {
+      id: parseInt(id),
+    },
+    include: {
+      
+    }
+  });
 
-  // const temp = await prisma.courses.findMany();
-  // console.log(temp);
+  console.log(temp);
 
-  console.log("test");
   res.json({ message: "ルーティング確認.profile" });
 });
 
