@@ -6,22 +6,37 @@ import logger from "morgan";
 
 import { router as indexRouter } from "./routes/index";
 import { router as usersRouter } from "./routes/users";
+import authenticate from "./routes/default/authenticate";
 
 const app = express();
 
 // view engine setup
-app.set("views", path.join("views"));//__dirNameと書いてある箇所を除く！
+app.set("views", path.join("views")); //__dirNameと書いてある箇所を除く！
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join("public")));//__dirNameと書いてある箇所を除く！
+app.use(express.static(path.join("public"))); //__dirNameと書いてある箇所を除く！
 app.use(express.static("public"));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+
+app.get("/test", (req, res) => {
+  res.status(200).json({
+    message: "Hello!",
+    token: "token",
+  });
+});
+
+app.get("/test2", authenticate, (req, res) => {
+  res.status(200).json({
+    message: "Hello!",
+    token: "token",
+  });
+});
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
