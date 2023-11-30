@@ -17,7 +17,7 @@ rmi:
 	$(dc) down --rmi all
 	@make up
 	$(dc) exec -it express bash -c "npm install" 
-	$(dc) exec -it app bash -c "npm install"
+	$(dc) exec -it app bash -c "cd e-ten-front/ && npm install"
 
 rmv:
 	$(dc) down -v
@@ -41,6 +41,12 @@ inapp:
 indb:
 	$(dc) exec -it db bash
 
+inex:
+	$(dc) exec -it express bash
+
 # appに入ってnpm installするコマンド
 npmia:
-	$(dc) exec -it app bash -c "npm install"
+	$(dc) exec -it app bash -c "cd e-ten-front/ && npm install"
+
+npmie:
+	$(dc) exec -it express bash -c "npm install"
