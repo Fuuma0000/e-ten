@@ -18,6 +18,7 @@ async function main() {
 
 
 // 混ぜると分からなくなるので関数切っておきます
+// レコードチェックしてもらってから複数個にする
 async function insertProfileSeedData() {
   // ユーザ情報
   const registedUser = await prisma.users.create({
