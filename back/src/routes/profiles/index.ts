@@ -69,6 +69,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       select: { latest_reviewed_id: true }
     });
 
+    // TODO:型定義誤魔化してる.次授業時に聞く
     const temp5 = await prisma.works_data.findUnique({
       where: { id: temp4?.latest_reviewed_id as number | undefined },
       select: {
