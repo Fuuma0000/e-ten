@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { convertUserData, convertWorksData, inputUserJson, inputWorksJson } from "./json-convert";
 
 const router: Router = Router();
 
@@ -101,9 +102,14 @@ router.get("/:id", async (req: Request, res: Response) => {
         }
       }
     })
-  console.log(temp);
 
-  res.json(temp5);
+  // TODO:型適当に上書きして良い物なのか聞く
+  const convertedUserData = convertUserData(temp as inputUserJson);
+  const convertedWorksData = convertWorksData(temp5 as inputWorksJson);
+  // console.log(convertedUserData);
+  // console.log(convertedWorksData);
+  const mergedData = { ...convertedUserData, ...convertedWorksData };
+  res.json(mergedData);
 });
 
 export { router };
