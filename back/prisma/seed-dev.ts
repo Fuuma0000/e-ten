@@ -14,6 +14,45 @@ async function main() {
     },
     update: {},
   });
+
+  const work_01 = await prisma.works.upsert({
+    where: { id: 1 },
+    create: {
+      events_id: 1,
+      latest_reviewed_id: null,
+    },
+    update: {},
+  });
+
+  // TODO: reset db
+  const work_data_01 = await prisma.works_data.upsert({
+    where: { id: 1 },
+    create: {
+      works_id: 1,
+      name: "テスト作品01",
+      catch_copy: "テスト作品01のキャッチコピー",
+      description: "テスト作品01の説明",
+      works_url: "https://example.com",
+      movie_url: "",
+      system_diagram_url: "",
+      detail: "テスト作品01の概要",
+      works_data_genres: {
+        createMany: {
+          data: [{ genres_id: 1 }, { genres_id: 2 }],
+        },
+      },
+      works_data_technologies: {
+        createMany: {
+          data: [{ technologies_id: 1 }, { technologies_id: 2 }],
+        },
+      },
+    },
+    include: {
+      works_data_genres: true,
+      works_data_technologies: true,
+    },
+    update: {},
+  });
 }
 
 main()

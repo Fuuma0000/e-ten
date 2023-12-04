@@ -29,6 +29,24 @@ async function main() {
     ],
   });
   // 権限
+  const roles = await prisma.roles.createMany({
+    data: [
+      { name: "admin" }, // 管理者
+      { name: "exhibitor" }, // 出展者
+      { name: "visitor" }, // 来場者
+    ],
+  });
+  // 希望職種
+  const jobs = await prisma.jobs.createMany({
+    data: [
+      { name: "フロントエンドエンジニア" },
+      { name: "バックエンドエンジニア" },
+      { name: "インフラエンジニア" },
+      { name: "ネットワークエンジニア" },
+      { name: "UI/UXデザイナー" },
+      { name: "セキュリティエンジニア" },
+    ],
+  });
 }
 
 main()
