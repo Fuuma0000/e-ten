@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function SignIn() {
+export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -41,7 +41,7 @@ export default function SignIn() {
           alignItems: "center",
         }}
       >
-        Sign In
+        Sign Up
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mx: 2 }}>
@@ -91,7 +91,7 @@ export default function SignIn() {
             },
           }}
         >
-          Sign In
+          Sign Up
         </Button>
         <Stack
           sx={{
@@ -99,8 +99,8 @@ export default function SignIn() {
             alignItems: "center",
           }}
         >
-          <Link href="./up" variant="body2">
-            Go to Sign Up
+          <Link href="./in" variant="body2">
+            Go to Sign In
           </Link>
         </Stack>
       </Box>

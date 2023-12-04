@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 let theme = createTheme({
   breakpoints: {
@@ -19,7 +19,7 @@ let theme = createTheme({
     primary: {
       main: "#00C2FF",
       light: "#75D1FF",
-      dark: "#006688"
+      dark: "#006688",
     },
     secondary: {
       main: "#FFE664",
@@ -29,10 +29,10 @@ let theme = createTheme({
     tertiary: {
       main: "#CB97FF",
       light: "#DDB8FF",
-      dark: "#5E2D8E"
-    }
+      dark: "#5E2D8E",
+    },
   },
-})
+});
 
 declare module "@mui/material/styles" {
   interface PaletteOptions {
@@ -40,20 +40,18 @@ declare module "@mui/material/styles" {
   }
 }
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider theme={theme}>
-         {children}
-        </ThemeProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
