@@ -26,8 +26,7 @@ router.get("/:id/works", async (req: Request, res: Response) => {
           end_at: true,
         },
       },
-      // TODO: 間違えてるかも
-      works_data_works_data_works_idToworks: {
+      works_data_works_latest_reviewed_idToworks_data: {
         select: {
           name: true,
           catch_copy: true,
