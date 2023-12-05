@@ -28,12 +28,12 @@ export default function SiteLayout({
         <Typography
           component={"div"}
           sx={{
-            backgroundColor: "primary.main",
+            backgroundColor: "primary.light",
             width: "75%",
             height: "8vh",
             borderRadius: "32px 0px 0px 180px / 0px 0px 0px 150px",
-            borderBottom: "10px solid",
-            borderLeft: "10px solid",
+            borderBottom: "8px solid",
+            borderLeft: "8px solid",
             borderColor: "tertiary.main",
             "::before": {
               content: "''",
@@ -43,8 +43,8 @@ export default function SiteLayout({
               width: "75%",
               height: "8vh",
               borderRadius: "32px 0px 0px 180px / 0px 0px 0px 150px",
-              borderBottom: "10px solid",
-              borderLeft: "10px solid",
+              borderBottom: "8px solid",
+              borderLeft: "8px solid",
               borderColor: "secondary.main",
             },
           }}
