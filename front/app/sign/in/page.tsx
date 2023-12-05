@@ -100,7 +100,7 @@ export default function SignIn() {
           }}
         >
           <Link href="./up" variant="body2">
-            Go to Sign Up
+            Don't have an account? Sign Up
           </Link>
         </Stack>
       </Box>
