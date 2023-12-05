@@ -7,23 +7,25 @@ import logger from "morgan";
 import { router as indexRouter } from "./routes/index";
 import { router as eventRoute } from "./routes/events";
 import { router as profileRoute } from "./routes/profiles";
+import { router as workRoute } from "./routes/works";
 
 const app = express();
 
 // view engine setup
-app.set("views", path.join("views"));//__dirNameと書いてある箇所を除く！
+app.set("views", path.join("views")); //__dirNameと書いてある箇所を除く！
 app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join("public")));//__dirNameと書いてある箇所を除く！
+app.use(express.static(path.join("public"))); //__dirNameと書いてある箇所を除く！
 app.use(express.static("public"));
 
 app.use("/", indexRouter);
 app.use("/events", eventRoute);
 app.use("/profiles", profileRoute);
+app.use("/works", workRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -1,16 +1,16 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { convertUserData, convertWorksData, inputUserJson, inputWorksJson } from "./json-convert";
+import { convertUserData, UserType } from "./json-convert";
 
 const router: Router = Router();
 
 const prisma = new PrismaClient();
 
+
 router.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  // works_data_usersからworksを上手く辿れないので分けて記述しています
-  const temp = await prisma.users.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
       id: parseInt(id),
     },
@@ -37,79 +37,57 @@ router.get("/:id", async (req: Request, res: Response) => {
           name: true
         }
       },
-      // works_data_users: {
-      //   select: {
-      //     works_data: {
-      //       select: {
-      //         works: {
-
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-    },
-    });
-
-    
-    // TODO:複数個レコードが取得出来た場合を考慮していないので入っているレコードが適切かどうかチェックしてもらってから作成する
-    const temp2 = await prisma.works_data_users.findMany({
-      where: { users_id: parseInt(id) },
-      select: {
-        works_data_id: true 
-      }
-    });
-
-    const temp3 = await prisma.works_data.findUnique({
-      where: { id: temp2[0].works_data_id },
-      select: { works_id: true }
-    });
-
-    const temp4 = await prisma.works.findUnique({
-      where: { id: temp3?.works_id },
-      select: { latest_reviewed_id: true }
-    });
-
-    // TODO:型定義誤魔化してる.次授業時に聞く
-    const temp5 = await prisma.works_data.findUnique({
-      where: { id: temp4?.latest_reviewed_id as number | undefined },
-      select: {
-        works_id: true,
-        name: true,
-        works_data_genres: {
-          select: {
-            genres: {
+      works_data_users: {
+        select: {
+          works_data: {
+            select: {
+              works_works_data_works_idToworks: {
+                select: {
+                  works_data_works_latest_reviewed_idToworks_data: {
+                    select: {
+                      works_id: true,
+                      name: true,
+                      works_data_genres: {
+                        select: {
+                          genres: {
+                            select: {
+                              name: true
+                            }
+                          }
+                        }
+                      },
+                      works_data_technologies: {
+                        select: {
+                          technologies: {
+                            select: {
+                              name: true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                }
+              },
+            catch_copy: true,
+            works_data_images: {  
               select: {
-                name: true
-              }
+                url: true
+              },
+              orderBy: {
+                order: "asc"
+              },
+              take: 1
             }
-          }
-        },
-        works_data_technologies: {
-          select: {
-            technologies: {
-              select: {
-                name: true
-              }
-            }
-          }
-        },
-        catch_copy: true,
-        works_data_images: {
-          select: {
-            url: true,
+            },
           }
         }
       }
-    })
+    },
+  });
 
-  // TODO:型適当に上書きして良い物なのか聞く
-  const convertedUserData = convertUserData(temp as inputUserJson);
-  const convertedWorksData = convertWorksData(temp5 as inputWorksJson);
-  // console.log(convertedUserData);
-  // console.log(convertedWorksData);
-  const mergedData = { ...convertedUserData, ...convertedWorksData };
-  res.json(mergedData);
+  const returnVal = convertUserData(user as UserType);
+  res.json(returnVal);
 });
 
 export { router };
