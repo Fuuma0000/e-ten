@@ -14,6 +14,81 @@ async function main() {
     },
     update: {},
   });
+
+  // 管理者ユーザー
+  const user_01 = await prisma.users.upsert({
+    where: { id: 1 },
+    create: {
+      username: "テストユーザー01",
+      email: "test01@mail.com",
+      password: "password",
+      courses_id: 1,
+      enrollment_year: 2022,
+      graduation_year: 2026,
+      is_job_hunt_completed: true,
+      self_introduction: "テストユーザー01の自己PR",
+      icon_url: "",
+      event_users_roles: {
+        create: {
+          events_id: 1,
+          roles_id: 1,
+        },
+      },
+    },
+    update: {},
+  });
+
+  const work_01 = await prisma.works.upsert({
+    where: { id: 1 },
+    create: {
+      events_id: 1,
+      latest_reviewed_id: null,
+    },
+    update: {},
+  });
+
+  const work_data_01 = await prisma.works_data.upsert({
+    where: { id: 1 },
+    create: {
+      works_id: 1,
+      name: "テスト作品01",
+      catch_copy: "テスト作品01のキャッチコピー",
+      description: "テスト作品01の説明",
+      works_url: "https://example.com",
+      movie_url: "",
+      system_diagram_url: "",
+      detail: "テスト作品01の概要",
+      works_data_genres: {
+        createMany: {
+          data: [{ genres_id: 1 }, { genres_id: 2 }],
+        },
+      },
+      works_data_technologies: {
+        createMany: {
+          data: [{ technologies_id: 1 }, { technologies_id: 2 }],
+        },
+      },
+      works_data_users: {
+        createMany: {
+          data: [{ users_id: 1 }],
+        },
+      },
+    },
+    include: {
+      works_data_genres: true,
+      works_data_technologies: true,
+      works_data_users: true,
+    },
+    update: {},
+  });
+
+  // 校閲後の作品データ
+  await prisma.works.update({
+    where: { id: 1 },
+    data: {
+      latest_reviewed_id: 1,
+    },
+  });
 }
 
 

@@ -89,7 +89,7 @@ components:
           description: 作品情報の配列
           type: array
           items:
-            $ref: '#/components/schemas/WorkList'
+            $ref: "#/components/schemas/WorkList"
 
     Event:
       properties:
@@ -305,11 +305,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  items:
-                    $ref: "#/components/schemas/WorkList"
+                type: object
+                # TODO: eventsの情報のオブジェクトとworksの情報のオブジェクトの配列
+                properties:
+                  event:
+                    $ref: "#/components/schemas/Event"
+                  works:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WorkList"
   /works/{id}:
     get:
       summary: 作品の詳細の取得
@@ -365,7 +369,7 @@ paths:
 
   /events/{id}/students:
     get:
-      tags: ['event']
+      tags: ["event"]
       operationId: getAllStudents
       parameters:
         - $ref: "#/components/parameters/event_id"
