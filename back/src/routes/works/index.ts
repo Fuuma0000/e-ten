@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import exp from "constants";
 const router: Router = Router();
 const prisma = new PrismaClient();
 
@@ -49,6 +48,15 @@ router.get("/:id", async (req: Request, res: Response) => {
                   username: true,
                   // TODO: 役割名がないかも？
                   // role: true,
+                  event_users_roles: {
+                    select: {
+                      roles: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
@@ -62,5 +70,11 @@ router.get("/:id", async (req: Request, res: Response) => {
 
   res.json(work);
 });
+
+// TODO: 作品の新規作成
+
+// TODO: 作品の更新
+
+// TODO: 作品の削除
 
 export { router };

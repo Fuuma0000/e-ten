@@ -15,6 +15,7 @@ async function main() {
     update: {},
   });
 
+  // 管理者ユーザー
   const user_01 = await prisma.users.upsert({
     where: { id: 1 },
     create: {
@@ -27,6 +28,12 @@ async function main() {
       is_job_hunt_completed: true,
       self_introduction: "テストユーザー01の自己PR",
       icon_url: "",
+      event_users_roles: {
+        create: {
+          events_id: 1,
+          roles_id: 1,
+        },
+      },
     },
     update: {},
   });
