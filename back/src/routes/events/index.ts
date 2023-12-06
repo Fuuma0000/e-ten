@@ -66,27 +66,53 @@ router.get("/:id/students", async (req: Request, res: Response) => {
 
   // TODO:events.idに対応するユーザだけ拾ってくるように修正する
   // events.id -> events_users_roles.users_id -> users取得?
-  const users = await prisma.users.findMany({
+  const events_users = await prisma.event_users_roles.findMany({
+    where: { events_id: parseInt(id) },
     select: {
-      id: true,
-      username: true,
-      enrollment_year: true,
-      graduation_year: true,
-      users_jobs: {
+      users: {
         select: {
-          jobs: {
+          id: true,
+          username: true,
+          enrollment_year: true,
+          graduation_year: true,
+          users_jobs: {
             select: {
-              name: true,
+              jobs: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
+          icon_url: true,
         },
-      },
-      icon_url: true,
-    },
+      }
+    }
   });
 
-  const convertedUsersData = convertUsersData(users as inputUsersJson[]);
-  res.json(convertedUsersData);
+  // const users = await prisma.users.findMany({
+  //   select: {
+  //     id: true,
+  //     username: true,
+  //     enrollment_year: true,
+  //     graduation_year: true,
+  //     users_jobs: {
+  //       select: {
+  //         jobs: {
+  //           select: {
+  //             name: true,
+  //           },
+  //         },
+  //       },
+  //     },
+  //     icon_url: true,
+  //   },
+  // });
+
+  // const convertedUsersData = convertUsersData(users as inputUsersJson[]);
+  // res.json(convertedUsersData);
+
+  res.json(events_users);
 });
 
 export { router };

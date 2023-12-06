@@ -105,6 +105,26 @@ async function insertProfileSeedData() {
     // 型推論のために代入してる
     let registedUserId = registedUser.id;
 
+    // 権限テーブル.中間テーブルのために追加しておく
+    const registedRoles = await prisma.roles.create({
+      data: {
+        name: `${i}.ここに権限のテキストが入ります`
+      }
+    })
+
+    const registedRolesId = registedRoles.id;
+
+    // イベントとユーザの中間テーブル
+    // events_idはハードコーディングしています
+    // マーメイドとnotionはusers_idになってるけどschemaはuser_idになってるがどちらに統一する？
+    const registedEventUserRoles = await prisma.event_users_roles.create({
+      data: {
+        events_id: 1,
+        user_id: registedUserId,
+        roles_id: registedRolesId,
+      }
+    });
+
     // 追加されたやつのデータ
     for (let i = 0; i < 3; i++) {
       const registedUserUrl = await prisma.users_urls.create({
