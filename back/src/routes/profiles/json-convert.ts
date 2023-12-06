@@ -61,7 +61,7 @@ const convertUserData = (input: UserType) => {
     ),
     catch_copy: works_data_user.works_data.catch_copy,
     icon_url: works_data_user.works_data.works_data_images.map(works_data_image => works_data_image.url)
-  }))
+  }));
 
   const returnJson: returnUserJson = {
     user_id: input.id,
@@ -78,48 +78,5 @@ const convertUserData = (input: UserType) => {
   }
   return returnJson;
 }
-
-// type inputGenre = {
-//   genres: {
-//     name: string;
-//   }
-// }
-
-// type inputTechnology = {
-//   technologies: {
-//     name: string;
-//   }
-// }
-
-// type inputImageUrl = {
-//   url: string;
-// }
-
-// type inputWorksJson = {
-//   works_id: number;
-//   name: string;
-//   works_data_genres: inputGenre[];
-//   works_data_technologies: inputTechnology[];
-//   catch_copy: string;
-//   works_data_images: inputImageUrl[];
-// }
-
-
-// const convertWorksData = (input: inputWorksJson) => {
-//   const genres = input.works_data_genres.map(genre => genre.genres.name);
-//   const technologies = input.works_data_technologies.map(technology => technology.technologies.name);
-//   const icon_url = input.works_data_images[0].url;
-
-//   const returnJson: returnWorksJson[] = [{
-//     work_id: input.works_id,
-//     name: input.name,
-//     genres,
-//     technologies,
-//     catch_copy: input.catch_copy,
-//     icon_url
-//   }];
-//   return { works: returnJson };
-// }
-
 
 export { convertUserData, UserType }

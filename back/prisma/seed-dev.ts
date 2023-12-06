@@ -105,6 +105,17 @@ async function insertProfileSeedData() {
     // 型推論のために代入してる
     let registedUserId = registedUser.id;
 
+    // 追加されたやつのデータ
+    for (let i = 0; i < 3; i++) {
+      const registedUserUrl = await prisma.users_urls.create({
+        data: {
+          users_id: registedUserId,
+          url_name: `${i}.Qiita等のSNSの名前が入ります`,
+          url: `${i}.ここにユーザに結びつくQiita等のURLが入ります`,
+        }
+      })
+    }
+
     // 志望職種情報
     for (let i = 0; i < 3; i++) {
       const registedJob = await prisma.jobs.create({

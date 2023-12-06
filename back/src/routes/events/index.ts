@@ -61,6 +61,11 @@ router.get("/:id/works", async (req: Request, res: Response) => {
 
 // イベント参加学生の取得
 router.get("/:id/students", async (req: Request, res: Response) => {
+  // events.idを指している
+  const { id } = req.params;
+
+  // TODO:events.idに対応するユーザだけ拾ってくるように修正する
+  // events.id -> events_users_roles.users_id -> users取得?
   const users = await prisma.users.findMany({
     select: {
       id: true,
