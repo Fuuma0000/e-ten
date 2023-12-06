@@ -83,12 +83,18 @@ router.get("/:id", async (req: Request, res: Response) => {
           }
         }
       },
+      users_urls: {
+        select: {
+          url_name: true,
+          url: true
+        }
+      }
     },
   });
 
-  const returnVal = convertUserData(user as UserType);
-  res.json(returnVal);
-  // res.json( user );
+  // const returnVal = convertUserData(user as UserType);
+  // res.json(returnVal);
+  res.json( user );
 });
 
 export { router };
