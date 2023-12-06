@@ -57,10 +57,10 @@ type UserType = {
 };
 
 const convertUserData = (input: UserType) => {
-  const job = input.users_jobs.map(job => job.jobs.name);
+  const job = input.users_jobs.map((job) => job.jobs.name);
   const urls = input.users_urls.map(url => ({
     url_name: url.url_name,
-    url: url.url
+    url: url.url,
   }));
 
   const works = input.works_data_users.map((works_data_user) => ({
@@ -80,7 +80,7 @@ const convertUserData = (input: UserType) => {
     catch_copy: works_data_user.works_data.catch_copy,
     icon_url: works_data_user.works_data.works_data_images.map(
       (works_data_image) => works_data_image.url
-    )
+    ),
   }));
 
   const returnJson: returnUserJson = {
