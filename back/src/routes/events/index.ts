@@ -109,10 +109,10 @@ router.get("/:id/students", async (req: Request, res: Response) => {
   //   },
   // });
 
-  // const convertedUsersData = convertUsersData(users as inputUsersJson[]);
   // res.json(convertedUsersData);
-
-  res.json(events_users);
+  
+  const convertedUsersData = convertUsersData(events_users as inputUsersJson[]);
+  res.json(convertedUsersData);
 });
 
 export { router };
