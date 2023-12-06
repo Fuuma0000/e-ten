@@ -11,7 +11,8 @@ type returnUserJson = {
   is_job_hunt_completed: boolean;
   self_introduction: string;
   works: work[];
-}
+  urls: url[];
+};
 
 type work = {
   work_id: number;
@@ -20,7 +21,12 @@ type work = {
   technologies: string[];
   catch_copy: string;
   icon_url: string[];
-}
+};
+
+type url = {
+  url_name: string;
+  url: string;
+};
 
 type UserType = {
   id: number;
@@ -47,20 +53,34 @@ type UserType = {
       works_data_images: { url: string }[];
     };
   }[];
+  users_urls: { url_name: string; url: string }[];
 };
 
 const convertUserData = (input: UserType) => {
   const job = input.users_jobs.map(job => job.jobs.name);
-  
-  const works = input.works_data_users.map(works_data_user => ({
-    work_id: works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data.works_id,
-    name: works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data.name,
-    genres: works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data.works_data_genres.map(works_data_genre => works_data_genre.genres.name),
-    technologies: works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data.works_data_technologies.map(
-      works_data_technology => works_data_technology.technologies.name
-    ),
+  const urls = input.users_urls.map(url => ({
+    url_name: url.url_name,
+    url: url.url
+  }));
+
+  const works = input.works_data_users.map((works_data_user) => ({
+    work_id:
+      works_data_user.works_data.works_works_data_works_idToworks
+        .works_data_works_latest_reviewed_idToworks_data.works_id,
+    name: works_data_user.works_data.works_works_data_works_idToworks
+      .works_data_works_latest_reviewed_idToworks_data.name,
+    genres:
+      works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data.works_data_genres.map(
+        (works_data_genre) => works_data_genre.genres.name
+      ),
+    technologies:
+      works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data.works_data_technologies.map(
+        (works_data_technology) => works_data_technology.technologies.name
+      ),
     catch_copy: works_data_user.works_data.catch_copy,
-    icon_url: works_data_user.works_data.works_data_images.map(works_data_image => works_data_image.url)
+    icon_url: works_data_user.works_data.works_data_images.map(
+      (works_data_image) => works_data_image.url
+    )
   }));
 
   const returnJson: returnUserJson = {
@@ -74,9 +94,10 @@ const convertUserData = (input: UserType) => {
     course: input.courses.name,
     is_job_hunt_completed: input.is_job_hunt_completed,
     self_introduction: input.self_introduction,
-    works 
-  }
+    works,
+    urls,
+  };
   return returnJson;
-}
+};
 
-export { convertUserData, UserType }
+export { convertUserData, UserType };
