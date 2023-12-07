@@ -419,8 +419,6 @@ paths:
             schema:
               type: object
               properties:
-                user_id:
-                  type: integer
                 email:
                   type: string
                   format: email
@@ -448,7 +446,7 @@ paths:
                     type: object
                     properties:
                       id:
-                       type: number
+                        type: integer
                       url_name:
                         type: string
                       url:

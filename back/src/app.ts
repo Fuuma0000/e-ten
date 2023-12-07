@@ -5,9 +5,13 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 import { router as indexRouter } from "./routes/index";
+import { router as usersRouter } from "./routes/users";
 import { router as eventRoute } from "./routes/events";
 import { router as profileRoute } from "./routes/profiles";
 import { router as workRoute } from "./routes/works";
+import { router as defaultRouter } from "./routes/default";
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const app = express();
 
@@ -22,10 +26,16 @@ app.use(cookieParser());
 app.use(express.static(path.join("public"))); //__dirNameと書いてある箇所を除く！
 app.use(express.static("public"));
 
+// passportの初期化
+app.use(passport.initialize());
+
 app.use("/", indexRouter);
 app.use("/events", eventRoute);
 app.use("/profiles", profileRoute);
 app.use("/works", workRoute);
+
+// ルーターに登録
+app.use("/signup", defaultRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
