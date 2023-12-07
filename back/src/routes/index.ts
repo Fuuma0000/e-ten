@@ -49,7 +49,7 @@ function sendEmail(email: string, token: string) {
     from: process.env.GMAIL_ADDRESS,
     to: email,
     subject: "メールアドレス確認",
-    text: `https://${process.env.SITE_URL}/verify?email=${email}&token=${token}`,
+    text: `${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}`,
   };
 
   transporter.sendMail(mailOptions, (error: any, info: any) => {
@@ -82,8 +82,9 @@ function createTemporaryUser(
   hashedPassword: string,
   token: string
 ) {
+  console.log("CreatedTemporaryUser ");
   // 仮登録の有効期限は15分とする
-  const expirationDate = new Date();
+  const expirationDate: Date = new Date();
   expirationDate.setMinutes(expirationDate.getMinutes() + 15);
 
   prisma.temporary_users.create({
@@ -103,30 +104,35 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
 
 // ユーザの仮登録を行う
 router.post("/signup", async (req: Request, res: Response) => {
-  const email: string = req.body.email;
-  const password: string = req.body.password;
+  try {
+    const email: string = req.body.email;
+    const password: string = req.body.password;
 
-  const isRegistered: boolean = await isEmailRegistered(email);
-  if (isRegistered) {
-    res.status(400).json({ message: "既に登録されているメールアドレスです" });
-    return;
+    const isRegistered: boolean = await isEmailRegistered(email);
+    if (isRegistered) {
+      res.status(400).json({ message: "既に登録されているメールアドレスです" });
+      return;
+    }
+    const token: string = generateToken();
+    const hashedPassword: string = hashPassword(password);
+    // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
+    deleteTemporaryUser(email);
+    createTemporaryUser(email, hashedPassword, token);
+
+    // メールを送信する
+    sendEmail(email, token);
+
+    res.json("メールを送信しました");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error });
   }
-  const token: string = generateToken();
-  const hashedPassword: string = hashPassword(password);
-  // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
-  deleteTemporaryUser(email);
-  createTemporaryUser(email, hashedPassword, token);
-
-  // メールを送信する
-  sendEmail(email, token);
-
-  res.json("メールを送信しました");
 });
 
 // ユーザの本登録を行う
 router.get("/verify", async (req: Request, res: Response) => {
-  const email: string = req.body.email;
-  const token: string = req.body.token;
+  const email: string = req.query.email as string;
+  const token: string = req.query.token as string;
 
   const temporaryUser = await prisma.temporary_users.findUnique({
     where: {
@@ -140,7 +146,7 @@ router.get("/verify", async (req: Request, res: Response) => {
   }
 
   const now = new Date();
-  if (now > temporaryUser.expired_at) {
+  if (now < temporaryUser.expired_at) {
     res.status(400).json({ message: "トークンの有効期限が切れています" });
     return;
   }
