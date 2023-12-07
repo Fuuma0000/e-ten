@@ -6,6 +6,9 @@ import logger from "morgan";
 
 import { router as indexRouter } from "./routes/index";
 import { router as usersRouter } from "./routes/users";
+import { router as eventRoute } from "./routes/events";
+import { router as profileRoute } from "./routes/profiles";
+import { router as workRoute } from "./routes/works";
 import { router as defaultRouter } from "./routes/default";
 import passport from "passport";
 import jwt from "jsonwebtoken";
@@ -27,7 +30,9 @@ app.use(express.static("public"));
 app.use(passport.initialize());
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/events", eventRoute);
+app.use("/profiles", profileRoute);
+app.use("/works", workRoute);
 
 // ルーターに登録
 app.use("/signup", defaultRouter);

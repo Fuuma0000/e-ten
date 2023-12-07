@@ -85,6 +85,23 @@ components:
         self_introduction:
           description: 自己PR
           type: string
+        works:
+          description: 作品情報の配列
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkList"
+        urls:
+          description: URL情報の配列
+          type: array
+          items:
+            type: object
+            properties:
+              url_name:
+                description: URLの名前
+                type: string
+              url:
+                description: URL
+                type: string
 
     Event:
       properties:
@@ -300,11 +317,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  items:
-                    $ref: "#/components/schemas/WorkList"
+                type: object
+                # TODO: eventsの情報のオブジェクトとworksの情報のオブジェクトの配列
+                properties:
+                  event:
+                    $ref: "#/components/schemas/Event"
+                  works:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WorkList"
   /works/{id}:
     get:
       summary: 作品の詳細の取得
@@ -358,10 +379,9 @@ paths:
         200:
           description: OK
 
-  /events/{id}/students/:
+  /events/{id}/students:
     get:
-      summary: イベントに参加している学生の一覧
-      tags: ["student"]
+      tags: ["event"]
       operationId: getAllStudents
       parameters:
         - $ref: "#/components/parameters/event_id"
@@ -398,7 +418,39 @@ paths:
           application/json:
             schema:
               type: object
-              $ref: "#/components/schemas/User"
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                enrollment_year:
+                  type: integer
+                graduation_year:
+                  type: integer
+                is_job_hunt_completed:
+                  type: boolean
+                self_introduction:
+                  type: string
+                icon_url:
+                  type: string
+                course_id:
+                  type: integer
+                jobs_id:
+                  type: array
+                  items:
+                    type: integer
+                urls:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      url_name:
+                        type: string
+                      url:
+                        type: string
       responses:
         200:
           description: OK
