@@ -1,6 +1,10 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { convertUsersData, inputUsersJson } from "./json-convert";
+import {
+  convertUsersData,
+  inputUsersJson,
+  convertWorksData,
+} from "./json-convert";
 const router: Router = Router();
 const prisma = new PrismaClient();
 
@@ -14,9 +18,9 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/:id/works", async (req: Request, res: Response) => {
   // worksからevents_idが一致するものを検索
   // works_dataのidとworksのlatest_reviewed_idが一致 -> 取得
-  const works = await prisma.works.findMany({
+  const works = await prisma.works.findFirst({
     where: { events_id: Number(req.params.id) },
-    include: {
+    select: {
       events: {
         select: {
           id: true,
@@ -29,8 +33,19 @@ router.get("/:id/works", async (req: Request, res: Response) => {
       },
       works_data_works_latest_reviewed_idToworks_data: {
         select: {
+          id: true,
           name: true,
           catch_copy: true,
+          works_data_images: {
+            // orderが一番若いのもを取得
+            orderBy: {
+              order: "asc",
+            },
+            select: {
+              url: true,
+            },
+            take: 1,
+          },
           works_data_genres: {
             select: {
               genres: {
@@ -54,9 +69,10 @@ router.get("/:id/works", async (req: Request, res: Response) => {
     },
   });
 
-  // TODO: JSONの形式を整形する
+  const returnWorksJson = convertWorksData(works);
 
-  res.json(works);
+  // res.json(works);
+  res.json(returnWorksJson);
 });
 
 // イベント参加学生の取得
