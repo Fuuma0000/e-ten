@@ -447,6 +447,8 @@ paths:
                   items:
                     type: object
                     properties:
+                      id:
+                       type: number
                       url_name:
                         type: string
                       url:
