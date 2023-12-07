@@ -124,7 +124,46 @@ router.post("/signup", async (req: Request, res: Response) => {
 });
 
 // ユーザの本登録を行う
-router.post("/verify", async (req: Request, res: Response) => {});
+router.get("/verify", async (req: Request, res: Response) => {
+  const email: string = req.body.email;
+  const token: string = req.body.token;
+
+  const temporaryUser = await prisma.temporary_users.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (!temporaryUser) {
+    res.status(400).json({ message: "仮登録がされていません" });
+    return;
+  }
+
+  const now = new Date();
+  if (now > temporaryUser.expired_at) {
+    res.status(400).json({ message: "トークンの有効期限が切れています" });
+    return;
+  }
+
+  if (temporaryUser.token !== token) {
+    res.status(400).json({ message: "トークンが一致しません" });
+    return;
+  }
+
+  // TODO: ここはどっちでもいいかも expが切れているのを削除するbatを作るか
+  // 本登録が完了したら、仮ユーザテーブルのレコードを削除する
+  // deleteTemporaryUser(email);
+
+  // 本登録が完了したら、ユーザテーブルにレコードを追加する
+  prisma.users.create({
+    data: {
+      email: email,
+      password: temporaryUser.hashed_password,
+    },
+  });
+
+  res.json("本登録が完了しました");
+});
 
 router.post("/signin", async (req: Request, res: Response) => {});
 
