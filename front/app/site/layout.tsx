@@ -41,6 +41,7 @@ export default function SiteLayout({
             width: "75%",
             height: "8vh",
             paddingRight: "8px",
+            marginBottom: "10px",
             borderRadius: "32px 0px 0px 180px / 0px 0px 0px 150px",
             borderBottom: "10px solid",
             borderLeft: "10px solid",
