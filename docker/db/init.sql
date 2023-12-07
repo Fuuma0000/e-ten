@@ -190,5 +190,14 @@ CREATE TABLE `event_users_roles` (
     FOREIGN KEY (`roles_id`) REFERENCES roles(`id`)
 );
 
+CREATE TABLE temporary_users (
+    id INT UNSIGNED AUTO_INCREMENT,
+    email VARCHAR(255) NOT NULL,
+    hashed_password VARCHAR(50) NOT NULL,
+    token VARCHAR(32) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
 ALTER TABLE `works_data` ADD CONSTRAINT `fk_works_data_works` FOREIGN KEY (`works_id`) REFERENCES works(`id`);
 ALTER TABLE `works` ADD CONSTRAINT `fk_works_works_data` FOREIGN KEY (`latest_reviewed_id`) REFERENCES works_data(`id`);
