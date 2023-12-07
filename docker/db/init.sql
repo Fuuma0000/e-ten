@@ -191,12 +191,13 @@ CREATE TABLE `event_users_roles` (
 );
 
 CREATE TABLE temporary_users (
-    id INT UNSIGNED AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    hashed_password VARCHAR(50) NOT NULL,
-    token VARCHAR(32) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    `id` INT UNSIGNED AUTO_INCREMENT,
+    `email` VARCHAR(255) NOT NULL UNIQUE,
+    `hashed_password` VARCHAR(50) NOT NULL,
+    `token` VARCHAR(32) NOT NULL,
+    `expired_at` DATETIME NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
 );
 
 ALTER TABLE `works_data` ADD CONSTRAINT `fk_works_data_works` FOREIGN KEY (`works_id`) REFERENCES works(`id`);
