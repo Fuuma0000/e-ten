@@ -6,7 +6,9 @@ import logger from "morgan";
 
 import { router as indexRouter } from "./routes/index";
 import { router as usersRouter } from "./routes/users";
-import authenticate from "./routes/default/authenticate";
+import { router as defaultRouter } from "./routes/default";
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const app = express();
 
@@ -21,25 +23,14 @@ app.use(cookieParser());
 app.use(express.static(path.join("public"))); //__dirNameと書いてある箇所を除く！
 app.use(express.static("public"));
 
+// passportの初期化
+app.use(passport.initialize());
+
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
-// jwtテスト用: jwt認証なしver
-app.get("/test", (req, res) => {
-  res.status(200).json({
-    message: "Hello!",
-    token: "token",
-  });
-});
-
-// jwtテスト用: jwt認証ありver
-// authenticateを挟むことで、jwt認証が通らないと、このルーティングには到達しない。
-app.get("/test2", authenticate, (req, res) => {
-  res.status(200).json({
-    message: "Hello!",
-    token: "token",
-  });
-});
+// ルーターに登録
+app.use("/signup", defaultRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
