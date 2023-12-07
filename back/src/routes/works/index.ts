@@ -1,14 +1,17 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { convertWorkData } from "./json-convert";
+
 const router: Router = Router();
 const prisma = new PrismaClient();
+var workType: any;
 
 // 作品詳細の取得
 router.get("/:id", async (req: Request, res: Response) => {
   const work = await prisma.works.findUnique({
     where: { id: Number(req.params.id) },
     select: {
-      latest_reviewed_id: true,
+      id: true,
       works_data_works_latest_reviewed_idToworks_data: {
         select: {
           works_id: true,
@@ -46,15 +49,10 @@ router.get("/:id", async (req: Request, res: Response) => {
                 select: {
                   id: true,
                   username: true,
-                  // TODO: 役割名がないかも？
-                  // role: true,
-                  event_users_roles: {
+                  works_data_users: {
+                    where: { works_data_id: Number(req.params.id) },
                     select: {
-                      roles: {
-                        select: {
-                          name: true,
-                        },
-                      },
+                      role_explanation: true,
                     },
                   },
                 },
@@ -66,9 +64,13 @@ router.get("/:id", async (req: Request, res: Response) => {
     },
   });
 
-  // TODO: JSONの形式を整形する
+  // TODO: データがなかったら
+  // workの型を持ってくる
+  type workType = typeof work;
+  const workData: workType = work as workType;
 
-  res.json(work);
+  const convertedWorkData = convertWorkData(work);
+  res.json(convertedWorkData);
 });
 
 // TODO: 作品の新規作成
@@ -77,4 +79,4 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 // TODO: 作品の削除
 
-export { router };
+export { router, workType };

@@ -77,7 +77,7 @@ async function main() {
       },
       works_data_users: {
         createMany: {
-          data: [{ users_id: 1 }],
+          data: [{ users_id: 1, role_explanation: "リーダー" }],
         },
       },
     },
