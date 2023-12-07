@@ -117,7 +117,6 @@ type RequestBody = {
 
 router.put("/:id", async (req: Request, res: Response) => {
   const body: RequestBody = req.body;
-  // TODO:IDもbodyに入ってる？か聞く.JWTトークンに含まれてると思ってる
   const allUsers = await prisma.users.update({
     where: { id: body.user_id },
     data: {
@@ -139,7 +138,6 @@ router.put("/:id", async (req: Request, res: Response) => {
   const dbJobsIds = users_jobs.map((users_job) => users_job.jobs_id);
   const reqJobsIds = body.jobs_id;
 
-  // const commonIds = dbJobsIds.filter(dbJobsId => reqJobsIds.includes(dbJobsId));
   const uniqueReqIds = reqJobsIds.filter(
     (reqJobsId) => !dbJobsIds.includes(reqJobsId)
   );
@@ -147,7 +145,6 @@ router.put("/:id", async (req: Request, res: Response) => {
     (dbJobsId) => !reqJobsIds.includes(dbJobsId)
   );
 
-  // トランザクション
   await prisma.$transaction(async (prisma) => {
     await prisma.users_jobs.createMany({
       data: uniqueReqIds.map((uniqueReqid) => ({
@@ -197,7 +194,6 @@ router.put("/:id", async (req: Request, res: Response) => {
       )
   );
 
-  // トランザクション
   await prisma.$transaction(async (prisma) => {
     await prisma.users_urls.createMany({
       data: uniqueReqUrls.map((uniqueReqUrl) => ({
