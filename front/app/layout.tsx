@@ -31,12 +31,18 @@ let theme = createTheme({
       light: "#DDB8FF",
       dark: "#5E2D8E",
     },
+    gray: {
+      main: "#CECECE",
+      light: "#ECECEC",
+      dark: "#A3A3A3",
+    },
   },
 });
 
 declare module "@mui/material/styles" {
   interface PaletteOptions {
     tertiary: PaletteOptions["primary"];
+    gray: PaletteOptions["primary"];
   }
 }
 
