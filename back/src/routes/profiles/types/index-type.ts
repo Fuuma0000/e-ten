@@ -1,8 +1,9 @@
-type Url = {
-  id: number;
-  url_name: string;
-  url: string;
-};
+// まとめるとVsCode上からオブジェクトの型定義が見えなくなるので展開しておく
+// type Url = {
+//   id: number;
+//   url_name: string;
+//   url: string;
+// };
 
 type RequestBody = {
   user_id: number;
@@ -15,7 +16,11 @@ type RequestBody = {
   icon_url: string;
   course_id: number;
   jobs_id: number[];
-  urls: Url[];
+  urls: {
+    id: number;
+    url_name: string;
+    url: string;
+  }[];
 };
 
 export { RequestBody };

@@ -1,7 +1,7 @@
 import { UserType, returnUserJson } from "./types/json-convert-type";
 const convertUserData = (input: UserType) => {
-  const job = input.users_jobs.map((job) => job.jobs.name);
-  const urls = input.users_urls.map((url) => ({ url_name: url.url_name, url: url.url }));
+  const job = input.users_jobs.map((currentJob) => currentJob.jobs.name);
+  const urls = input.users_urls.map((currentUrl) => ({ url_name: currentUrl.url_name, url: currentUrl.url }));
 
   const works = input.works_data_users.map((works_data_user) => {
     const latestWorksDataRef = works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data;
