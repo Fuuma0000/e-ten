@@ -8,13 +8,13 @@ const convertUserData = (input: UserType) => {
     const latestWorksDataRef = works_data_user.works_data.works_works_data_works_idToworks.works_data_works_latest_reviewed_idToworks_data;
 
     return {
-      work_id: latestWorksDataRef.works_id,
-      name: latestWorksDataRef.name,
-      genres:latestWorksDataRef.works_data_genres.map(
+      work_id: latestWorksDataRef?.works_id,
+      name: latestWorksDataRef?.name,
+      genres:latestWorksDataRef?.works_data_genres.map(
           (currentGenre) => currentGenre.genres.name
         ),
       technologies:
-        latestWorksDataRef.works_data_technologies.map(
+        latestWorksDataRef?.works_data_technologies.map(
           (currentTechnology) => currentTechnology.technologies.name
         ),
       catch_copy: works_data_user.works_data.catch_copy,
@@ -32,7 +32,7 @@ const convertUserData = (input: UserType) => {
     job,
     icon_url: input.icon_url,
     "e-mail": input.email,
-    course: input.courses.name,
+    course: input.courses?.name,
     is_job_hunt_completed: input.is_job_hunt_completed,
     self_introduction: input.self_introduction,
     works,

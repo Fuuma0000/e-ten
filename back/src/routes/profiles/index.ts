@@ -92,8 +92,12 @@ router.get("/:id", async (req: Request, res: Response) => {
     },
   });
 
-
-  const returnVal = convertUserData(user as UserType);
+  let returnVal;
+  if (user !== null) {
+    returnVal = convertUserData(user);
+  } else {
+    returnVal = { message: "適切なIDを入力してください。" };
+  }
   res.json(returnVal);
 });
 
