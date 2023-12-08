@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { convertUsersData, inputUsersJson } from "./json-convert";
+import { convertUsersData } from "./json-convert";
 const router: Router = Router();
 const prisma = new PrismaClient();
 
