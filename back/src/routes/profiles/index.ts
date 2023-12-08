@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { convertUserData, UserType } from "./json-convert";
+import { RequestBody } from "./types/index-type";
 
 const router: Router = Router();
 
@@ -95,29 +96,11 @@ router.get("/:id", async (req: Request, res: Response) => {
   res.json(returnVal);
 });
 
-type Url = {
-  id: number;
-  url_name: string;
-  url: string;
-};
 
-type RequestBody = {
-  user_id: number;
-  email: string;
-  username: string;
-  enrollment_year: number;
-  graduation_year: number;
-  is_job_hunt_completed: boolean;
-  self_introduction: string;
-  icon_url: string;
-  course_id: number;
-  jobs_id: number[];
-  urls: Url[];
-};
 
 router.put("/:id", async (req: Request, res: Response) => {
   const body: RequestBody = req.body;
-  const allUsers = await prisma.users.update({
+  await prisma.users.update({
     where: { id: body.user_id },
     data: {
       email: body.email,

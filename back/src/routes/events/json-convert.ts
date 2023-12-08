@@ -1,4 +1,3 @@
-// TODO:後で共通化する.多分いけるはず
 type inputJob = {
   jobs: {
     name: string;
@@ -38,4 +37,4 @@ const convertUsersData = (input: inputUsersJson[]) => {
   return returnJson;
 }
 
-export { convertUsersData, inputUsersJson }
+export { convertUsersData }
