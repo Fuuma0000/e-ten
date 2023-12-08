@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { convertUserData, UserType } from "./json-convert";
+import { RequestBody } from "./types/index-type";
 
 const router: Router = Router();
 
@@ -91,33 +92,21 @@ router.get("/:id", async (req: Request, res: Response) => {
     },
   });
 
-  const returnVal = convertUserData(user as UserType);
+  let returnVal;
+  if (user !== null) {
+    returnVal = convertUserData(user);
+  } else {
+    returnVal = { message: "適切なIDを入力してください。" };
+  }
   res.json(returnVal);
 });
 
-type Url = {
-  id: number;
-  url_name: string;
-  url: string;
-};
-
-type RequestBody = {
-  user_id: number;
-  email: string;
-  username: string;
-  enrollment_year: number;
-  graduation_year: number;
-  is_job_hunt_completed: boolean;
-  self_introduction: string;
-  icon_url: string;
-  course_id: number;
-  jobs_id: number[];
-  urls: Url[];
-};
 
 router.put("/:id", async (req: Request, res: Response) => {
   const body: RequestBody = req.body;
-  const allUsers = await prisma.users.update({
+  
+  // Todo:body.user_idを渡されたidに変更する
+  await prisma.users.update({
     where: { id: body.user_id },
     data: {
       email: body.email,
@@ -131,20 +120,21 @@ router.put("/:id", async (req: Request, res: Response) => {
     },
   });
 
+  
+  // ユーザに該当するレコードを検索
   const users_jobs = await prisma.users_jobs.findMany({
     where: { users_id: body.user_id },
   });
 
-  const dbJobsIds = users_jobs.map((users_job) => users_job.jobs_id);
+  const dbJobsIds = users_jobs.map((currentUsersJob) => currentUsersJob.jobs_id);
   const reqJobsIds = body.jobs_id;
 
-  const uniqueReqIds = reqJobsIds.filter(
-    (reqJobsId) => !dbJobsIds.includes(reqJobsId)
-  );
-  const uniqueDbIds = dbJobsIds.filter(
-    (dbJobsId) => !reqJobsIds.includes(dbJobsId)
-  );
+  // リクエストにだけ含まれるusers_jobs.IDを抽出
+  const uniqueReqIds = reqJobsIds.filter(reqJobsId => !dbJobsIds.includes(reqJobsId));
+  // DBにだけ含まれるusers_jobs.IDを抽出
+  const uniqueDbIds = dbJobsIds.filter(dbJobsId => !reqJobsIds.includes(dbJobsId));
 
+  // 抽出したレコードを元にinsert.delete
   await prisma.$transaction(async (prisma) => {
     await prisma.users_jobs.createMany({
       data: uniqueReqIds.map((uniqueReqid) => ({
@@ -165,6 +155,7 @@ router.put("/:id", async (req: Request, res: Response) => {
     }
   });
 
+
   const users_urls = await prisma.users_urls.findMany({
     where: { users_id: body.user_id },
   });
@@ -174,8 +165,9 @@ router.put("/:id", async (req: Request, res: Response) => {
     url_name: users_url.url_name,
     url: users_url.url,
   }));
-
   const reqUrlsObjects = body.urls;
+
+  // リクエストにのみ含まれるusers_urls.url_name.users_url.users_url.idの組をオブジェクトとして抽出する
   const uniqueReqUrls = reqUrlsObjects.filter(
     (reqUrlObject) =>
       !dbUsersUrlsObjects.some(
@@ -184,7 +176,7 @@ router.put("/:id", async (req: Request, res: Response) => {
           dbUsersUrlsObject.url === reqUrlObject.url
       )
   );
-
+  // DBにのみ含まれるusers_urls.url.users_url.url.users_urls.idの組をオブジェクトとして抽出する
   const uniqueDbUsersUrls = dbUsersUrlsObjects.filter(
     (dbUsersUrlsObject) =>
       !reqUrlsObjects.some(
@@ -194,6 +186,7 @@ router.put("/:id", async (req: Request, res: Response) => {
       )
   );
 
+  // 抽出したオブジェクトを元にinsert.delete
   await prisma.$transaction(async (prisma) => {
     await prisma.users_urls.createMany({
       data: uniqueReqUrls.map((uniqueReqUrl) => ({
