@@ -1,4 +1,6 @@
 // openAPI通りにJSONをコンバートする関数群
+import { users } from "@prisma/client";
+
 type work = {
   work_id: number;
   name: string;
@@ -15,15 +17,15 @@ type url = {
 
 type UserType = {
   id: number;
-  username: string;
-  enrollment_year: number;
-  graduation_year: number;
-  icon_url: string;
-  email: string;
-  is_job_hunt_completed: boolean;
-  self_introduction: string;
-  users_jobs: { jobs: { name: string } }[];
-  courses: { name: string };
+  username: string | null;
+  enrollment_year: number | null;
+  graduation_year: number | null;
+  icon_url: string | null;
+  email: string | null;
+  is_job_hunt_completed: boolean | null;
+  self_introduction: string | null;
+  users_jobs: { jobs: { name: string } }[] | null;
+  courses: { name: string } | null;
   works_data_users: {
     works_data: {
       works_works_data_works_idToworks: {

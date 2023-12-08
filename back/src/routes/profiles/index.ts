@@ -92,6 +92,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     },
   });
 
+
   const returnVal = convertUserData(user as UserType);
   res.json(returnVal);
 });

@@ -1,4 +1,5 @@
 import { UserType, returnUserJson } from "./types/json-convert-type";
+
 const convertUserData = (input: UserType) => {
   const job = input.users_jobs.map((currentJob) => currentJob.jobs.name);
   const urls = input.users_urls.map((currentUrl) => ({ url_name: currentUrl.url_name, url: currentUrl.url }));

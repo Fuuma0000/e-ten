@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 import { router as indexRouter } from "./routes/index";
-import { router as usersRouter } from "./routes/users";
+// import { router as usersRouter } from "./routes/users";
 import { router as eventRoute } from "./routes/events";
 import { router as profileRoute } from "./routes/profiles";
 import { router as workRoute } from "./routes/works";

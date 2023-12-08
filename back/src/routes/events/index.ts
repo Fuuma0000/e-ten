@@ -62,7 +62,7 @@ router.get("/:id/works", async (req: Request, res: Response) => {
 // イベント参加学生の取得
 router.get("/:id/students", async (req: Request, res: Response) => {
   const { id } = req.params;
-
+  // aa
   const events_users = await prisma.event_users_roles.findMany({
     where: { events_id: parseInt(id) },
     select: {

@@ -37,4 +37,4 @@ const convertUsersData = (input: inputUsersJson[]) => {
   return returnJson;
 }
 
-export { convertUsersData }
+export { convertUsersData, inputUsersJson }
