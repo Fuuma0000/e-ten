@@ -46,6 +46,7 @@ type UserType = {
   }[];
 };
 
+// 基本的に取得出来なかったレコードにはnullが返りますが、nullでチェーンされて取得されるプロパティはundeifinedが返ります
 type returnUserJson = {
   user_id: number;
   username: string | null;
