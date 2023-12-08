@@ -18,7 +18,7 @@ function hashPassword(password: string): string {
 // メールアドレスが既に登録されているかどうかをチェックする関数
 async function isEmailRegistered(
   email: string
-): Promise<{ bool: Boolean | null; error: Error | null }> {
+): Promise<{ bool: boolean | null; error: Error | null }> {
   const user = await prisma.users
     .findUnique({
       where: {
@@ -251,6 +251,7 @@ router.get("/verify", async (req: Request, res: Response) => {
   // 本登録が完了したら、仮ユーザテーブルのレコードを削除する
   // deleteTemporaryUser(email);
 
+  // TODO: ここはpassportでやった方がいいかも
   // 本登録が完了したら、ユーザテーブルにレコードを追加する
   err = await registerUser(email, temporaryUser.hashed_password);
   if (err) {
