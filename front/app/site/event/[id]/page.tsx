@@ -1,14 +1,20 @@
-"use client"
+"use client";
 import {
+  Autocomplete,
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
+  Grid,
   IconButton,
+  Paper,
   Stack,
   Tab,
   Tabs,
+  TextField,
   Typography,
+  styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import React from "react";
@@ -27,6 +33,7 @@ export default function Event({ params }: { params: { id: string } }) {
           width: "90vw",
           marginX: "auto",
           marginTop: "24px",
+          marginBottom: "160px"
         }}
       >
         <Typography
@@ -53,8 +60,7 @@ export default function Event({ params }: { params: { id: string } }) {
           component={"div"}
           sx={{
             padding: "16px 8px",
-            borderBottom: "2px solid",
-            borderColor: "gray.dark",
+            marginBottom: "24px",
           }}
         >
           <Stack
@@ -93,10 +99,280 @@ export default function Event({ params }: { params: { id: string } }) {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          参加作品
+          <Stack
+            sx={{
+              paddingX: "16px",
+            }}
+          >
+            <Typography
+              component={"h3"}
+              sx={{
+                textAlign: "center",
+                fontSize: { xs: "h5.fontSize", md: "h4.fontSize" },
+                color: "gray.dark",
+                letterSpacing: "1rem",
+              }}
+            >
+              参加作品
+            </Typography>
+            <Stack
+              sx={{
+                marginY: "16px",
+                padding: "24px",
+                border: "2px solid",
+                borderColor: "gray.main",
+                borderRadius: "16px",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
+              <Stack
+                sx={{
+                  flexDirection: { md: "row" },
+                  width: "100%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: { xs: "16px", md: "40px" },
+                }}
+              >
+                <Autocomplete
+                  multiple
+                  limitTags={2}
+                  id="multiple-limit-tags"
+                  options={top100Films}
+                  getOptionLabel={(option) => option.title}
+                  defaultValue={[]}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="ジャンル"
+                      placeholder="Favorites"
+                    />
+                  )}
+                  sx={{ width: { xs: "90%", md: "40%" } }}
+                />
+                <Autocomplete
+                  multiple
+                  limitTags={2}
+                  id="multiple-limit-tags"
+                  options={top100Films}
+                  getOptionLabel={(option) => option.title}
+                  defaultValue={[]}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="技術"
+                      placeholder="Favorites"
+                    />
+                  )}
+                  sx={{ width: { xs: "90%", md: "40%" } }}
+                />
+              </Stack>
+              <Button
+                variant="contained"
+                disableElevation
+                sx={{
+                  fontSize: "h6.fontSize",
+                  color: "gray.light",
+                  width: "40%",
+                }}
+              >
+                検索
+              </Button>
+            </Stack>
+          </Stack>
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+            sx={{
+              marginY: "16px",
+              paddingX: "32px",
+            }}
+          >
+            {Array.from(Array(8)).map((_, index) => (
+              <Grid item xs={4} sm={4} md={3} key={index}>
+                <Item>
+                  <Stack
+                    sx={{
+                      alignItems: "center"
+                    }}
+                  >
+                    <Typography
+                      component={"img"}
+                      src="/event_1.png"
+                      sx={{
+                        width: "60%",
+                      }}
+                    />
+                  </Stack>
+                  <Stack
+                    sx={{
+                      backgroundColor: "gray.light",
+                      padding: "8px 16px"
+                    }}
+                  >
+                    <Typography
+                      component={"h4"}
+                      sx={{
+                        fontSize: "h6.fontSize",
+                        marginBottom: "8px"
+                      }}
+                    >
+                      あああ
+                    </Typography>
+                    <Typography
+                      component={"p"}
+                      sx={{
+                        fontSize: "p.fontSize",
+                        wordBreak: "break-word"
+                      }}
+                    >
+                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                    </Typography>
+                  </Stack>
+                </Item>
+              </Grid>
+            ))}
+          </Grid>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          参加学生
+        <Stack
+            sx={{
+              paddingX: "16px",
+            }}
+          >
+            <Typography
+              component={"h3"}
+              sx={{
+                textAlign: "center",
+                fontSize: { xs: "h5.fontSize", md: "h4.fontSize" },
+                color: "gray.dark",
+                letterSpacing: "1rem",
+              }}
+            >
+              参加学生
+            </Typography>
+            <Stack
+              sx={{
+                marginY: "16px",
+                padding: "24px",
+                border: "2px solid",
+                borderColor: "gray.main",
+                borderRadius: "16px",
+                alignItems: "center",
+                gap: "16px",
+              }}
+            >
+              <Stack
+                sx={{
+                  flexDirection: { md: "row" },
+                  width: "100%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: { xs: "16px", md: "40px" },
+                }}
+              >
+                <Autocomplete
+                  multiple
+                  limitTags={2}
+                  id="multiple-limit-tags"
+                  options={top100Films}
+                  getOptionLabel={(option) => option.title}
+                  defaultValue={[]}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="ジャンル"
+                      placeholder="Favorites"
+                    />
+                  )}
+                  sx={{ width: { xs: "90%", md: "40%" } }}
+                />
+                <Autocomplete
+                  multiple
+                  limitTags={2}
+                  id="multiple-limit-tags"
+                  options={top100Films}
+                  getOptionLabel={(option) => option.title}
+                  defaultValue={[]}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="技術"
+                      placeholder="Favorites"
+                    />
+                  )}
+                  sx={{ width: { xs: "90%", md: "40%" } }}
+                />
+              </Stack>
+              <Button
+                variant="contained"
+                disableElevation
+                sx={{
+                  fontSize: "h6.fontSize",
+                  color: "gray.light",
+                  width: "40%",
+                }}
+              >
+                検索
+              </Button>
+            </Stack>
+          </Stack>
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            columns={{ xs: 4, sm: 8, md: 12 }}
+            sx={{
+              marginY: "16px",
+              paddingX: "32px",
+            }}
+          >
+            {Array.from(Array(8)).map((_, index) => (
+              <Grid item xs={4} sm={4} md={3} key={index}>
+                <Item>
+                  <Stack
+                    sx={{
+                      alignItems: "center"
+                    }}
+                  >
+                    <Typography
+                      component={"img"}
+                      src="/event_1.png"
+                      sx={{
+                        width: "60%",
+                      }}
+                    />
+                  </Stack>
+                  <Stack
+                    sx={{
+                      backgroundColor: "gray.light",
+                      padding: "8px 16px"
+                    }}
+                  >
+                    <Typography
+                      component={"h4"}
+                      sx={{
+                        fontSize: "h6.fontSize",
+                        marginBottom: "8px"
+                      }}
+                    >
+                      あああ
+                    </Typography>
+                    <Typography
+                      component={"p"}
+                      sx={{
+                        fontSize: "p.fontSize",
+                        wordBreak: "break-word"
+                      }}
+                    >
+                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                    </Typography>
+                  </Stack>
+                </Item>
+              </Grid>
+            ))}
+          </Grid>
         </CustomTabPanel>
       </Stack>
     </Box>
@@ -106,7 +382,7 @@ export default function Event({ params }: { params: { id: string } }) {
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
@@ -127,11 +403,19 @@ function CustomTabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ paddingY: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ paddingY: 3 }}>{children}</Box>}
     </div>
   );
 }
+
+const top100Films = [
+  { title: "IT", key: 1 },
+  { title: "WEB", key: 2 },
+  { title: "経営情報", key: 3 },
+];
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
+  ...theme.typography.body2,
+  color: theme.palette.text.secondary,
+}));
