@@ -4,7 +4,8 @@ const crypto = require("crypto");
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { authenticate } from "./auth";
 
 // パスワードをハッシュ化する関数
 function hashPassword(password: string, salt: string): string {
@@ -246,10 +247,12 @@ router.post("/signin", async (req: Request, res: Response) => {
     }
 
     const payload = {
-      userId: user.id, // ユーザーIDをペイロードに追加する
+      userId: user.id,
     };
 
-    const token: string = jwt.sign(payload, process.env.JWT_SECRET as string, {
+    const secret = process.env.JWT_SECRET_SIGN_IN as string;
+
+    const token: string = jwt.sign(payload, secret, {
       expiresIn: "1day",
     });
 
@@ -259,6 +262,92 @@ router.post("/signin", async (req: Request, res: Response) => {
     res.status(500).json({ message: "サーバーエラーが発生しました" });
   } finally {
     await prisma.$disconnect();
+  }
+});
+
+router.post("/site-password", async (req: Request, res: Response) => {
+  try {
+    const password = req.body.password;
+
+    if (password !== process.env.SITE_PASSWORD) {
+      return res.status(400).json({ message: "パスワードが間違っています" });
+    }
+
+    const payload = { isSitePasswordKnown: true };
+    const secret = process.env.JWT_SECRET_SITE_PASSWORD as string;
+    const token = jwt.sign(payload, secret, {
+      expiresIn: "1week",
+    });
+    return res.json({ token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  } finally {
+  }
+});
+
+router.post("/refresh", async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.headers["x-refresh-token"] as string;
+
+    // リフレッシュトークンを検証して、新しいアクセストークンを発行する
+    const secret = process.env.REFRESH_TOKEN_SECRET as string;
+    jwt.verify(refreshToken, secret, (err: any, decoded: any) => {
+      if (err) {
+        return res.status(401).json({ message: "無効なトークンです" });
+      }
+
+      // リフレッシュトークンが有効なら新しいアクセストークンを発行
+      const userId = decoded.userId; // ユーザーIDなどの情報を取得する
+      const payload = { userId }; // 新しいアクセストークンに含める情報
+      const accessToken = jwt.sign(
+        payload,
+        process.env.ACCESS_TOKEN_SECRET as string,
+        {
+          expiresIn: "15min", // アクセストークンの有効期限を設定
+        }
+      );
+
+      res.json({ accessToken });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  }
+});
+
+// テスト用 プロフィール情報を取得する
+router.get("/profile", authenticate, async (req: Request, res: Response) => {
+  try {
+    // 以降の処理は認証が成功した場合のみ実行される
+    const authorizationHeader = req.headers.authorization;
+    if (!authorizationHeader) {
+      return res.status(401).json({ message: "アクセストークンが必要です" });
+    }
+
+    const accessToken = authorizationHeader.split(" ")[1];
+    if (!accessToken) {
+      return res.status(401).json({ message: "アクセストークンが不正です" });
+    }
+
+    const payload = jwt.decode(accessToken) as any;
+    const userId = payload.userId; // ユーザーIDを取得
+
+    // ユーザー情報をデータベースから取得
+    const user = await prisma.users.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "ユーザーが見つかりません" });
+    }
+
+    res.json({ user }); // ユーザー情報を返す
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
   }
 });
 
