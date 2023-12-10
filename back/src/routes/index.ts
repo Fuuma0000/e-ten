@@ -4,10 +4,10 @@ const crypto = require("crypto");
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
+import * as jwt from "jsonwebtoken";
 
 // パスワードをハッシュ化する関数
-function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16);
+function hashPassword(password: string, salt: string): string {
   const hashedPassword: string = crypto
     .pbkdf2Sync(password, salt, 100000, 64, "sha256")
     .toString("hex");
@@ -51,35 +51,49 @@ async function sendEmail(email: string, token: string) {
     text: `${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}`,
   };
 
-  await transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.log(error);
-      return { error };
-    }
+  await transporter.sendMail(mailOptions, (info: any) => {
     console.log("Message sent: %s", info.messageId);
-    return null;
   });
+
+  console.log("Email sent");
+
+  return;
+}
+
+// パスワードをハッシュ化する関数
+function generateSalt(): string {
+  const salt: string = crypto.randomBytes(16).toString("hex");
+  return salt;
 }
 
 // メール認証用のランダム文字列を発行する関数
-function generateToken() {
+function generateToken(): string {
   const token: string = crypto.randomBytes(32).toString("hex");
   return token;
 }
 
 // 仮ユーザテーブルに既にメールアドレスが登録されていたら、そのレコードを削除する関数
 async function deleteTemporaryUser(email: string) {
-  await prisma.temporary_users.delete({
+  const existingUser = await prisma.temporary_users.findUnique({
     where: {
       email: email,
     },
   });
+
+  if (existingUser) {
+    await prisma.temporary_users.delete({
+      where: {
+        email: email,
+      },
+    });
+  }
 }
 
 // 仮ユーザテーブルにメールアドレス、パスワード、ランダム文字列を入れる関数
 async function createTemporaryUser(
   email: string,
   hashedPassword: string,
+  salt: string,
   token: string
 ) {
   // 仮登録の有効期限は15分とする
@@ -90,6 +104,7 @@ async function createTemporaryUser(
     data: {
       email: email,
       hashed_password: hashedPassword,
+      salt: salt,
       token: token,
       expired_at: expirationDate,
     },
@@ -97,11 +112,16 @@ async function createTemporaryUser(
 }
 
 // 本登録を行う関数
-async function registerUser(email: string, hashedPassword: string) {
+async function registerUser(
+  email: string,
+  hashedPassword: string,
+  salt: string
+) {
   await prisma.users.create({
     data: {
       email: email,
       password: hashedPassword,
+      salt: salt,
     },
   });
 }
@@ -115,6 +135,17 @@ async function findTemporaryUser(email: string): Promise<{ data: any }> {
   });
 
   return { data: temporaryUser };
+}
+
+function verifyPassword(
+  password: string,
+  hashedPassword: string,
+  salt: string
+): boolean {
+  const hashedAttempt: string = crypto
+    .pbkdf2Sync(password, salt, 100000, 64, "sha256")
+    .toString("hex");
+  return hashedAttempt === hashedPassword;
 }
 
 /* GET home page. */
@@ -133,12 +164,14 @@ router.post("/signup", async (req: Request, res: Response) => {
     if (isRegistered) {
       res.status(400).json({ message: "既に登録されているメールアドレスです" });
     }
+
+    const salt: string = generateSalt();
     const token: string = generateToken();
-    const hashedPassword: string = hashPassword(password);
+    const hashedPassword: string = hashPassword(password, salt);
     // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
     await deleteTemporaryUser(email);
 
-    await createTemporaryUser(email, hashedPassword, token);
+    await createTemporaryUser(email, hashedPassword, salt, token);
 
     // メールを送信する
     await sendEmail(email, token);
@@ -174,7 +207,11 @@ router.get("/verify", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "トークンが一致しません" });
     }
 
-    await registerUser(email, temporaryUser.hashed_password);
+    await registerUser(
+      email,
+      temporaryUser.hashed_password,
+      temporaryUser.salt
+    );
 
     res.json("本登録が完了しました");
   } catch (error) {
@@ -185,6 +222,44 @@ router.get("/verify", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/signin", async (req: Request, res: Response) => {});
+router.post("/signin", async (req: Request, res: Response) => {
+  try {
+    const email: string = req.body.email;
+    const password: string = req.body.password;
+
+    const user = await prisma.users.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "メールアドレスが間違っています" });
+    }
+
+    const isPasswordValid = verifyPassword(password, user.password, user.salt);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "パスワードが間違っています" });
+    }
+
+    const payload = {
+      userId: user.id, // ユーザーIDをペイロードに追加する
+    };
+
+    const token: string = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: "1day",
+    });
+
+    res.json({ token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  } finally {
+    await prisma.$disconnect();
+  }
+});
 
 export { router };
