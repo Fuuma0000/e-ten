@@ -319,19 +319,12 @@ router.post("/refresh", async (req: Request, res: Response) => {
 // テスト用 プロフィール情報を取得する
 router.get("/profile", authenticate, async (req: Request, res: Response) => {
   try {
-    // 以降の処理は認証が成功した場合のみ実行される
-    const authorizationHeader = req.headers.authorization;
-    if (!authorizationHeader) {
-      return res.status(401).json({ message: "アクセストークンが必要です" });
-    }
+    const userId = parseInt(req.user as string);
 
-    const accessToken = authorizationHeader.split(" ")[1];
-    if (!accessToken) {
-      return res.status(401).json({ message: "アクセストークンが不正です" });
+    // userIdをint型に変換
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
     }
-
-    const payload = jwt.decode(accessToken) as any;
-    const userId = payload.userId; // ユーザーIDを取得
 
     // ユーザー情報をデータベースから取得
     const user = await prisma.users.findUnique({
