@@ -4,10 +4,11 @@ const crypto = require("crypto");
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
+import { authenticate } from "./auth";
 
 // パスワードをハッシュ化する関数
-function hashPassword(password: string): string {
-  const salt = crypto.randomBytes(16);
+function hashPassword(password: string, salt: string): string {
   const hashedPassword: string = crypto
     .pbkdf2Sync(password, salt, 100000, 64, "sha256")
     .toString("hex");
@@ -16,23 +17,22 @@ function hashPassword(password: string): string {
 }
 
 // メールアドレスが既に登録されているかどうかをチェックする関数
-async function isEmailRegistered(email: string): Promise<boolean> {
-  try {
-    const user = await prisma.users.findUnique({
-      where: {
-        email: email,
-      },
-    });
+async function isEmailRegistered(email: string): Promise<{ bool: boolean }> {
+  const user = await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
+  });
 
-    return !!user; // 存在すれば true、存在しなければ false を返す
-  } catch (error) {
-    console.error("Error in checking email registration:", error);
-    return false; // エラーが発生した場合も false を返す
+  if (user) {
+    return { bool: true };
   }
+
+  return { bool: false };
 }
 
 // メールを送信する関数
-function sendEmail(email: string, token: string) {
+async function sendEmail(email: string, token: string) {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -49,51 +49,104 @@ function sendEmail(email: string, token: string) {
     from: process.env.GMAIL_ADDRESS,
     to: email,
     subject: "メールアドレス確認",
-    text: `https://${process.env.SITE_URL}/verify?email=${email}&token=${token}`,
+    text: `${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}`,
   };
 
-  transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.error("Send email error:", error);
-    } else {
-      console.log("Email sent:", info);
-    }
+  await transporter.sendMail(mailOptions, (info: any) => {
+    console.log("Message sent: %s", info.messageId);
   });
+
+  console.log("Email sent");
+
+  return;
+}
+
+// パスワードをハッシュ化する関数
+function generateSalt(): string {
+  const salt: string = crypto.randomBytes(16).toString("hex");
+  return salt;
 }
 
 // メール認証用のランダム文字列を発行する関数
-function generateToken() {
+function generateToken(): string {
   const token: string = crypto.randomBytes(32).toString("hex");
   return token;
 }
 
 // 仮ユーザテーブルに既にメールアドレスが登録されていたら、そのレコードを削除する関数
-function deleteTemporaryUser(email: string) {
-  prisma.temporary_users.delete({
+async function deleteTemporaryUser(email: string) {
+  const existingUser = await prisma.temporary_users.findUnique({
     where: {
       email: email,
     },
   });
+
+  if (existingUser) {
+    await prisma.temporary_users.delete({
+      where: {
+        email: email,
+      },
+    });
+  }
 }
 
 // 仮ユーザテーブルにメールアドレス、パスワード、ランダム文字列を入れる関数
-function createTemporaryUser(
+async function createTemporaryUser(
   email: string,
   hashedPassword: string,
+  salt: string,
   token: string
 ) {
   // 仮登録の有効期限は15分とする
-  const expirationDate = new Date();
+  const expirationDate: Date = new Date();
   expirationDate.setMinutes(expirationDate.getMinutes() + 15);
 
-  prisma.temporary_users.create({
+  await prisma.temporary_users.create({
     data: {
       email: email,
       hashed_password: hashedPassword,
+      salt: salt,
       token: token,
       expired_at: expirationDate,
     },
   });
+}
+
+// 本登録を行う関数
+async function registerUser(
+  email: string,
+  hashedPassword: string,
+  salt: string
+) {
+  await prisma.users.create({
+    data: {
+      email: email,
+      password: hashedPassword,
+      salt: salt,
+    },
+  });
+}
+
+// temporary_usersでメールアドレスが一致するのを検索する関数
+async function findTemporaryUser(email: string): Promise<{ data: any }> {
+  const temporaryUser = await prisma.temporary_users.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  return { data: temporaryUser };
+}
+
+function verifyPassword(
+  password: string,
+  hashedPassword: string,
+  salt: string
+): boolean {
+  const hashedAttempt: string = crypto
+    .pbkdf2Sync(password, salt, 100000, 64, "sha256")
+    .toString("hex");
+  return hashedAttempt === hashedPassword;
 }
 
 /* GET home page. */
@@ -103,29 +156,192 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
 
 // ユーザの仮登録を行う
 router.post("/signup", async (req: Request, res: Response) => {
-  const email: string = req.body.email;
-  const password: string = req.body.password;
+  try {
+    const email: string = req.body.email;
+    const password: string = req.body.password;
 
-  const isRegistered: boolean = await isEmailRegistered(email);
-  if (isRegistered) {
-    res.status(400).json({ message: "既に登録されているメールアドレスです" });
-    return;
+    // すでに登録されているメールアドレスかどうかをチェックする
+    const { bool: isRegistered } = await isEmailRegistered(email);
+    if (isRegistered) {
+      res.status(400).json({ message: "既に登録されているメールアドレスです" });
+    }
+
+    const salt: string = generateSalt();
+    const token: string = generateToken();
+    const hashedPassword: string = hashPassword(password, salt);
+    // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
+    await deleteTemporaryUser(email);
+
+    await createTemporaryUser(email, hashedPassword, salt, token);
+
+    // メールを送信する
+    await sendEmail(email, token);
+
+    res.json("メールを送信しました");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  } finally {
+    await prisma.$disconnect();
   }
-  const token: string = generateToken();
-  const hashedPassword: string = hashPassword(password);
-  // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
-  deleteTemporaryUser(email);
-  createTemporaryUser(email, hashedPassword, token);
-
-  // メールを送信する
-  sendEmail(email, token);
-
-  res.json("メールを送信しました");
 });
 
 // ユーザの本登録を行う
-router.post("/verify", async (req: Request, res: Response) => {});
+router.get("/verify", async (req: Request, res: Response) => {
+  try {
+    const email: string = req.query.email as string;
+    const token: string = req.query.token as string;
 
-router.post("/signin", async (req: Request, res: Response) => {});
+    const { data: temporaryUser } = await findTemporaryUser(email);
+    if (!temporaryUser) {
+      return res.status(400).json({ message: "仮登録がされていません" });
+    }
+
+    const now = new Date();
+    if (now > temporaryUser.expired_at) {
+      return res
+        .status(400)
+        .json({ message: "トークンの有効期限が切れています" });
+    }
+
+    if (temporaryUser.token !== token) {
+      return res.status(400).json({ message: "トークンが一致しません" });
+    }
+
+    await registerUser(
+      email,
+      temporaryUser.hashed_password,
+      temporaryUser.salt
+    );
+
+    res.json("本登録が完了しました");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  } finally {
+    await prisma.$disconnect();
+  }
+});
+
+router.post("/signin", async (req: Request, res: Response) => {
+  try {
+    const email: string = req.body.email;
+    const password: string = req.body.password;
+
+    const user = await prisma.users.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "メールアドレスが間違っています" });
+    }
+
+    const isPasswordValid = verifyPassword(password, user.password, user.salt);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "パスワードが間違っています" });
+    }
+
+    const payload = {
+      userId: user.id,
+    };
+
+    const secret = process.env.JWT_SECRET_SIGN_IN as string;
+
+    const token: string = jwt.sign(payload, secret, {
+      expiresIn: "1day",
+    });
+
+    res.json({ token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  } finally {
+    await prisma.$disconnect();
+  }
+});
+
+router.post("/site-password", async (req: Request, res: Response) => {
+  try {
+    const password = req.body.password;
+
+    if (password !== process.env.SITE_PASSWORD) {
+      return res.status(400).json({ message: "パスワードが間違っています" });
+    }
+
+    const payload = { isSitePasswordKnown: true };
+    const secret = process.env.JWT_SECRET_SITE_PASSWORD as string;
+    const token = jwt.sign(payload, secret, {
+      expiresIn: "1week",
+    });
+    return res.json({ token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  } finally {
+  }
+});
+
+router.post("/refresh", async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.headers["x-refresh-token"] as string;
+
+    // リフレッシュトークンを検証して、新しいアクセストークンを発行する
+    const secret = process.env.REFRESH_TOKEN_SECRET as string;
+    jwt.verify(refreshToken, secret, (err: any, decoded: any) => {
+      if (err) {
+        return res.status(401).json({ message: "無効なトークンです" });
+      }
+
+      // リフレッシュトークンが有効なら新しいアクセストークンを発行
+      const userId = decoded.userId; // ユーザーIDなどの情報を取得する
+      const payload = { userId }; // 新しいアクセストークンに含める情報
+      const accessToken = jwt.sign(
+        payload,
+        process.env.ACCESS_TOKEN_SECRET as string,
+        {
+          expiresIn: "15min", // アクセストークンの有効期限を設定
+        }
+      );
+
+      res.json({ accessToken });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  }
+});
+
+// テスト用 プロフィール情報を取得する
+router.get("/profile", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.user as string);
+
+    // userIdをint型に変換
+    if (!userId) {
+      return res.status(401).json({ message: "認証が必要です" });
+    }
+
+    // ユーザー情報をデータベースから取得
+    const user = await prisma.users.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "ユーザーが見つかりません" });
+    }
+
+    res.json({ user }); // ユーザー情報を返す
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "サーバーエラーが発生しました" });
+  }
+});
 
 export { router };
