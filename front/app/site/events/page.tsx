@@ -42,7 +42,7 @@ export default function Events() {
         >
           <Typography
             component={"a"}
-            href="https://color.adobe.com/create/color-wheel"
+            href="./event/1"
             sx={{
               width: "100%",
               textDecoration: "none",
@@ -116,7 +116,7 @@ export default function Events() {
 
           <Typography
             component={"a"}
-            href="https://color.adobe.com/create/color-wheel"
+            href="./event/2"
             sx={{
               width: "100%",
               textDecoration: "none",
