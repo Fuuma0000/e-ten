@@ -33,7 +33,7 @@ export default function Event({ params }: { params: { id: string } }) {
           width: "90vw",
           marginX: "auto",
           marginTop: "24px",
-          marginBottom: "160px"
+          marginBottom: "160px",
         }}
       >
         <Typography
@@ -192,52 +192,60 @@ export default function Event({ params }: { params: { id: string } }) {
           >
             {Array.from(Array(8)).map((_, index) => (
               <Grid item xs={4} sm={4} md={3} key={index}>
-                <Item>
-                  <Stack
-                    sx={{
-                      alignItems: "center"
-                    }}
-                  >
-                    <Typography
-                      component={"img"}
-                      src="/event_1.png"
+                <Typography
+                  component={"a"}
+                  href={`../work/${index}`}
+                  sx={{
+                    textDecoration: "none",
+                  }}
+                >
+                  <Item>
+                    <Stack
                       sx={{
-                        width: "60%",
-                      }}
-                    />
-                  </Stack>
-                  <Stack
-                    sx={{
-                      backgroundColor: "gray.light",
-                      padding: "8px 16px"
-                    }}
-                  >
-                    <Typography
-                      component={"h4"}
-                      sx={{
-                        fontSize: "h6.fontSize",
-                        marginBottom: "8px"
+                        alignItems: "center",
                       }}
                     >
-                      あああ
-                    </Typography>
-                    <Typography
-                      component={"p"}
+                      <Typography
+                        component={"img"}
+                        src="/event_1.png"
+                        sx={{
+                          width: "60%",
+                        }}
+                      />
+                    </Stack>
+                    <Stack
                       sx={{
-                        fontSize: "p.fontSize",
-                        wordBreak: "break-word"
+                        backgroundColor: "gray.light",
+                        padding: "8px 16px",
                       }}
                     >
-                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                    </Typography>
-                  </Stack>
-                </Item>
+                      <Typography
+                        component={"h4"}
+                        sx={{
+                          fontSize: "h6.fontSize",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        あああ
+                      </Typography>
+                      <Typography
+                        component={"p"}
+                        sx={{
+                          fontSize: "p.fontSize",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                      </Typography>
+                    </Stack>
+                  </Item>
+                </Typography>
               </Grid>
             ))}
           </Grid>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-        <Stack
+          <Stack
             sx={{
               paddingX: "16px",
             }}
@@ -330,46 +338,54 @@ export default function Event({ params }: { params: { id: string } }) {
           >
             {Array.from(Array(8)).map((_, index) => (
               <Grid item xs={4} sm={4} md={3} key={index}>
-                <Item>
-                  <Stack
-                    sx={{
-                      alignItems: "center"
-                    }}
-                  >
-                    <Typography
-                      component={"img"}
-                      src="/event_1.png"
+                <Typography
+                  component={"a"}
+                  href={`../work/${index}`}
+                  sx={{
+                    textDecoration: "none",
+                  }}
+                >
+                  <Item>
+                    <Stack
                       sx={{
-                        width: "60%",
-                      }}
-                    />
-                  </Stack>
-                  <Stack
-                    sx={{
-                      backgroundColor: "gray.light",
-                      padding: "8px 16px"
-                    }}
-                  >
-                    <Typography
-                      component={"h4"}
-                      sx={{
-                        fontSize: "h6.fontSize",
-                        marginBottom: "8px"
+                        alignItems: "center",
                       }}
                     >
-                      あああ
-                    </Typography>
-                    <Typography
-                      component={"p"}
+                      <Typography
+                        component={"img"}
+                        src="/event_1.png"
+                        sx={{
+                          width: "60%",
+                        }}
+                      />
+                    </Stack>
+                    <Stack
                       sx={{
-                        fontSize: "p.fontSize",
-                        wordBreak: "break-word"
+                        backgroundColor: "gray.light",
+                        padding: "8px 16px",
                       }}
                     >
-                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                    </Typography>
-                  </Stack>
-                </Item>
+                      <Typography
+                        component={"h4"}
+                        sx={{
+                          fontSize: "h6.fontSize",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        あああ
+                      </Typography>
+                      <Typography
+                        component={"p"}
+                        sx={{
+                          fontSize: "p.fontSize",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                      </Typography>
+                    </Stack>
+                  </Item>
+                </Typography>
               </Grid>
             ))}
           </Grid>
