@@ -8,6 +8,7 @@ import { router as indexRouter } from "./routes/index";
 import { router as eventRoute } from "./routes/events";
 import { router as profileRoute } from "./routes/profiles";
 import { router as workRoute } from "./routes/works";
+import { router as bookmarkRoute } from "./routes/bookmarks";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/", indexRouter);
 app.use("/events", eventRoute);
 app.use("/profiles", profileRoute);
 app.use("/works", workRoute);
+app.use("/bookmarks", bookmarkRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
