@@ -443,27 +443,18 @@ paths:
 
   /bookmarks/{id}:
     post:
-      summary: ブックマークの追加
+      summary: ブックマークの追加・削除
       tags: ["bookmark"]
       operationId: createBookmark
       requestBody:
         content:
           application/json:
             schema:
-              type: object
               properties:
                 work_id:
                   type: integer
       responses:
-        201:
-          description: OK
-
-    delete:
-      summary: ブックマークの削除
-      tags: ["bookmark"]
-      operationId: deleteBookmark
-      parameters:
-        - $ref: "#/components/parameters/work_id"
-      responses:
         200:
-          description: OK
+          description: deleted
+        201:
+          description: created
