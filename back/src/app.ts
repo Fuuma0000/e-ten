@@ -21,7 +21,7 @@ app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));  //validator設定済み
 app.use(cookieParser());
 app.use(express.static(path.join("public"))); //__dirNameと書いてある箇所を除く！
 app.use(express.static("public"));

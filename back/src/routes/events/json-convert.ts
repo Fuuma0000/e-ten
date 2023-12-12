@@ -1,3 +1,4 @@
+import { inputUsersJson, returnUsersJson } from "./types/json-convert-type";
 const convertUsersData = (input: inputUsersJson) => {
   const returnJson: returnUsersJson[] = input.map((user) => ({
     user_id: user.users.id,

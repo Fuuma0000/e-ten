@@ -21,3 +21,6 @@ type returnUsersJson = {
   job: string[];
   icon_url: string | null;
 };
+
+
+export { inputUsersJson, returnUsersJson };
