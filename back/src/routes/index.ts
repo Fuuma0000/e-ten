@@ -4,8 +4,8 @@ const crypto = require("crypto");
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
-import jwt from "jsonwebtoken";
-import { authenticate } from "./auth";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { authenticate, authenticateSitePassword } from "./auth";
 
 // パスワードをハッシュ化する関数
 function hashPassword(password: string, salt: string): string {
@@ -55,8 +55,6 @@ async function sendEmail(email: string, token: string) {
   await transporter.sendMail(mailOptions, (info: any) => {
     console.log("Message sent: %s", info.messageId);
   });
-
-  console.log("Email sent");
 
   return;
 }
@@ -155,36 +153,42 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
 });
 
 // ユーザの仮登録を行う
-router.post("/signup", async (req: Request, res: Response) => {
-  try {
-    const email: string = req.body.email;
-    const password: string = req.body.password;
+router.post(
+  "/signup",
+  authenticateSitePassword,
+  async (req: Request, res: Response) => {
+    try {
+      const email: string = req.body.email;
+      const password: string = req.body.password;
 
-    // すでに登録されているメールアドレスかどうかをチェックする
-    const { bool: isRegistered } = await isEmailRegistered(email);
-    if (isRegistered) {
-      res.status(400).json({ message: "既に登録されているメールアドレスです" });
+      // すでに登録されているメールアドレスかどうかをチェックする
+      const { bool: isRegistered } = await isEmailRegistered(email);
+      if (isRegistered) {
+        res
+          .status(400)
+          .json({ message: "既に登録されているメールアドレスです" });
+      }
+
+      const salt: string = generateSalt();
+      const token: string = generateToken();
+      const hashedPassword: string = hashPassword(password, salt);
+      // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
+      await deleteTemporaryUser(email);
+
+      await createTemporaryUser(email, hashedPassword, salt, token);
+
+      // メールを送信する
+      await sendEmail(email, token);
+
+      res.json("メールを送信しました");
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "サーバーエラーが発生しました" });
+    } finally {
+      await prisma.$disconnect();
     }
-
-    const salt: string = generateSalt();
-    const token: string = generateToken();
-    const hashedPassword: string = hashPassword(password, salt);
-    // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
-    await deleteTemporaryUser(email);
-
-    await createTemporaryUser(email, hashedPassword, salt, token);
-
-    // メールを送信する
-    await sendEmail(email, token);
-
-    res.json("メールを送信しました");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "サーバーエラーが発生しました" });
-  } finally {
-    await prisma.$disconnect();
   }
-});
+);
 
 // ユーザの本登録を行う
 router.get("/verify", async (req: Request, res: Response) => {
@@ -223,47 +227,69 @@ router.get("/verify", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/signin", async (req: Request, res: Response) => {
-  try {
-    const email: string = req.body.email;
-    const password: string = req.body.password;
+router.post(
+  "/signin",
+  authenticateSitePassword,
+  async (req: Request, res: Response) => {
+    try {
+      const email: string = req.body.email;
+      const password: string = req.body.password;
 
-    const user = await prisma.users.findUnique({
-      where: {
-        email: email,
-      },
-    });
+      const user = await prisma.users.findUnique({
+        where: {
+          email: email,
+        },
+      });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: "メールアドレスが間違っています" });
+      }
 
-    if (!user) {
-      return res
-        .status(400)
-        .json({ message: "メールアドレスが間違っています" });
+      const isPasswordValid = verifyPassword(
+        password,
+        user.password,
+        user.salt
+      );
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "パスワードが間違っています" });
+      }
+
+      // アクセストークンを発行する
+      const accessTokenPayload = {
+        userId: user.id,
+      };
+      const accessTokenSecret = process.env.JWT_SECRET_SIGN_IN as string;
+      const accessToken: string = jwt.sign(
+        accessTokenPayload,
+        accessTokenSecret,
+        {
+          expiresIn: "1m",
+        }
+      );
+
+      // リフレッシュトークンを発行する
+      const refreshTokenPayload = {
+        userId: user.id,
+      };
+      const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string;
+      const refreshToken: string = jwt.sign(
+        refreshTokenPayload,
+        refreshTokenSecret,
+        {
+          expiresIn: "30d",
+        }
+      );
+
+      res.json({ accessToken: accessToken, refreshToken: refreshToken });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "サーバーエラーが発生しました" });
+    } finally {
+      await prisma.$disconnect();
     }
-
-    const isPasswordValid = verifyPassword(password, user.password, user.salt);
-
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "パスワードが間違っています" });
-    }
-
-    const payload = {
-      userId: user.id,
-    };
-
-    const secret = process.env.JWT_SECRET_SIGN_IN as string;
-
-    const token: string = jwt.sign(payload, secret, {
-      expiresIn: "1day",
-    });
-
-    res.json({ token: token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "サーバーエラーが発生しました" });
-  } finally {
-    await prisma.$disconnect();
   }
-});
+);
 
 router.post("/site-password", async (req: Request, res: Response) => {
   try {
@@ -276,7 +302,7 @@ router.post("/site-password", async (req: Request, res: Response) => {
     const payload = { isSitePasswordKnown: true };
     const secret = process.env.JWT_SECRET_SITE_PASSWORD as string;
     const token = jwt.sign(payload, secret, {
-      expiresIn: "1week",
+      expiresIn: "30d",
     });
     return res.json({ token: token });
   } catch (error) {
@@ -289,27 +315,16 @@ router.post("/site-password", async (req: Request, res: Response) => {
 router.post("/refresh", async (req: Request, res: Response) => {
   try {
     const refreshToken = req.headers["x-refresh-token"] as string;
-
-    // リフレッシュトークンを検証して、新しいアクセストークンを発行する
-    const secret = process.env.REFRESH_TOKEN_SECRET as string;
-    jwt.verify(refreshToken, secret, (err: any, decoded: any) => {
-      if (err) {
-        return res.status(401).json({ message: "無効なトークンです" });
-      }
-
-      // リフレッシュトークンが有効なら新しいアクセストークンを発行
-      const userId = decoded.userId; // ユーザーIDなどの情報を取得する
-      const payload = { userId }; // 新しいアクセストークンに含める情報
-      const accessToken = jwt.sign(
-        payload,
-        process.env.ACCESS_TOKEN_SECRET as string,
-        {
-          expiresIn: "15min", // アクセストークンの有効期限を設定
-        }
-      );
-
-      res.json({ accessToken });
+    const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string;
+    const decoded = jwt.verify(refreshToken, refreshTokenSecret) as JwtPayload;
+    const userId = Number(decoded.userId);
+    const payload = { userId: userId }; // 新しいアクセストークンに含める情報
+    const secret = process.env.JWT_SECRET_SIGN_IN as string;
+    const accessToken = jwt.sign(payload, secret, {
+      expiresIn: "1m", // アクセストークンの有効期限を設定
     });
+
+    res.json({ accessToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "サーバーエラーが発生しました" });
