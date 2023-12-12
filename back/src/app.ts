@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+const cors = require("cors");
 
 import { router as indexRouter } from "./routes/index";
 import { router as eventRoute } from "./routes/events";
@@ -12,6 +13,8 @@ import passport from "passport";
 import jwt from "jsonwebtoken";
 
 const app = express();
+
+app.use(cors()); // すべてのリクエストに対してCORSを有効にする
 
 // view engine setup
 app.set("views", path.join("views")); //__dirNameと書いてある箇所を除く！
