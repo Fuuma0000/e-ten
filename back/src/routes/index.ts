@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import { authenticate } from "./auth";
+import { authenticate, authenticateSitePassword } from "./auth";
 
 // パスワードをハッシュ化する関数
 function hashPassword(password: string, salt: string): string {
@@ -155,36 +155,42 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
 });
 
 // ユーザの仮登録を行う
-router.post("/signup", async (req: Request, res: Response) => {
-  try {
-    const email: string = req.body.email;
-    const password: string = req.body.password;
+router.post(
+  "/signup",
+  authenticateSitePassword,
+  async (req: Request, res: Response) => {
+    try {
+      const email: string = req.body.email;
+      const password: string = req.body.password;
 
-    // すでに登録されているメールアドレスかどうかをチェックする
-    const { bool: isRegistered } = await isEmailRegistered(email);
-    if (isRegistered) {
-      res.status(400).json({ message: "既に登録されているメールアドレスです" });
+      // すでに登録されているメールアドレスかどうかをチェックする
+      const { bool: isRegistered } = await isEmailRegistered(email);
+      if (isRegistered) {
+        res
+          .status(400)
+          .json({ message: "既に登録されているメールアドレスです" });
+      }
+
+      const salt: string = generateSalt();
+      const token: string = generateToken();
+      const hashedPassword: string = hashPassword(password, salt);
+      // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
+      await deleteTemporaryUser(email);
+
+      await createTemporaryUser(email, hashedPassword, salt, token);
+
+      // メールを送信する
+      await sendEmail(email, token);
+
+      res.json("メールを送信しました");
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "サーバーエラーが発生しました" });
+    } finally {
+      await prisma.$disconnect();
     }
-
-    const salt: string = generateSalt();
-    const token: string = generateToken();
-    const hashedPassword: string = hashPassword(password, salt);
-    // すでに仮登録されているメールアドレスがあれば、そのレコードを削除する
-    await deleteTemporaryUser(email);
-
-    await createTemporaryUser(email, hashedPassword, salt, token);
-
-    // メールを送信する
-    await sendEmail(email, token);
-
-    res.json("メールを送信しました");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "サーバーエラーが発生しました" });
-  } finally {
-    await prisma.$disconnect();
   }
-});
+);
 
 // ユーザの本登録を行う
 router.get("/verify", async (req: Request, res: Response) => {
@@ -223,51 +229,60 @@ router.get("/verify", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/signin", async (req: Request, res: Response) => {
-  try {
-    const email: string = req.body.email;
-    const password: string = req.body.password;
+router.post(
+  "/signin",
+  authenticateSitePassword,
+  async (req: Request, res: Response) => {
+    try {
+      const email: string = req.body.email;
+      const password: string = req.body.password;
 
-    const user = await prisma.users.findUnique({
-      where: {
-        email: email,
-      },
-    });
+      const user = await prisma.users.findUnique({
+        where: {
+          email: email,
+        },
+      });
 
-    if (!user) {
-      return res
-        .status(400)
-        .json({ message: "メールアドレスが間違っています" });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: "メールアドレスが間違っています" });
+      }
+
+      const isPasswordValid = verifyPassword(
+        password,
+        user.password,
+        user.salt
+      );
+
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "パスワードが間違っています" });
+      }
+
+      const payload = {
+        userId: user.id,
+      };
+
+      const secret = process.env.JWT_SECRET_SIGN_IN as string;
+
+      const token: string = jwt.sign(payload, secret, {
+        expiresIn: "1day",
+      });
+
+      res.json({ token: token });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "サーバーエラーが発生しました" });
+    } finally {
+      await prisma.$disconnect();
     }
-
-    const isPasswordValid = verifyPassword(password, user.password, user.salt);
-
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "パスワードが間違っています" });
-    }
-
-    const payload = {
-      userId: user.id,
-    };
-
-    const secret = process.env.JWT_SECRET_SIGN_IN as string;
-
-    const token: string = jwt.sign(payload, secret, {
-      expiresIn: "1day",
-    });
-
-    res.json({ token: token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "サーバーエラーが発生しました" });
-  } finally {
-    await prisma.$disconnect();
   }
-});
+);
 
 router.post("/site-password", async (req: Request, res: Response) => {
   try {
     const password = req.body.password;
+    console.log(password);
 
     if (password !== process.env.SITE_PASSWORD) {
       return res.status(400).json({ message: "パスワードが間違っています" });

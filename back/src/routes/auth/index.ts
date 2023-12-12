@@ -46,3 +46,28 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
   req.user = userId; // リクエストオブジェクトにユーザーIDをセット
   next(); // 認証が成功したら次の処理へ
 }
+
+// サイトパスワードの認証を行うミドルウェア
+export function authenticateSitePassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const sitePasswordToken = req.headers["x-site-password-token"] as string;
+  if (!sitePasswordToken) {
+    return res
+      .status(401)
+      .json({ message: "サイトパスワードの認証が必要です" });
+  }
+
+  const siteSecret = process.env.JWT_SECRET_SITE_PASSWORD as string;
+  try {
+    jwt.verify(sitePasswordToken, siteSecret);
+  } catch (err) {
+    return res
+      .status(401)
+      .json({ message: "無効なサイトパスワードトークンです" });
+  }
+
+  next();
+}
