@@ -33,7 +33,7 @@ export default function Event({ params }: { params: { id: string } }) {
         <Typography
           component={"h2"}
           sx={{
-            fontSize: "h2.fontSize",
+            fontSize: {xs: "h5.fontSize", md:"h2.fontSize"},
           }}
         >
           Welking Helper
