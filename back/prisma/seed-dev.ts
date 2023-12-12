@@ -95,6 +95,14 @@ async function main() {
       latest_reviewed_id: 1,
     },
   });
+
+  // ブックマーク
+  await prisma.bookmarks.createMany({
+    data: [
+      { users_id: 1, works_id: 1 },
+      { users_id: 1, works_id: 2 },
+    ],
+  });
 }
 
 // 混ぜると分からなくなるので関数切っておきます

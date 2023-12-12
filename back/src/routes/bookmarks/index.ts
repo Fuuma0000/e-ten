@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { convertBookmarkData } from "./json-convert";
 
 const router: Router = Router();
 const prisma = new PrismaClient();
@@ -12,6 +13,7 @@ router.get("/", async (req: Request, res: Response) => {
   const bookmark = await prisma.bookmarks.findMany({
     where: { users_id: users_id },
     select: {
+      id: true,
       works_id: true,
       works: {
         select: {
@@ -54,8 +56,10 @@ router.get("/", async (req: Request, res: Response) => {
   });
 
   //   TODO: jsonを整形する
+  const convertedBookmarkData = convertBookmarkData(bookmark);
 
-  return res.json(bookmark);
+  return res.json(convertedBookmarkData);
+  //   return res.json(bookmark);
 });
 
 export { router };
