@@ -15,10 +15,12 @@ type workReturnType = {
     username: string;
     role: string;
   }[];
+  is_bookmarked?: boolean;
 };
 
 const convertWorkData = (input: any) => {
   const work_data = input.works_data_works_latest_reviewed_idToworks_data;
+  const is_bookmarked = input.bookmarks.length !== 0;
 
   const returnJson: workReturnType = {
     works_id: work_data.works_id,
@@ -50,6 +52,7 @@ const convertWorkData = (input: any) => {
         role: user.users.works_data_users[0].role_explanation,
       })
     ),
+    is_bookmarked: is_bookmarked,
   };
 
   return returnJson;

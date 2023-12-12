@@ -7,6 +7,9 @@ const prisma = new PrismaClient();
 
 // 作品詳細の取得
 router.get("/:id", async (req: Request, res: Response) => {
+  // TODO: ユーザーIDを取得する
+  const users_id = 1;
+
   const work = await prisma.works.findUnique({
     where: { id: Number(req.params.id) },
     select: {
@@ -60,6 +63,9 @@ router.get("/:id", async (req: Request, res: Response) => {
           },
         },
       },
+      bookmarks: {
+        where: { users_id: users_id, works_id: Number(req.params.id) },
+      },
     },
   });
 
@@ -68,7 +74,6 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.status(404).json({ message: "Not Found" });
     return;
   }
-  // TODO: ブックマークしているかどうか(is_bookmarked)も返す
 
   const convertedWorkData = convertWorkData(work);
   res.json(convertedWorkData);
