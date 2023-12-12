@@ -8,19 +8,19 @@
 type RequestBody = {
   user_id: number;
   email: string;
-  username: string;
-  enrollment_year: number;
-  graduation_year: number;
-  is_job_hunt_completed: boolean;
-  self_introduction: string;
-  icon_url: string;
-  course_id: number;
-  jobs_id: number[];
+  username: string | undefined;
+  enrollment_year: number | undefined;
+  graduation_year: number | undefined;
+  is_job_hunt_completed: boolean | undefined;
+  self_introduction: string | undefined;
+  icon_url: string | undefined;
+  course_id: number | undefined;
+  jobs_id: number[] | undefined;
   urls: {
     id: number;
     url_name: string;
     url: string;
-  }[];
+  }[] | undefined;
 };
 
 export { RequestBody };
