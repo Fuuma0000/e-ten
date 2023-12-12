@@ -17,6 +17,7 @@ type UserType = {
     };
   }[];
   users_urls: {
+    id: number;
     url: string;
     url_name: string;
   }[];
@@ -72,6 +73,7 @@ type work = {
 };
 
 type url = {
+  id: number;
   url_name: string;
   url: string;
 };

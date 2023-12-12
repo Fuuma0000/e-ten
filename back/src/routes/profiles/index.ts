@@ -85,6 +85,7 @@ router.get("/:id", async (req: Request, res: Response) => {
       },
       users_urls: {
         select: {
+          id: true,
           url_name: true,
           url: true,
         },
