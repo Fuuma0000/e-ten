@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Refresh Access Token Example</title>
+    </head>
+
+    <body>
+        <form id="sitePasswordForm">
+            <label for="sitePassword">Site Password:</label>
+            <input type="password" id="sitePassword" name="sitePassword" value="password"><br><br>
+            <button type="submit">sitePassword</button><br><br>
+        </form>
+
+        <form id="loginForm">
+            <label for="email">Email:</label>
+            <input type="text" id="email" name="email" value="masa81hiro69@gmail.com"><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" value="password"><br><br>
+            <button type="submit">Login</button>
+        </form>
+
+        <button id="profileButton">Get Profile</button>
+
+        <script>
+            // サイトパスワードを使ってアクセストークンを取得するリクエストを送信する
+            document.getElementById("sitePasswordForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(event.target);
+                const sitePassword = formData.get("sitePassword");
+
+                try {
+                    const response = await fetch("http://localhost:8000/site-password", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ password: sitePassword })
+                    });
+
+                    const data = await response.json();
+                    // クッキーにトークンを保存する
+                    // TODO: secure属性, httpOnly属性を追加する
+                    document.cookie = `x-site-password-token=${data.token}`;
+                    console.log("Response from server:", data);
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            });
+
+            // ログイン情報を使ってアクセストークンを取得するリクエストを送信する
+            document.getElementById("loginForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(event.target);
+                const email = formData.get("email");
+                const password = formData.get("password");
+                // クッキーからサイトパスワードトークンを取得する
+                const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                console.log(sitePasswordToken);
+
+                // ログイン情報を使って新しいアクセストークンを取得するリクエストを送信する
+                try {
+                    const loginResponse = await fetch("http://localhost:8000/signin", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-site-password-token": sitePasswordToken
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    });
+
+                    const loginData = await loginResponse.json();
+                    // クッキーにトークンを保存する
+                    // TODO: secure属性, httpOnly属性を追加する
+                    document.cookie = `x-login-token=${loginData.accessToken}`;
+                    document.cookie = `x-refresh-token=${loginData.refreshToken}`;
+
+                    console.log("New Access Token:", loginData.accessToken);
+                } catch (loginError) {
+                    console.error("Error Logging In:", loginError);
+                }
+            });
+
+            // プロフィール情報を取得するリクエストを送信する
+            document.getElementById("profileButton").addEventListener("click", async () => {
+                try {
+                    // クッキーからサイトパスワードトークンを取得する
+                    const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    // クッキーからアクセストークンを取得する
+                    const accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+                    const response = await fetch("http://localhost:8000/profile", {
+                        method: "GET",
+                        headers: {
+                            "x-site-password-token": sitePasswordToken,
+                            "Authorization": `Bearer ${accessToken}`
+                        }
+                    });
+
+                    const data = await response.json();
+                    // エラーがあったらスローする
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    console.log("User Profile:", data.user);
+                } catch (error) {
+                    // アクセストークンが切れている場合のエラー処理
+                    console.error("Access Token Expired:", error);
+                    // リフレッシュトークンを取得するためのリクエストを送信
+                    try {
+                        // クッキーからリフレッシュトークンを取得する
+                        const refreshToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-refresh-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+                        const refreshResponse = await fetch("http://localhost:8000/refresh", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "x-refresh-token": refreshToken
+                            }
+                        });
+
+                        const refreshData = await refreshResponse.json();
+                        console.log("New Access Token:", refreshData.accessToken);
+
+                        // 新しいアクセストークンをクッキーに保存する
+                        document.cookie = `x-login-token=${refreshData.accessToken}`;
+
+                        // クッキーからサイトパスワードトークンを取得する
+                        const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                        // クッキーからアクセストークンを取得する
+                        const accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+                        const newResponse = await fetch("http://localhost:8000/profile", {
+                            method: "GET",
+                            headers: {
+                                "x-site-password-token": sitePasswordToken,
+                                "Authorization": `Bearer ${accessToken}`
+
+                            }
+                        });
+
+                        const newData = await newResponse.json();
+                        console.log("Updated User Profile:", newData.user);
+                    } catch (refreshError) {
+                        console.error("Error Refreshing Token:", refreshError);
+                    }
+                }
+            });
+        </script>
+
+    </body>
+
+</html>
