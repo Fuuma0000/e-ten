@@ -46,7 +46,6 @@ model event_users_roles {
   @@index([events_id], map: "events_id")
   @@index([roles_id], map: "roles_id")
   @@index([user_id], map: "user_id")
-
 }
 
 model events {
@@ -247,4 +246,13 @@ model works_data_users {
   @@id([works_data_id, users_id])
   @@index([users_id], map: "users_id")
   @@index([works_data_id], map: "works_data_id")
+}
+
+model temporary_users {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  email           String    @unique(map: "email") @db.VarChar(255)
+  hashed_password String    @db.VarChar(50)
+  token           String    @db.VarChar(32)
+  expired_at      DateTime @db.DateTime(0)
+  created_at      DateTime? @default(now()) @db.DateTime(0)
 }
