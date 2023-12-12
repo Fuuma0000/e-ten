@@ -327,7 +327,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Work"
+                allOf:
+                  - $ref: "#/components/schemas/WorkList"
+                  - properties:
+                      is_bookmarked:
+                        type: boolean
+                        description: ブックマークしているかどうかのフラグ
 
     post:
       summary: 作品の新規作成

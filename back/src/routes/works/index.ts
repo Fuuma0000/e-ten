@@ -68,6 +68,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     res.status(404).json({ message: "Not Found" });
     return;
   }
+  // TODO: ブックマークしているかどうか(is_bookmarked)も返す
 
   const convertedWorkData = convertWorkData(work);
   res.json(convertedWorkData);
