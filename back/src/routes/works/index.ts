@@ -4,7 +4,6 @@ import { convertWorkData } from "./json-convert";
 
 const router: Router = Router();
 const prisma = new PrismaClient();
-var workType: any;
 
 // 作品詳細の取得
 router.get("/:id", async (req: Request, res: Response) => {
@@ -64,10 +63,11 @@ router.get("/:id", async (req: Request, res: Response) => {
     },
   });
 
-  // TODO: データがなかったら
-  // workの型を持ってくる
-  type workType = typeof work;
-  const workData: workType = work as workType;
+  // データがなかったら
+  if (work === null) {
+    res.status(404).json({ message: "Not Found" });
+    return;
+  }
 
   const convertedWorkData = convertWorkData(work);
   res.json(convertedWorkData);
@@ -79,4 +79,4 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 // TODO: 作品の削除
 
-export { router, workType };
+export { router };
