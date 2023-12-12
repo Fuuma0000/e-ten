@@ -55,11 +55,45 @@ router.get("/", async (req: Request, res: Response) => {
     },
   });
 
-  //   TODO: jsonを整形する
   const convertedBookmarkData = convertBookmarkData(bookmark);
 
   return res.json(convertedBookmarkData);
-  //   return res.json(bookmark);
+});
+
+// ブックマークの追加・削除
+router.post("/:id", async (req: Request, res: Response) => {
+  // TODO: ユーザーIDを取得する
+  const users_id = 1;
+  const works_id = Number(req.params.id);
+
+  const bookmark = await prisma.bookmarks.findFirst({
+    where: {
+      users_id: users_id,
+      works_id: works_id,
+    },
+  });
+
+  console.log(bookmark);
+
+  // すでにブックマークされていたら削除
+  if (bookmark !== null) {
+    await prisma.bookmarks.delete({
+      where: {
+        id: bookmark.id,
+      },
+    });
+    return res.status(200).send("deleted");
+  }
+
+  // なかったら追加
+  const test = await prisma.bookmarks.create({
+    data: {
+      users_id: users_id,
+      works_id: works_id,
+    },
+  });
+
+  return res.status(201).send("created");
 });
 
 export { router };
