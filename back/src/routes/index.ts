@@ -4,7 +4,7 @@ const crypto = require("crypto");
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
 
 // パスワードをハッシュ化する関数
@@ -55,8 +55,6 @@ async function sendEmail(email: string, token: string) {
   await transporter.sendMail(mailOptions, (info: any) => {
     console.log("Message sent: %s", info.messageId);
   });
-
-  console.log("Email sent");
 
   return;
 }
@@ -242,7 +240,6 @@ router.post(
           email: email,
         },
       });
-
       if (!user) {
         return res
           .status(400)
@@ -254,22 +251,37 @@ router.post(
         user.password,
         user.salt
       );
-
       if (!isPasswordValid) {
         return res.status(400).json({ message: "パスワードが間違っています" });
       }
 
-      const payload = {
+      // アクセストークンを発行する
+      const accessTokenPayload = {
         userId: user.id,
       };
+      const accessTokenSecret = process.env.JWT_SECRET_SIGN_IN as string;
+      const accessToken: string = jwt.sign(
+        accessTokenPayload,
+        accessTokenSecret,
+        {
+          expiresIn: "1m",
+        }
+      );
 
-      const secret = process.env.JWT_SECRET_SIGN_IN as string;
+      // リフレッシュトークンを発行する
+      const refreshTokenPayload = {
+        userId: user.id,
+      };
+      const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string;
+      const refreshToken: string = jwt.sign(
+        refreshTokenPayload,
+        refreshTokenSecret,
+        {
+          expiresIn: "30d",
+        }
+      );
 
-      const token: string = jwt.sign(payload, secret, {
-        expiresIn: "1day",
-      });
-
-      res.json({ token: token });
+      res.json({ accessToken: accessToken, refreshToken: refreshToken });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
@@ -282,7 +294,6 @@ router.post(
 router.post("/site-password", async (req: Request, res: Response) => {
   try {
     const password = req.body.password;
-    console.log(password);
 
     if (password !== process.env.SITE_PASSWORD) {
       return res.status(400).json({ message: "パスワードが間違っています" });
@@ -291,7 +302,7 @@ router.post("/site-password", async (req: Request, res: Response) => {
     const payload = { isSitePasswordKnown: true };
     const secret = process.env.JWT_SECRET_SITE_PASSWORD as string;
     const token = jwt.sign(payload, secret, {
-      expiresIn: "1week",
+      expiresIn: "30d",
     });
     return res.json({ token: token });
   } catch (error) {
@@ -304,27 +315,16 @@ router.post("/site-password", async (req: Request, res: Response) => {
 router.post("/refresh", async (req: Request, res: Response) => {
   try {
     const refreshToken = req.headers["x-refresh-token"] as string;
-
-    // リフレッシュトークンを検証して、新しいアクセストークンを発行する
-    const secret = process.env.REFRESH_TOKEN_SECRET as string;
-    jwt.verify(refreshToken, secret, (err: any, decoded: any) => {
-      if (err) {
-        return res.status(401).json({ message: "無効なトークンです" });
-      }
-
-      // リフレッシュトークンが有効なら新しいアクセストークンを発行
-      const userId = decoded.userId; // ユーザーIDなどの情報を取得する
-      const payload = { userId }; // 新しいアクセストークンに含める情報
-      const accessToken = jwt.sign(
-        payload,
-        process.env.ACCESS_TOKEN_SECRET as string,
-        {
-          expiresIn: "15min", // アクセストークンの有効期限を設定
-        }
-      );
-
-      res.json({ accessToken });
+    const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string;
+    const decoded = jwt.verify(refreshToken, refreshTokenSecret) as JwtPayload;
+    const userId = Number(decoded.userId);
+    const payload = { userId: userId }; // 新しいアクセストークンに含める情報
+    const secret = process.env.JWT_SECRET_SIGN_IN as string;
+    const accessToken = jwt.sign(payload, secret, {
+      expiresIn: "1m", // アクセストークンの有効期限を設定
     });
+
+    res.json({ accessToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "サーバーエラーが発生しました" });
