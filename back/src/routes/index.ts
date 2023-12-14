@@ -334,12 +334,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
 // テスト用 プロフィール情報を取得する
 router.get("/profile", authenticate, async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.user as string);
-
-    // userIdをint型に変換
-    if (!userId) {
-      return res.status(401).json({ message: "認証が必要です" });
-    }
+    const userId = Number(req.user);
 
     // ユーザー情報をデータベースから取得
     const user = await prisma.users.findUnique({
