@@ -1,14 +1,14 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { authenticate } from "../auth";
 import { convertWorkData } from "./json-convert";
 
 const router: Router = Router();
 const prisma = new PrismaClient();
 
 // 作品詳細の取得
-router.get("/:id", async (req: Request, res: Response) => {
-  // TODO: ユーザーIDを取得する
-  const users_id = 1;
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
+  const users_id = Number(req.user);
 
   const work = await prisma.works.findUnique({
     where: { id: Number(req.params.id) },
