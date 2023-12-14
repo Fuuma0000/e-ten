@@ -280,6 +280,7 @@ router.put(
       res.status(200).json({ message: "Success" });
     } catch (err) {
       if (err instanceof Error) {
+        // エラー出力をログに書き出す
         const currentDate = new Date();
         fs.writeFileSync(path.resolve(__dirname, `../../../errorlogs/${currentDate.getDate()}_${currentDate.getHours()}_${currentDate.getMinutes()}_${currentDate.getSeconds()}`), err.message);
       }
