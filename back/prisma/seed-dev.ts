@@ -51,6 +51,20 @@ async function main() {
       movie_url: "",
       system_diagram_url: "",
       detail: "テスト作品01の概要",
+      works_data_images: {
+        createMany: {
+          data: [
+            {
+              url: "https://placehold.jp/800x600.png",
+              order: 1,
+            },
+            {
+              url: "https://placehold.jp/640x480.png",
+              order: 2,
+            },
+          ],
+        },
+      },
       works_data_genres: {
         createMany: {
           data: [{ genres_id: 1 }, { genres_id: 2 }],
@@ -63,7 +77,7 @@ async function main() {
       },
       works_data_users: {
         createMany: {
-          data: [{ users_id: 1 }],
+          data: [{ users_id: 1, role_explanation: "リーダー" }],
         },
       },
     },
@@ -80,6 +94,14 @@ async function main() {
     data: {
       latest_reviewed_id: 1,
     },
+  });
+
+  // ブックマーク
+  await prisma.bookmarks.createMany({
+    data: [
+      { users_id: 1, works_id: 1 },
+      { users_id: 1, works_id: 2 },
+    ],
   });
 }
 

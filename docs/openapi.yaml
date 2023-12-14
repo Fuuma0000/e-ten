@@ -161,14 +161,13 @@ components:
           description: チームメンバーのidと名前と役割のオブジェクトの配列
           items:
             type: object
-            items:
-              properties:
-                user_id:
-                  type: integer
-                usernane:
-                  type: string
-                role:
-                  type: integer
+            properties:
+              user_id:
+                type: integer
+              usernane:
+                type: string
+              role:
+                type: integer
 
     Work:
       type: object
@@ -339,7 +338,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Work"
+                allOf:
+                  # TODO:icon_urlいらない
+                  - $ref: "#/components/schemas/Work"
+                  - properties:
+                      is_bookmarked:
+                        type: boolean
+                        description: ブックマークしているかどうかのフラグ
 
     post:
       summary: 作品の新規作成
@@ -464,3 +469,36 @@ paths:
       responses:
         200:
           description: OK
+
+  /bookmarks:
+    get:
+      summary: ブックマークの一覧取得
+      tags: ["bookmark"]
+      operationId: getAllBookmarks
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkList"
+
+  /bookmarks/{id}:
+    post:
+      summary: ブックマークの追加・削除
+      tags: ["bookmark"]
+      operationId: createBookmark
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                work_id:
+                  type: integer
+      responses:
+        200:
+          description: deleted
+        201:
+          description: created

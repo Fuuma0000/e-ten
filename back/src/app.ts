@@ -3,14 +3,15 @@ import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-const cors = require("cors");
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 import { router as indexRouter } from "./routes/index";
 import { router as eventRoute } from "./routes/events";
 import { router as profileRoute } from "./routes/profiles";
 import { router as workRoute } from "./routes/works";
-import passport from "passport";
-import jwt from "jsonwebtoken";
+import { router as bookmarkRoute } from "./routes/bookmarks";
+const cors = require("cors");
 
 const app = express();
 
@@ -22,7 +23,7 @@ app.set("view engine", "ejs");
 
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));  //validator設定済み
+app.use(express.urlencoded({ extended: true })); //validator設定済み
 app.use(cookieParser());
 app.use(express.static(path.join("public"))); //__dirNameと書いてある箇所を除く！
 app.use(express.static("public"));
@@ -34,6 +35,7 @@ app.use("/", indexRouter);
 app.use("/events", eventRoute);
 app.use("/profiles", profileRoute);
 app.use("/works", workRoute);
+app.use("/bookmarks", bookmarkRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
