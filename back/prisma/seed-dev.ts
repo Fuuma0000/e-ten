@@ -18,7 +18,8 @@ async function main() {
     data: {
       username: "テストユーザー01",
       email: "test01@mail.com",
-      password: "password",
+      password:
+        "0394a2ede332c9a13eb82e9b24631604c31df978b4e2f0fbd2c549944f9d79a536ceea9b92c6170cbbf0153ef33a4ff57321e17b7a5fadc33f7023ddd325da47",
       salt: "salt",
       courses_id: 1,
       enrollment_year: 2022,
@@ -109,13 +110,19 @@ async function main() {
 // 混ぜると分からなくなるので関数切っておきます
 // レコードチェックしてもらってから複数個にする
 async function insertProfileSeedData() {
+  const passwordTestList = [
+    "d71c8601cef40e28aad6d15a88cf7311dc95cc96d4f20d989a90d1a5202789b07f75eff7ccb95c5400e2e4ca3b46c17f17a3646659b51689374b42a039a97528",
+    "0d5ca4e7af038a8b08bec3d0e820f5e5a5b6745750193ee4954bcf544b996767062a288afe78635526139ebc531d56a5c2e88b1be123b919677d9b98c332dd0c",
+    "2ed1f3f24da6c275ed2ef8ccc4eb0eaae9a70f3c3a3603f9f690071290f210874e80204029eee0bf117a6ea63c0db8d26d51166414c6a9e5a14ea6de81e1c8a1",
+    "e84063032b764a8cc5fc80e0c86f2fd20440c082352874d33287b42575c6943628f8d7a28616e64ab561ae5ed761461d3c1a81ea2392f787d05432cbc32204ba",
+  ];
   // ユーザ情報
   for (let i = 0; i < 3; i++) {
     const registedUser = await prisma.users.create({
       data: {
         email: `example${i}@example.com`,
-        password: "example",
-        salt: "salt",
+        password: passwordTestList[i],
+        salt: `salt${i}`,
         username: "testuser",
         courses_id: 1,
         enrollment_year: 2022,
