@@ -18,6 +18,8 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import React from "react";
+import { GetServerSideProps } from "next";
+import { authClient } from "@/lib/apiClient";
 
 export default function Event({ params }: { params: { id: string } }) {
   const [value, setValue] = React.useState(0);
@@ -435,3 +437,16 @@ const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   color: theme.palette.text.secondary,
 }));
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  // 認証部分
+  const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+  const headers = {
+    "x-site-password-token": sitePasswordToken
+  }
+  authClient.post("/signin", {
+    "x-site-password-token": sitePasswordToken,
+
+  }, )
+}
