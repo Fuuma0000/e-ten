@@ -19,6 +19,7 @@ async function main() {
       username: "テストユーザー01",
       email: "test01@mail.com",
       password: "password",
+      salt: "salt",
       courses_id: 1,
       enrollment_year: 2022,
       graduation_year: 2026,
@@ -100,7 +101,7 @@ async function main() {
   await prisma.bookmarks.createMany({
     data: [
       { users_id: 1, works_id: 1 },
-      { users_id: 1, works_id: 2 },
+      // { users_id: 1, works_id: 2 },
     ],
   });
 }
@@ -114,6 +115,7 @@ async function insertProfileSeedData() {
       data: {
         email: `example${i}@example.com`,
         password: "example",
+        salt: "salt",
         username: "testuser",
         courses_id: 1,
         enrollment_year: 2022,
@@ -130,9 +132,9 @@ async function insertProfileSeedData() {
     // 権限テーブル.中間テーブルのために追加しておく
     const registedRoles = await prisma.roles.create({
       data: {
-        name: `${i}.ここに権限のテキストが入ります`
-      }
-    })
+        name: `${i}.ここに権限のテキストが入ります`,
+      },
+    });
 
     const registedRolesId = registedRoles.id;
 
@@ -144,7 +146,7 @@ async function insertProfileSeedData() {
         events_id: 1,
         user_id: registedUserId,
         roles_id: registedRolesId,
-      }
+      },
     });
 
     // 追加されたやつのデータ
@@ -154,8 +156,8 @@ async function insertProfileSeedData() {
           users_id: registedUserId,
           url_name: `${i}.Qiita等のSNSの名前が入ります`,
           url: `${i}.ここにユーザに結びつくQiita等のURLが入ります`,
-        }
-      })
+        },
+      });
     }
 
     // 志望職種情報
