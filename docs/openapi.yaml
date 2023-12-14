@@ -149,14 +149,13 @@ components:
           description: チームメンバーのidと名前と役割のオブジェクトの配列
           items:
             type: object
-            items:
-              properties:
-                user_id:
-                  type: integer
-                usernane:
-                  type: string
-                role:
-                  type: integer
+            properties:
+              user_id:
+                type: integer
+              usernane:
+                type: string
+              role:
+                type: integer
 
     Work:
       type: object
@@ -328,7 +327,8 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: "#/components/schemas/WorkList"
+                  # TODO:icon_urlいらない
+                  - $ref: "#/components/schemas/Work"
                   - properties:
                       is_bookmarked:
                         type: boolean
