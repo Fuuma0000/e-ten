@@ -34,7 +34,7 @@ let theme = createTheme({
     gray: {
       main: "#CECECE",
       light: "#F5F5F5",
-      dark: "#A3A3A3",
+      dark: "#666666",
     },
   },
 });
