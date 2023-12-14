@@ -1,17 +1,18 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { convertUsersData, convertWorksData } from "./json-convert";
+import { authenticate } from "../auth";
 const router: Router = Router();
 const prisma = new PrismaClient();
 
 // イベント一覧の取得
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authenticate, async (req: Request, res: Response) => {
   const events = await prisma.events.findMany();
   res.json(events);
 });
 
 // 作品一覧の取得
-router.get("/:id/works", async (req: Request, res: Response) => {
+router.get("/:id/works", authenticate, async (req: Request, res: Response) => {
   // worksからevents_idが一致するものを検索
   // works_dataのidとworksのlatest_reviewed_idが一致 -> 取得
   const works = await prisma.works.findFirst({
@@ -72,7 +73,7 @@ router.get("/:id/works", async (req: Request, res: Response) => {
 });
 
 // イベント参加学生の取得
-router.get("/:id/students", async (req: Request, res: Response) => {
+router.get("/:id/students", authenticate, async (req: Request, res: Response) => {
   const { id } = req.params;
 
   const events_users = await prisma.event_users_roles.findMany({

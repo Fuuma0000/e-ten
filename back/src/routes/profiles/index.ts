@@ -10,7 +10,7 @@ const router: Router = Router();
 
 const prisma = new PrismaClient();
 
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
   const { id } = req.params;
 
   let returnVal;

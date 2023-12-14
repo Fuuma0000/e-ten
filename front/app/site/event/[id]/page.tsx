@@ -438,14 +438,15 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  // 認証部分
-  const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-  const headers = {
-    "x-site-password-token": sitePasswordToken
-  }
-  authClient.post("/signin", {}, {
-    headers: headers
-  })
-}
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   // 認証部分
+//   const sitePasswordToken: string = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+//   const accessToken: string = document.cookie.replace(/(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+//   const headers = {
+//     "x-site-password-token": sitePasswordToken,
+//     "Authorization": accessToken
+//   }
+//   authClient.post("/events/", {}, {
+//     headers: headers
+//   })
+// }
