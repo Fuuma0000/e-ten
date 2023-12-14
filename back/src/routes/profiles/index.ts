@@ -5,7 +5,7 @@ import path from "path";
 import fs from "fs";
 import { convertUserData } from "./json-convert";
 import { RequestBody } from "./types/index-type";
-
+import { authenticate } from "../auth";
 const router: Router = Router();
 
 const prisma = new PrismaClient();
@@ -148,18 +148,19 @@ router.put(
     body("jobs_id").optional().isArray().withMessage("jobs_idが配列でない"),
     body("urls").optional().isArray().withMessage("urlsが配列でない"),
   ],
+  authenticate,
   async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
+    const accessUserId = req.user as number;
     const body: RequestBody = req.body;
 
     try {
-      // Todo:body.user_idを渡されたidに変更する
       await prisma.users.update({
-        where: { id: body.user_id },
+        where: { id: accessUserId },
         data: {
           username: body.username ?? null,
           enrollment_year: body.enrollment_year ?? null,
@@ -173,7 +174,7 @@ router.put(
 
       // ユーザに該当するレコードを検索
       const users_jobs = await prisma.users_jobs.findMany({
-        where: { users_id: body.user_id },
+        where: { users_id: accessUserId },
         select: {
           jobs_id: true,
         },
@@ -197,7 +198,7 @@ router.put(
         await prisma.$transaction(async (prisma) => {
           await prisma.users_jobs.createMany({
             data: uniqueReqIds.map((uniqueReqid) => ({
-              users_id: body.user_id,
+              users_id: accessUserId,
               jobs_id: uniqueReqid,
             })),
           });
@@ -206,7 +207,7 @@ router.put(
             await prisma.users_jobs.delete({
               where: {
                 users_id_jobs_id: {
-                  users_id: body.user_id,
+                  users_id: accessUserId,
                   jobs_id: uniqueDbId,
                 },
               },
@@ -217,13 +218,13 @@ router.put(
         // req.jobs_idが空の時に走る
         await prisma.users_jobs.deleteMany({
           where: {
-            users_id: body.user_id,
+            users_id: accessUserId,
           },
         });
       }
 
       const dbUrlObjects = await prisma.users_urls.findMany({
-        where: { users_id: body.user_id },
+        where: { users_id: accessUserId },
         select: {
           id: true,
           url_name: true,
@@ -256,7 +257,7 @@ router.put(
         await prisma.$transaction(async (prisma) => {
           await prisma.users_urls.createMany({
             data: uniqueReqUrls.map((uniqueReqUrl) => ({
-              users_id: body.user_id,
+              users_id: accessUserId,
               url_name: uniqueReqUrl.url_name,
               url: uniqueReqUrl.url,
             })),
@@ -272,7 +273,7 @@ router.put(
         // req.urlsが空の時に走る
         await prisma.users_urls.deleteMany({
           where: {
-            users_id: body.user_id,
+            users_id: accessUserId,
           },
         });
       }
