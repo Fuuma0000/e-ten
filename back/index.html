@@ -7,18 +7,29 @@
     </head>
 
     <body>
+        <h2>SitePassword</h2>
         <form id="sitePasswordForm">
             <label for="sitePassword">Site Password:</label>
             <input type="password" id="sitePassword" name="sitePassword" value="password"><br><br>
             <button type="submit">sitePassword</button><br><br>
         </form>
 
-        <form id="loginForm">
+        <h2>SignUp</h2>
+        <form id="signUpForm">
+            <label for="newEmail">New Email:</label>
+            <input type="text" id="newEmail" name="newEmail"><br><br>
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword"><br><br>
+            <button type="submit">SignUp</button>
+        </form>
+
+        <h2>SignIn</h2>
+        <form id="signInForm">
             <label for="email">Email:</label>
             <input type="text" id="email" name="email"><br><br>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password"><br><br>
-            <button type="submit">Login</button>
+            <button type="submit">SignIn</button>
         </form>
 
         <button id="profileButton">Get Profile</button>
@@ -50,8 +61,37 @@
                 }
             });
 
+            document.getElementById("signUpForm").addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(event.target);
+                const newEmail = formData.get("newEmail");
+                const newPassword = formData.get("newPassword");
+                const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+                try {
+                    // 新規ユーザーを作成するリクエストを送信する
+                    const signUpResponse = await fetch("http://localhost:8000/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-site-password-token": sitePasswordToken
+                        },
+                        body: JSON.stringify({
+                            email: newEmail,
+                            password: newPassword
+                        })
+                    });
+
+                    const signUpData = await signUpResponse.json();
+                    console.log("SignUp Response:", signUpData);
+                } catch (signUpError) {
+                    console.error("Error Signing Up:", signUpError);
+                }
+            });
+
             // ログイン情報を使ってアクセストークンを取得するリクエストを送信する
-            document.getElementById("loginForm").addEventListener("submit", async (event) => {
+            document.getElementById("signInForm").addEventListener("submit", async (event) => {
                 event.preventDefault();
 
                 const formData = new FormData(event.target);

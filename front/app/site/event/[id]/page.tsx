@@ -445,8 +445,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const headers = {
     "x-site-password-token": sitePasswordToken
   }
-  authClient.post("/signin", {
-    "x-site-password-token": sitePasswordToken,
-
-  }, )
+  authClient.post("/signin", {}, {
+    headers: headers
+  })
 }
