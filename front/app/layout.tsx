@@ -33,7 +33,7 @@ let theme = createTheme({
     },
     gray: {
       main: "#CECECE",
-      light: "#ECECEC",
+      light: "#F5F5F5",
       dark: "#A3A3A3",
     },
   },
