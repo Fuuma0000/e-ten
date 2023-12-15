@@ -1,4 +1,5 @@
 "use client";
+import { addSitePasswordHeader } from "@/lib/apiClient";
 import {
   Box,
   Button,
@@ -12,13 +13,22 @@ import {
 } from "@mui/material";
 
 export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get("email"),
       password: data.get("password"),
     });
+
+    // 登録処理
+    const axiosClient = addSitePasswordHeader();
+
+    await axiosClient.post("/sign-up", {
+      "e-mail": data.get("email"),
+      password: data.get("password")
+    });
+    // TODO:ステータスコードにより飛び先変更する
   };
 
   return (

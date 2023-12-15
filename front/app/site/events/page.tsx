@@ -7,8 +7,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { GetServerSideProps } from "next";
+import { addHeaderMiddleware } from "@/lib/apiClient";
 
-export default function Events() {
+export default function Events({ eventsData }: any) {
   return (
     <Box>
       <Box
@@ -191,4 +193,16 @@ export default function Events() {
       </Box>
     </Box>
   );
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const axiosClient = addHeaderMiddleware();
+
+  const eventsData = await axiosClient.get("/events");
+  
+  return {
+    props: {
+      eventsData: eventsData.data
+    }
+  }
 }

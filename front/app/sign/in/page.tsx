@@ -10,15 +10,24 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { addSitePasswordHeader } from "@/lib/apiClient";
 
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get("email"),
       password: data.get("password"),
     });
+
+    // ログイン処理
+    const axiosClient = addSitePasswordHeader();
+
+    await axiosClient.post("/sign-in", {
+      "e-mail": data.get("email"),
+      password: data.get("password")
+    })
   };
 
   return (
