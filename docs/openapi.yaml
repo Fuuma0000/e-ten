@@ -213,14 +213,6 @@ paths:
       responses:
         201:
           description: OK
-          # TODO: tokenの返却
-          # content:
-          #   application/json:
-          #     schema:
-          #       type: object
-          #       properties:
-          #         token:
-          #           type: string
         409:
           description: メールアドレスが既に登録されています
 
@@ -297,6 +289,23 @@ paths:
                 items:
                   $ref: "#/components/schemas/Event"
 
+  # イベントの詳細
+  /events/{id}:
+    get:
+      summary: イベントの詳細情報の取得
+      operationId: getEvent
+      tags: ["event"]
+      parameters:
+        - $ref: "#/components/parameters/event_id"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  # TODO: イベントに紐付く作品一覧の取得
   /event/{id}/works:
     get:
       summary: 作品一覧の取得
@@ -316,15 +325,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                # TODO: eventsの情報のオブジェクトとworksの情報のオブジェクトの配列
-                properties:
-                  event:
-                    $ref: "#/components/schemas/Event"
-                  works:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/WorkList"
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkList"
   /works/{id}:
     get:
       summary: 作品の詳細の取得
@@ -502,3 +505,7 @@ paths:
           description: deleted
         201:
           description: created
+# TODO: 作品検索の項目：技術
+
+# TODO: 学生検索の項目：志望職種
+
