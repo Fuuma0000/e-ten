@@ -289,7 +289,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Event"
 
-  # イベントの詳細
+  # TODO: イベントの詳細
   /events/{id}:
     get:
       summary: イベントの詳細情報の取得
@@ -402,6 +402,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserList"
+
+  # TODO: 技術一覧の取得
+  /events/technologies:
+    get:
+      tags: ["event"]
+      operationId: getAllTechnologies
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    technologies_id: { type: integer }
+                    technologies_name: { type: string }
+
+  # TODO:志望職種一蘭の取得
+  /events/jobs:
+    get:
+      tags: ["event"]
+      operationId: getAllJobs
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    jobs_id: { type: integer }
+                    jobs_name: { type: string }
+
   /profiles/{id}:
     get:
       summary: 学生情報の詳細
