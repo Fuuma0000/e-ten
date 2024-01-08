@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response, Router } from "express";
-const router: Router = Router();
-const crypto = require("crypto");
+// TODO: prismaclientのimportまとめる
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
+
+const router: Router = Router();
+const crypto = require("crypto");
+const prisma = new PrismaClient();
 
 // パスワードをハッシュ化する関数
 function hashPassword(password: string, salt: string): string {

@@ -33,7 +33,7 @@ router.get("/:id/works", async (req: Request, res: Response) => {
           name: true,
           catch_copy: true,
           works_data_images: {
-            // orderが一番若いのもを取得
+            // orderが一番若いものを取得
             orderBy: {
               order: "asc",
             },
