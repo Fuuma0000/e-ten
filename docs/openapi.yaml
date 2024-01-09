@@ -281,7 +281,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Event"
 
-  # TODO: イベントの詳細
+  # イベントの詳細
   /events/{id}:
     get:
       summary: イベントの詳細情報の取得

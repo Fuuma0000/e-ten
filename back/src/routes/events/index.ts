@@ -10,6 +10,17 @@ router.get("/", async (req: Request, res: Response) => {
   res.json(events);
 });
 
+// イベントの詳細情報の取得
+router.get("/:id", async (req: Request, res: Response) => {
+  const event = await prisma.events.findUnique({
+    where: {
+      id: Number(req.params.id),
+    },
+  });
+
+  return res.json(event);
+});
+
 // 作品一覧の取得
 router.get("/:id/works", async (req: Request, res: Response) => {
   // worksからevents_idが一致するものを検索
