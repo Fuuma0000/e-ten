@@ -105,7 +105,7 @@ components:
 
     Event:
       properties:
-        event_id:
+        id:
           type: integer
         name:
           type: string
@@ -263,14 +263,6 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: tokenの返却
-          # content:
-          #   application/json:
-          #     schema:
-          #       type: object
-          #       properties:
-          # token:
-          # type: string
 
         401:
           description: Client side error
@@ -305,8 +297,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/Event"
 
-  # TODO: イベントに紐付く作品一覧の取得
-  /event/{id}/works:
+  # イベントに紐付く作品一覧の取得
+  /events/{id}/works:
     get:
       summary: 作品一覧の取得
       operationId: getWorks
