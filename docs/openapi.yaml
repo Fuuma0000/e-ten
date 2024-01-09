@@ -281,7 +281,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Event"
 
-  # イベントの詳細
+  # イベントのみの詳細
   /events/{id}:
     get:
       summary: イベントの詳細情報の取得
@@ -413,7 +413,7 @@ paths:
                     technologies_id: { type: integer }
                     technologies_name: { type: string }
 
-  # TODO:志望職種一蘭の取得
+  # TODO:志望職種一覧の取得
   /events/jobs:
     get:
       tags: ["event"]
@@ -502,6 +502,30 @@ paths:
         200:
           description: OK
 
+  /myprofile:
+    # TODO:自分のプロフィール取得
+    get:
+      summary: 自分のプロフィール情報の取得
+      tags: ["profile"]
+      operationId: getMyProfile
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    # TODO: 自分のプロフィール編集
+    put:
+      summary: 自分のプロフィール情報の編集
+      tags: ["profile"]
+      operationId: updateMyProfile
+      responses:
+        200:
+          description: OK
+
+  # TODO: ブックマーク
   /bookmarks:
     get:
       summary: ブックマークの一覧取得
@@ -534,7 +558,3 @@ paths:
           description: deleted
         201:
           description: created
-# TODO: 作品検索の項目：技術
-
-# TODO: 学生検索の項目：志望職種
-
