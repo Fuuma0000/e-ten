@@ -1,3 +1,4 @@
+"use client"
 import {
   Box,
   Button,
@@ -72,9 +73,7 @@ export default function Index() {
         </Typography>
 
         <Typography
-          component="form"
-          action=""
-          method="POST"
+          component="div"
           sx={{
             width: { xs: "50%", md: "40%", lg: "30%", xl: "25%" },
           }}
@@ -91,8 +90,8 @@ export default function Index() {
           />
           <Button
             variant="contained"
-            href="./sign/up"
             disableElevation
+            onClick={test}
             sx={{
               backgroundColor: "#FFF",
               color: "#898989",
@@ -121,4 +120,8 @@ export default function Index() {
       </Stack>
     </Typography>
   );
+}
+
+function test () {
+  console.log("aa")
 }
