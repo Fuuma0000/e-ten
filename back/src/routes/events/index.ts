@@ -14,19 +14,9 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/:id/works", async (req: Request, res: Response) => {
   // worksからevents_idが一致するものを検索
   // works_dataのidとworksのlatest_reviewed_idが一致 -> 取得
-  const works = await prisma.works.findFirst({
+  const works = await prisma.works.findMany({
     where: { events_id: Number(req.params.id) },
     select: {
-      events: {
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          icon_url: true,
-          start_at: true,
-          end_at: true,
-        },
-      },
       works_data_works_latest_reviewed_idToworks_data: {
         select: {
           id: true,
