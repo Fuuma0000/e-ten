@@ -410,8 +410,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    technologies_id: { type: integer }
-                    technologies_name: { type: string }
+                    id: { type: integer }
+                    name: { type: string }
 
   # TODO:志望職種一覧の取得
   /events/jobs:
@@ -428,8 +428,8 @@ paths:
                 items:
                   type: object
                   properties:
-                    jobs_id: { type: integer }
-                    jobs_name: { type: string }
+                    id: { type: integer }
+                    name: { type: string }
 
   /profiles/{id}:
     get:
