@@ -46,10 +46,10 @@ export default function User({ params }: { params: { id: string } }) {
           <Stack
             sx={{
               width: "100%",
-              flexDirection: { md: "row" },
+              flexDirection: { lg: "row" },
               alignItems: "center",
               justifyContent: "center",
-              gap: { xs: "24px", md: "104px" },
+              gap: { xs: "24px", md: "32px" },
             }}
           >
             <Typography
@@ -62,7 +62,11 @@ export default function User({ params }: { params: { id: string } }) {
                 border: "8px solid",
               }}
             />
-            <Stack>
+            <Stack
+              sx={{
+                width: "100%"
+              }}
+            >
               <Typography
                 component={"h2"}
                 sx={{
@@ -195,7 +199,7 @@ export default function User({ params }: { params: { id: string } }) {
                   component={"a"}
                   href="https://mui.com/material-ui/api/button/"
                   sx={{
-                    fontSize: { xs: "h6.fontSize", md: "h5.fontSize" }
+                    fontSize: { xs: "p.fontSize", md: "h6.fontSize" }
                   }}
                 >
                   X
