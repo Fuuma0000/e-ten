@@ -19,16 +19,16 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import React from "react";
 import { GetServerSideProps } from "next";
-import { authClient } from "@/lib/apiClient";
+import { addHeaderMiddleware } from "@/lib/apiClient";
 
-export default function Event({ params }: { params: { id: string } }) {
+export default function Event({ eventsData, usersData }: any) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  return (
+  return ( 
     <Box>
       <Stack
         sx={{
@@ -438,15 +438,18 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   // 認証部分
-//   const sitePasswordToken: string = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-//   const accessToken: string = document.cookie.replace(/(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-//   const headers = {
-//     "x-site-password-token": sitePasswordToken,
-//     "Authorization": accessToken
-//   }
-//   authClient.post("/events/", {}, {
-//     headers: headers
-//   })
-// }
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+
+  const axiosClient = addHeaderMiddleware();
+
+  const eventsData = await axiosClient.get(`/events/${id}/works`);
+  const profilesData = await axiosClient.get(`/events/${id}/students`);
+  // TODO:技術一覧のエンドポイントからデータを取得する
+  return {
+    props: {
+      eventsData: eventsData.data,
+      usersData: profilesData.data
+    }
+  }
+}

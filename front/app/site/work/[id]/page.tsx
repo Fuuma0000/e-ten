@@ -18,8 +18,12 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { GetServerSideProps } from "next";
+import { addHeaderMiddleware } from "@/lib/apiClient";
+;
 
-export default function Event({ params }: { params: { id: string } }) {
+// 認証を一貫して通せないとデータが取得出来ずにエラーによりコンポーネントが描画されなくなってしまうのでpropsに渡した状態で留めています
+export default function Event({ detailWorkData }: any) {
   return (
     <Box>
       <Stack
@@ -306,4 +310,19 @@ export default function Event({ params }: { params: { id: string } }) {
       </Stack>
     </Box>
   );
+}
+
+
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  
+  const axiosClient = addHeaderMiddleware();
+
+  const detailWorkData = await axiosClient.get(`/works/${id}`);
+  return {
+    props: {
+      detailWorkData: detailWorkData.data
+    }
+  }
 }
