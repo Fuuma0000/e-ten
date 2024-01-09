@@ -41,6 +41,7 @@
 
                 const formData = new FormData(event.target);
                 const sitePassword = formData.get("sitePassword");
+                console.log(sitePassword);
 
                 try {
                     const response = await fetch("http://localhost:8000/site-password", {
