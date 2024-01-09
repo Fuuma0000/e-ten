@@ -141,7 +141,11 @@ export default function User({ params }: { params: { id: string } }) {
               </Stack>
             </Stack>
           </Stack>
-          <Stack>
+          <Stack
+            sx={{
+              width: "100%"
+            }}
+          >
             <Typography
               component={"h3"}
               sx={{
@@ -160,6 +164,43 @@ export default function User({ params }: { params: { id: string } }) {
               }}
             >
               私はリーダーシップを発揮できる人材です。学生時代にサークル長として運営に携わった際に、リーダーシップを養うことができました。サークル長を務めていたフットボールサークルでは、練習場所や時間が取れないことや、連携を取り切れていないことが問題でした。そこで、大学生側に掛け合い週に2回の練習場所を確保し、時間を決め活動するようにメンバーに声掛けを行いました。さらに週末明けに今週の活動の詳細をメンバーに配信することで連携強化に努めた結果、サークル加入率を前年度の3倍まで伸ばすことができました。問題にしっかりと焦点を当て、迅速に対応していき、周りを良い意味で巻き込んでいくリーダーシップを御社でも活かしていきたいと考えております
+            </Typography>
+          </Stack>
+          <Stack
+            sx={{
+              width: "100%"
+            }}
+          >
+            <Typography
+              component={"h3"}
+              sx={{
+                fontSize: { xs: "h5.fontSize", md: "h4.fontSize" },
+                borderBottom: "4px solid",
+              }}
+            >
+              リンク集
+            </Typography>
+            <Typography
+              component={"ul"}
+              sx={{
+                padding: "8px 16px",
+                fontSize: { xs: "p.fontSize", md: "h5.fontSize" },
+                lineHeight: "2.5rem",
+              }}
+            >
+              <Typography
+                component={"li"}
+              >
+                <Typography
+                  component={"a"}
+                  href="https://mui.com/material-ui/api/button/"
+                  sx={{
+                    fontSize: { xs: "h6.fontSize", md: "h5.fontSize" }
+                  }}
+                >
+                  X
+                </Typography>
+              </Typography>
             </Typography>
           </Stack>
         </Stack>
