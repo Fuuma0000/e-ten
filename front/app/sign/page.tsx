@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Divider,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 
 export default function Index() {
   return (
@@ -71,24 +64,58 @@ export default function Index() {
           サイト名
         </Typography>
 
-        <Typography
-          component="form"
-          action=""
-          method="POST"
+        <Stack
           sx={{
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "4px",
             width: { xs: "50%", md: "40%", lg: "30%", xl: "25%" },
           }}
         >
-          <TextField
-            id="outlined-password-input"
-            label="SitePassword"
-            type="password"
-            autoComplete="current-password"
+          <Button
+            variant="contained"
+            href="./sign/in"
+            disableElevation
             sx={{
+              backgroundColor: "#FFF",
+              color: "#898989",
+              border: "4px solid #CBCBCB",
               width: "100%",
-              marginBottom: "8px",
+              paddingY: "8px",
+              fontSize: { xs: "1.5rem", md: "1.7rem" },
+              fontWeight: "bold",
+              ":hover": {
+                backgroundColor: "secondary.main",
+                color: "#FFF",
+                border: "4px solid",
+                borderColor: "secondary.light",
+              },
+              ":active": {
+                backgroundColor: "secondary.main",
+                color: "#FFF",
+                border: "4px solid",
+                borderColor: "secondary.light",
+              },
             }}
-          />
+          >
+            Sign In
+          </Button>
+
+          <Typography
+            component="p"
+            sx={{
+              fontSize: {
+                xs: "h6.fontSize",
+                md: "h5.fontSize",
+                lg: "h4.fontSize",
+              },
+              fontWeight: "bold",
+              color: "primary.light",
+            }}
+          >
+            OR
+          </Typography>
+
           <Button
             variant="contained"
             href="./sign/up"
@@ -115,9 +142,9 @@ export default function Index() {
               },
             }}
           >
-            Sign
+            Sign Up
           </Button>
-        </Typography>
+        </Stack>
       </Stack>
     </Typography>
   );
