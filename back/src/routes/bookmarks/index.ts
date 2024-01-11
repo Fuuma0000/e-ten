@@ -7,8 +7,7 @@ const prisma = new PrismaClient();
 
 // ブックマークの取得
 router.get("/", async (req: Request, res: Response) => {
-  // TODO: ユーザーIDを取得する
-  const users_id = 1;
+  const users_id = Number(req.user);
 
   const bookmark = await prisma.bookmarks.findMany({
     where: { users_id: users_id },
@@ -62,8 +61,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 // ブックマークの追加・削除
 router.post("/:id", async (req: Request, res: Response) => {
-  // TODO: ユーザーIDを取得する
-  const users_id = 1;
+  const users_id = Number(req.user);
   const works_id = Number(req.params.id);
 
   const bookmark = await prisma.bookmarks.findFirst({

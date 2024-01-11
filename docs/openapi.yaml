@@ -105,7 +105,7 @@ components:
 
     Event:
       properties:
-        event_id:
+        id:
           type: integer
         name:
           type: string
@@ -213,14 +213,6 @@ paths:
       responses:
         201:
           description: OK
-          # TODO: tokenの返却
-          # content:
-          #   application/json:
-          #     schema:
-          #       type: object
-          #       properties:
-          #         token:
-          #           type: string
         409:
           description: メールアドレスが既に登録されています
 
@@ -271,14 +263,6 @@ paths:
       responses:
         200:
           description: OK
-          # TODO: tokenの返却
-          # content:
-          #   application/json:
-          #     schema:
-          #       type: object
-          #       properties:
-          # token:
-          # type: string
 
         401:
           description: Client side error
@@ -297,7 +281,24 @@ paths:
                 items:
                   $ref: "#/components/schemas/Event"
 
-  /event/{id}/works:
+  # イベントのみの詳細
+  /events/{id}:
+    get:
+      summary: イベントの詳細情報の取得
+      operationId: getEvent
+      tags: ["event"]
+      parameters:
+        - $ref: "#/components/parameters/event_id"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  # イベントに紐付く作品一覧の取得
+  /events/{id}/works:
     get:
       summary: 作品一覧の取得
       operationId: getWorks
@@ -316,15 +317,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                # TODO: eventsの情報のオブジェクトとworksの情報のオブジェクトの配列
-                properties:
-                  event:
-                    $ref: "#/components/schemas/Event"
-                  works:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/WorkList"
+                type: array
+                items:
+                  $ref: "#/components/schemas/WorkList"
   /works/{id}:
     get:
       summary: 作品の詳細の取得
@@ -399,6 +394,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/UserList"
+
+  # 技術一覧の取得
+  /events/technologies:
+    get:
+      tags: ["event"]
+      operationId: getAllTechnologies
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    name: { type: string }
+
+  # 志望職種一覧の取得
+  /events/jobs:
+    get:
+      tags: ["event"]
+      operationId: getAllJobs
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer }
+                    name: { type: string }
+
   /profiles/{id}:
     get:
       summary: 学生情報の詳細
@@ -470,6 +502,30 @@ paths:
         200:
           description: OK
 
+  /myprofile:
+    # 自分のプロフィール取得
+    get:
+      summary: 自分のプロフィール情報の取得
+      tags: ["profile"]
+      operationId: getMyProfile
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    # TODO: 自分のプロフィール編集
+    put:
+      summary: 自分のプロフィール情報の編集
+      tags: ["profile"]
+      operationId: updateMyProfile
+      responses:
+        200:
+          description: OK
+
+  # TODO: ブックマーク
   /bookmarks:
     get:
       summary: ブックマークの一覧取得

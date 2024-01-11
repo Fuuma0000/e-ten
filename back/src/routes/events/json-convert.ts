@@ -13,35 +13,24 @@ const convertUsersData = (input: inputUsersJson) => {
 };
 
 // TODO: 型を定義する
-const convertWorksData = (input: any) => {
-  const returnJson = {
-    events: {
-      event_id: input?.events.id,
-      name: input?.events.name,
-      description: input?.events.description,
-      start_at: input?.events.start_at,
-      end_at: input?.events.end_at,
-    },
-    works: {
-      works_id: input?.works_data_works_latest_reviewed_idToworks_data?.id,
-      name: input?.works_data_works_latest_reviewed_idToworks_data?.name,
-      // TODO: 画像
-      icon_url:
-        input?.works_data_works_latest_reviewed_idToworks_data
-          ?.works_data_images[0]?.url,
-      catch_copy:
-        input?.works_data_works_latest_reviewed_idToworks_data?.catch_copy,
-      genres:
-        input?.works_data_works_latest_reviewed_idToworks_data?.works_data_genres.map(
-          (genre: { genres: { name: any } }) => genre.genres.name
-        ),
-      technologies:
-        input?.works_data_works_latest_reviewed_idToworks_data?.works_data_technologies.map(
-          (technology: { technologies: { name: any } }) =>
-            technology.technologies.name
-        ),
-    },
-  };
+const convertWorksData = (input: any[]) => {
+  const returnJson = input.map((work_data) => {
+    const work_data_ref =
+      work_data.works_data_works_latest_reviewed_idToworks_data;
+    return {
+      work_id: work_data_ref?.id,
+      name: work_data_ref?.name,
+      icon_url: work_data_ref?.works_data_images[0]?.url,
+      catch_copy: work_data_ref?.catch_copy,
+      genres: work_data_ref?.works_data_genres.map(
+        (genre: { genres: { name: any } }) => genre.genres.name
+      ),
+      technologies: work_data_ref?.works_data_technologies.map(
+        (technology: { technologies: { name: any } }) =>
+          technology.technologies.name
+      ),
+    };
+  });
 
   return returnJson;
 };
