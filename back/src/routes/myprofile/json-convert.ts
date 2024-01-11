@@ -1,4 +1,7 @@
-import { inputMyprofileJson, returnMyprofileJson } from "./json-convert-type";
+import {
+  inputMyprofileJson,
+  returnMyprofileJson,
+} from "./types/json-convert-type";
 
 const convertMyprofileData = (input: inputMyprofileJson) => {
   const jobs = input.users_jobs.map((myJob) => myJob.jobs.name);
