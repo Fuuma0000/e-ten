@@ -395,7 +395,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/UserList"
 
-  # TODO: 技術一覧の取得
+  # 技術一覧の取得
   /events/technologies:
     get:
       tags: ["event"]
@@ -413,7 +413,7 @@ paths:
                     id: { type: integer }
                     name: { type: string }
 
-  # TODO:志望職種一覧の取得
+  # 志望職種一覧の取得
   /events/jobs:
     get:
       tags: ["event"]
@@ -503,7 +503,7 @@ paths:
           description: OK
 
   /myprofile:
-    # TODO:自分のプロフィール取得
+    # 自分のプロフィール取得
     get:
       summary: 自分のプロフィール情報の取得
       tags: ["profile"]
