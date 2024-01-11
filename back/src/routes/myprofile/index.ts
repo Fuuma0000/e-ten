@@ -145,9 +145,7 @@ router.put(
       return res.status(422).json({ errors: errors.array() });
     }
 
-    // TODO:
-    // const accessUserId = req.user as number;
-    const accessUserId = 1;
+    const accessUserId = req.user as number;
     const body: RequestBody = req.body;
 
     try {
