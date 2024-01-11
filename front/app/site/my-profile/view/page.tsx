@@ -18,10 +18,24 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import SettingsIcon from "@mui/icons-material/Settings";
+import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 
 export default function MyProfileView() {
   return (
     <Box>
+      <Typography component={"a"} href="./set">
+        <BuildCircleIcon
+          sx={{
+            width: { xs: "58px", sm: "80px", md: "100px" },
+            height: { xs: "58px", sm: "80px", md: "100px" },
+            color: "gray.dark",
+            position: "fixed",
+            bottom: { xs: "16px", md: "24px" },
+            right: { xs: "8px", md: "24px" },
+          }}
+        />
+      </Typography>
       <Stack
         sx={{
           width: "90vw",
@@ -64,7 +78,7 @@ export default function MyProfileView() {
             />
             <Stack
               sx={{
-                width: "100%"
+                width: "100%",
               }}
             >
               <Typography
@@ -99,7 +113,7 @@ export default function MyProfileView() {
                 </Typography>
                 <Stack
                   sx={{
-                    marginY: "8px"
+                    marginY: "8px",
                   }}
                 >
                   <Typography
@@ -147,7 +161,7 @@ export default function MyProfileView() {
           </Stack>
           <Stack
             sx={{
-              width: "100%"
+              width: "100%",
             }}
           >
             <Typography
@@ -172,7 +186,7 @@ export default function MyProfileView() {
           </Stack>
           <Stack
             sx={{
-              width: "100%"
+              width: "100%",
             }}
           >
             <Typography
@@ -192,14 +206,12 @@ export default function MyProfileView() {
                 lineHeight: "2.5rem",
               }}
             >
-              <Typography
-                component={"li"}
-              >
+              <Typography component={"li"}>
                 <Typography
                   component={"a"}
                   href="https://mui.com/material-ui/api/button/"
                   sx={{
-                    fontSize: { xs: "p.fontSize", md: "h6.fontSize" }
+                    fontSize: { xs: "p.fontSize", md: "h6.fontSize" },
                   }}
                 >
                   X
