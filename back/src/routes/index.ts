@@ -6,6 +6,7 @@ const prisma = new PrismaClient();
 import nodemailer from "nodemailer";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
+import { body } from "express-validator";
 
 // パスワードをハッシュ化する関数
 function hashPassword(password: string, salt: string): string {
@@ -155,6 +156,12 @@ router.get("/", function (req: Request, res: Response, next: NextFunction) {
 // ユーザの仮登録を行う
 router.post(
   "/signup",
+  [
+    body("email").isEmail().withMessage("メールアドレスの形式が不正です"),
+    body("password")
+      .isString()
+      .withMessage("パスワードは文字列である必要があります"),
+  ],
   authenticateSitePassword,
   async (req: Request, res: Response) => {
     try {
@@ -211,44 +218,59 @@ router.post(
 );
 
 // ユーザの本登録を行う
-router.get("/verify", async (req: Request, res: Response) => {
-  try {
-    const email: string = req.query.email as string;
-    const token: string = req.query.token as string;
+router.get(
+  "/verify",
+  [
+    body("email").isEmail().withMessage("メールアドレスの形式が不正です"),
+    body("token")
+      .isString()
+      .withMessage("トークンは文字列である必要があります"),
+  ],
+  async (req: Request, res: Response) => {
+    try {
+      const email: string = req.query.email as string;
+      const token: string = req.query.token as string;
 
-    const { data: temporaryUser } = await findTemporaryUser(email);
-    if (!temporaryUser) {
-      return res.status(400).json({ message: "仮登録がされていません" });
+      const { data: temporaryUser } = await findTemporaryUser(email);
+      if (!temporaryUser) {
+        return res.status(400).json({ message: "仮登録がされていません" });
+      }
+
+      const now = new Date();
+      if (now > temporaryUser.expired_at) {
+        return res
+          .status(400)
+          .json({ message: "トークンの有効期限が切れています" });
+      }
+
+      if (temporaryUser.token !== token) {
+        return res.status(400).json({ message: "トークンが一致しません" });
+      }
+
+      await registerUser(
+        email,
+        temporaryUser.hashed_password,
+        temporaryUser.salt
+      );
+
+      res.json("本登録が完了しました");
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "サーバーエラーが発生しました" });
+    } finally {
+      await prisma.$disconnect();
     }
-
-    const now = new Date();
-    if (now > temporaryUser.expired_at) {
-      return res
-        .status(400)
-        .json({ message: "トークンの有効期限が切れています" });
-    }
-
-    if (temporaryUser.token !== token) {
-      return res.status(400).json({ message: "トークンが一致しません" });
-    }
-
-    await registerUser(
-      email,
-      temporaryUser.hashed_password,
-      temporaryUser.salt
-    );
-
-    res.json("本登録が完了しました");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "サーバーエラーが発生しました" });
-  } finally {
-    await prisma.$disconnect();
   }
-});
+);
 
 router.post(
   "/signin",
+  [
+    body("email").isEmail().withMessage("メールアドレスの形式が不正です"),
+    body("password")
+      .isString()
+      .withMessage("パスワードは文字列である必要があります"),
+  ],
   authenticateSitePassword,
   async (req: Request, res: Response) => {
     try {
@@ -311,26 +333,34 @@ router.post(
   }
 );
 
-router.post("/site-password", async (req: Request, res: Response) => {
-  try {
-    const password = req.body.password;
+router.post(
+  "/site-password",
+  [
+    body("password")
+      .isString()
+      .withMessage("パスワードは文字列である必要があります"),
+  ],
+  async (req: Request, res: Response) => {
+    try {
+      const password = req.body.password;
 
-    if (password !== process.env.SITE_PASSWORD) {
-      return res.status(400).json({ message: "パスワードが間違っています" });
+      if (password !== process.env.SITE_PASSWORD) {
+        return res.status(400).json({ message: "パスワードが間違っています" });
+      }
+
+      const payload = { isSitePasswordKnown: true };
+      const secret = process.env.JWT_SECRET_SITE_PASSWORD as string;
+      const token = jwt.sign(payload, secret, {
+        expiresIn: "30d",
+      });
+      return res.json({ token: token });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "サーバーエラーが発生しました" });
+    } finally {
     }
-
-    const payload = { isSitePasswordKnown: true };
-    const secret = process.env.JWT_SECRET_SITE_PASSWORD as string;
-    const token = jwt.sign(payload, secret, {
-      expiresIn: "30d",
-    });
-    return res.json({ token: token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "サーバーエラーが発生しました" });
-  } finally {
   }
-});
+);
 
 router.post("/refresh", async (req: Request, res: Response) => {
   try {
