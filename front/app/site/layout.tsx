@@ -27,10 +27,10 @@ export default function SiteLayout({
             marginY: "auto",
             textAlign: "center",
             width: "25%",
-            fontSize: "1.2rem",
+            fontSize: { xs: "h5.fontSize", md: "h3.fontSize" },
           }}
         >
-          サイト名
+          E++
         </Typography>
         <Stack
           direction={"row"}
