@@ -14,7 +14,7 @@ const addHeaderMiddleware = () => {
       headers: {
         "Content-Type": "application/json",
         "x-site-password-token": sitePasswordToken,
-        "Authorization": accessToken
+        "Authorization": `Bearer ${accessToken}`
       }
     });
 }
@@ -30,4 +30,26 @@ const addSitePasswordHeader = () => {
     }
   })
 }
-export { addHeaderMiddleware, addSitePasswordHeader }
+
+const sendSitePassword = async (sitePassword: String) => {
+  try {
+    const response = await axios.post(`${EXPRESS_URL}/site-password`, {
+      password: sitePassword
+    });
+    console.log(response);
+    console.log(response.data.token);
+    return {
+      errorFlag: false, 
+      token: response.data.token
+    };
+  } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+      console.log(e.response.data.message);
+      return {
+        errorFlag: true,
+        message: e.response.data.message
+    }
+    }
+  }
+}
+export { addHeaderMiddleware, addSitePasswordHeader, sendSitePassword }

@@ -11,11 +11,19 @@ import {
   Typography,
 } from "@mui/material";
 import { addSitePasswordHeader } from "@/lib/apiClient";
+import axios from "axios";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignIn() {
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    // TODO:後で消す
     console.log({
       email: data.get("email"),
       password: data.get("password"),
@@ -24,10 +32,26 @@ export default function SignIn() {
     // ログイン処理
     const axiosClient = addSitePasswordHeader();
 
-    await axiosClient.post("/sign-in", {
-      "e-mail": data.get("email"),
-      password: data.get("password")
-    })
+    try {
+      const loginResponse = await axiosClient.post("/signin", {
+        email: data.get("email"),
+        password: data.get("password")
+      });
+
+      // トークン保持
+      document.cookie = `x-login-token=${loginResponse.data.accessToken}`;
+      document.cookie = `x-refresh-token=${loginResponse.data.refreshToken}`;
+
+      // TODO:リフレッシュトークン切れてたときみたいなやつまだやってないから後でやる
+
+      router.push("/site/events");
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        // TODO:後で消す
+        console.log(e.response.data);
+        setErrorMessage(e.response.data);
+      }
+    }
   };
 
   return (

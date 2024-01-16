@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import {
   Autocomplete,
   Box,
@@ -17,12 +17,54 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import React from "react";
-import { GetServerSideProps } from "next";
+import React, { useEffect, useState } from "react";
 import { addHeaderMiddleware } from "@/lib/apiClient";
+import { useParams } from "next/navigation";
+import axios from "axios";
 
-export default function Event({ eventsData, usersData }: any) {
+export default function Event() {
   const [value, setValue] = React.useState(0);
+  const [eventsData, setEventsData] = useState();
+  const [profilesData, setProfilesData] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  const params = useParams();
+
+  // TODO:ダイナミックルーティングの値を取得する
+  // それ使ってレスポンスを受け取る
+  // stateに詰めて描画に使う
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      const dynamicRoutingId = params.id;
+      const axiosClient = addHeaderMiddleware();
+
+      // TODO:レスポンスによって飛び先変える
+      // TODO:ページ遷移時にログイントークンとリフレッシュトークンを引き継げてないのを福留にきく
+
+      try {
+        const eventsResponse = await axiosClient.get(`/events/${dynamicRoutingId}/works`);
+        const profilesResponse = await axiosClient.get(`/events/${dynamicRoutingId}/students`);
+
+        // TODO:確認したら消す
+        console.log("=----------------------------");
+        console.log(eventsResponse);
+        console.log("-------------------------------------------");
+        console.log(profilesResponse);
+        console.log("---------------------------------------------");
+
+        setEventsData(eventsResponse.data);
+        setProfilesData(profilesResponse.data);
+
+      } catch (e) {
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }
+    }
+
+    asyncWrapper();
+  }, []);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -438,18 +480,18 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.query;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const { id } = context.query;
 
-  const axiosClient = addHeaderMiddleware();
+//   const axiosClient = addHeaderMiddleware();
 
-  const eventsData = await axiosClient.get(`/events/${id}/works`);
-  const profilesData = await axiosClient.get(`/events/${id}/students`);
-  // TODO:技術一覧のエンドポイントからデータを取得する
-  return {
-    props: {
-      eventsData: eventsData.data,
-      usersData: profilesData.data
-    }
-  }
-}
+//   const eventsData = await axiosClient.get(`/events/${id}/works`);
+//   const profilesData = await axiosClient.get(`/events/${id}/students`);
+//   // TODO:技術一覧のエンドポイントからデータを取得する
+//   return {
+//     props: {
+//       eventsData: eventsData.data,
+//       usersData: profilesData.data
+//     }
+//   }
+// }

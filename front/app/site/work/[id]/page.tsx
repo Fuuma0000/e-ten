@@ -20,10 +20,43 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { GetServerSideProps } from "next";
 import { addHeaderMiddleware } from "@/lib/apiClient";
-;
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 // 認証を一貫して通せないとデータが取得出来ずにエラーによりコンポーネントが描画されなくなってしまうのでpropsに渡した状態で留めています
-export default function Event({ detailWorkData }: any) {
+export default function Event() {
+  const [detailWorksData, setDetailWorksData] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  const params = useParams();
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      const dynamicRoutingId = params.id;
+      const axiosClient = addHeaderMiddleware();
+  
+      try {
+        const response = await axiosClient.get(`/works/${dynamicRoutingId}`); 
+
+        // TODO:確認したら消す
+        console.log("----------------------");
+        console.log(response.data);
+        console.log("----------------------");
+
+        setDetailWorksData(response.data);
+      } catch (e) {
+        // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }
+    }
+
+    asyncWrapper();
+  }, []);
+
   return (
     <Box>
       <Stack
@@ -314,15 +347,15 @@ export default function Event({ detailWorkData }: any) {
 
 
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.query;
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const { id } = context.query;
   
-  const axiosClient = addHeaderMiddleware();
+//   const axiosClient = addHeaderMiddleware();
 
-  const detailWorkData = await axiosClient.get(`/works/${id}`);
-  return {
-    props: {
-      detailWorkData: detailWorkData.data
-    }
-  }
-}
+//   const detailWorkData = await axiosClient.get(`/works/${id}`);
+//   return {
+//     props: {
+//       detailWorkData: detailWorkData.data
+//     }
+//   }
+// }

@@ -11,11 +11,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import axios from "axios";
+import { useState } from "react";
 
 export default function SignUp() {
+  // errorMessageに返ってきたエラーメッセージを詰めてます.使ってください
+  const [errorMessage, setErrorMessage] = useState("");
+  // 登録が成功した時に返ってくるメッセージが詰まっています.使ってください
+  const [registSuccessMessage, setRegistSuccessMessage] = useState("");
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
+    // TODO:後で消す
     console.log({
       email: data.get("email"),
       password: data.get("password"),
@@ -24,11 +33,21 @@ export default function SignUp() {
     // 登録処理
     const axiosClient = addSitePasswordHeader();
 
-    await axiosClient.post("/sign-up", {
-      "e-mail": data.get("email"),
-      password: data.get("password")
-    });
+    try {
+      const response = await axiosClient.post("/signup", {
+        email: data.get("email"),
+        password: data.get("password")
+      });
+
     // TODO:ステータスコードにより飛び先変更する
+      console.log(response.data);
+      setRegistSuccessMessage(response.data);
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        setErrorMessage(e.response.data);
+        console.log(e.response.data);
+      }
+    }
   };
 
   return (
@@ -64,6 +83,7 @@ export default function SignUp() {
           name="email"
           autoComplete="email"
           autoFocus
+
         />
         <TextField
           margin="normal"

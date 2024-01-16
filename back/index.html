@@ -119,6 +119,7 @@
                     });
 
                     const loginData = await loginResponse.json();
+                    console.log(loginData);
                     // クッキーにトークンを保存する
                     // TODO: secure属性, httpOnly属性を追加する
                     document.cookie = `x-login-token=${loginData.accessToken}`;

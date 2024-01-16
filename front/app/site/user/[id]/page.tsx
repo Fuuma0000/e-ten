@@ -18,8 +18,43 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { addHeaderMiddleware } from "@/lib/apiClient";
+import axios from "axios";
 
-export default function User({ params }: { params: { id: string } }) {
+export default function User() {
+  const [detailProfileData, setDetailProfileData] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  const params = useParams();
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      const dynamicRoutingId = params.id;
+      const axiosClient = addHeaderMiddleware();
+      
+      try {
+        const response = await axiosClient.get(`/profiles/${dynamicRoutingId}`);
+        
+        // TODO:確認したら消す
+        console.log("-------------------------------");
+        console.log(response.data);
+        console.log("-------------------------------");
+        
+        setDetailProfileData(response.data);
+      } catch (e) {
+        // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }
+    }
+
+    asyncWrapper();
+  }, []);
+
   return (
     <Box>
       <Stack
