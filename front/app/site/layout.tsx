@@ -61,14 +61,24 @@ export default function SiteLayout({
             },
           }}
         >
-          <BookmarkIcon
+          <Typography
+            component={"a"}
+            href="/site/bookmark"
             sx={{
+              display: "inline-block",
               height: "64px",
               width: "64px",
-              color: "#fff",
-              marginX: "8px",
+              marginX: "8px"
             }}
-          />
+          >
+            <BookmarkIcon
+              sx={{
+                height: "100%",
+                width: "100%",
+                color: "#fff",
+              }}
+            />
+          </Typography>
           <Typography
             component={"a"}
             href="/site/my-profile/view"
