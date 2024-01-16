@@ -1,6 +1,6 @@
 import { AppBar, Box, Stack, Toolbar, Typography } from "@mui/material";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 
 export default function SiteLayout({
   children,
@@ -27,10 +27,10 @@ export default function SiteLayout({
             marginY: "auto",
             textAlign: "center",
             width: "25%",
-            fontSize: "1.2rem",
+            fontSize: { xs: "h5.fontSize", md: "h3.fontSize" },
           }}
         >
-          サイト名
+          E++
         </Typography>
         <Stack
           direction={"row"}
@@ -46,7 +46,7 @@ export default function SiteLayout({
             borderBottom: "10px solid",
             borderLeft: "10px solid",
             borderColor: "tertiary.main",
-            "::before": {
+            "::after": {
               content: "''",
               position: "absolute",
               top: 0,
@@ -57,6 +57,7 @@ export default function SiteLayout({
               borderBottom: "10px solid",
               borderLeft: "10px solid",
               borderColor: "secondary.main",
+              zIndex: "-1",
             },
           }}
         >
@@ -68,14 +69,24 @@ export default function SiteLayout({
               marginX: "8px",
             }}
           />
-          <AccountCircleIcon
+          <Typography
+            component={"a"}
+            href="/site/my-profile/view"
             sx={{
+              display: "inline-block",
               height: "64px",
               width: "64px",
-              color: "#fff",
-              marginX: "8px",
+              marginX: "8px"
             }}
-          />
+          >
+            <AccountCircleIcon
+              sx={{
+                height: "100%",
+                width: "100%",
+                color: "#fff",
+              }}
+            />
+          </Typography>
         </Stack>
       </Stack>
       <Box
@@ -92,33 +103,31 @@ export default function SiteLayout({
         }}
       >
         <Typography
-         component={"div"}
-         sx={{
-          height: "50px",
-          width: "33%",
-          backgroundColor: "secondary.main",
-          borderRadius: " 0px 75px 75px 0px",
-         }}
+          component={"div"}
+          sx={{
+            height: "50px",
+            width: "33%",
+            backgroundColor: "secondary.main",
+            borderRadius: " 0px 75px 75px 0px",
+          }}
         />
         <Typography
-         component={"div"}
-         sx={{
-          height: "50px",
-          width: "66%",
-          backgroundColor: "tertiary.main",
-          borderRadius: " 0px 75px 75px 0px",
-         }}
+          component={"div"}
+          sx={{
+            height: "50px",
+            width: "66%",
+            backgroundColor: "tertiary.main",
+            borderRadius: " 0px 75px 75px 0px",
+          }}
         />
         <Typography
-         component={"div"}
-         sx={{
-          height: "400px",
-          backgroundColor: "primary.light",
-          borderRadius: " 0px 75px 0px 0px",
-         }}
-        >
-
-        </Typography>
+          component={"div"}
+          sx={{
+            height: "400px",
+            backgroundColor: "primary.light",
+            borderRadius: " 0px 75px 0px 0px",
+          }}
+        ></Typography>
       </Stack>
     </Box>
   );
