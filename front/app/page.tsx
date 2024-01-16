@@ -7,8 +7,36 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
+import { sendSitePassword } from "@/lib/apiClient";
+import { useRouter } from "next/navigation";
 
 export default function Index() {
+  const [inputValue, setInputValue] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+  console.log(router);
+
+  const handleInputChange = (event: any) => {
+    setInputValue(event.target.value);
+  };
+
+  // エラーメッセージはerrorMessageに詰まっているのでそれを使ってください
+  const test = async () => {
+    const sitePasswordToSend = inputValue;
+    const response = await sendSitePassword(sitePasswordToSend);
+    if (response?.errorFlag === false) {
+      console.log("正当なリクエストが通った時に発火します。");
+      document.cookie = `x-site-password-token=${response.token}`;
+  
+      router.push("/sign/up");
+    } else {
+      console.log("正当なリクエストが通らなかった時に発火します。");
+      setErrorMessage(response.message);
+      setInputValue("");
+    }
+  }
+
   return (
     <Typography
       component="div"
@@ -87,6 +115,8 @@ export default function Index() {
               width: "100%",
               marginBottom: "8px",
             }}
+            value={inputValue}
+            onChange={handleInputChange}      
           />
           <Button
             variant="contained"
@@ -120,8 +150,4 @@ export default function Index() {
       </Stack>
     </Typography>
   );
-}
-
-function test () {
-  console.log("aa")
 }

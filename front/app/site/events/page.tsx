@@ -1,3 +1,4 @@
+"use client"
 import {
   Box,
   Card,
@@ -7,10 +8,38 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { GetServerSideProps } from "next";
 import { addHeaderMiddleware } from "@/lib/apiClient";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-export default function Events({ eventsData }: any) {
+export default function Events() {
+  const [eventData, setEventData] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      const axiosClient = addHeaderMiddleware();
+      
+      // TODO:レスポンスによって飛ばし先を変える
+      // TODO:現在の日時と終了日時・開始日時を比較して画面に描画する文字列を返す関数を記述する
+      // TODO:エラーの文言をステートに詰める必要あるか？.どうせログインページに飛ばすのに？.聞く
+
+      try {
+        const eventsResponse = await axiosClient.get("/events");
+        const eventsData = eventsResponse.data;
+        console.log(eventsData);
+        setEventData(eventData);
+      } catch (e) {
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }
+    }
+
+   asyncWrapper();
+  }, []);
+  
   return (
     <Box>
       <Box
@@ -195,14 +224,10 @@ export default function Events({ eventsData }: any) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const axiosClient = addHeaderMiddleware();
+// getServerSIdeProps使えないらしいので代替
+// export const getEventData = async () => {
+//   const axiosClient = addHeaderMiddleware();
+//   const eventsData = await axiosClient.get("/events");
 
-  const eventsData = await axiosClient.get("/events");
-  
-  return {
-    props: {
-      eventsData: eventsData.data
-    }
-  }
-}
+//   return eventsData.data;
+// }

@@ -161,6 +161,10 @@ router.post(
       const email: string = req.body.email;
       const password: string = req.body.password;
 
+      // TODO:後で消す
+      console.log(`email:${email}`);
+      console.log(`password:${password}`);
+
       // メールアドレスのバリデーション
       const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
       if (!emailRegex.test(email)) {
