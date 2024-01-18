@@ -2,11 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
-  const sitePasswordToken = req.headers["x-site-password-token"] as string;
+  const sitePasswordToken = req.cookies["x-site-password-token"] as string;
   if (!sitePasswordToken) {
     return res
       .status(401)
-      .json({ message: "サイトパスワードの認証が必要です" });
+      .json({ message: "サイトパスワードの認証が必要です2" });
   }
 
   const siteSecret = process.env.JWT_SECRET_SITE_PASSWORD as string;
@@ -18,13 +18,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
       .json({ message: "無効なサイトパスワードトークンです" });
   }
 
-  const authorizationHeader = req.headers.authorization;
-  if (!authorizationHeader) {
+  const accessToken = req.cookies["x-access-token"] as string;
+  if (!accessToken) {
     return res.status(401).json({ message: "アクセストークンが必要です" });
   }
 
-  // トークンが有効期限切れかどうかを検証する
-  const accessToken = authorizationHeader.split(" ")[1];
   const accessSecret = process.env.JWT_SECRET_SIGN_IN as string;
   try {
     const decoded = jwt.verify(accessToken, accessSecret) as JwtPayload;
@@ -52,7 +50,7 @@ export function authenticateSitePassword(
   res: Response,
   next: NextFunction
 ) {
-  const sitePasswordToken = req.headers["x-site-password-token"] as string;
+  const sitePasswordToken = req.cookies["x-site-password-token"] as string;
   if (!sitePasswordToken) {
     return res
       .status(401)
