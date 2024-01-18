@@ -312,7 +312,7 @@ router.post(
         accessTokenPayload,
         accessTokenSecret,
         {
-          expiresIn: "1m",
+          expiresIn: "1h",
         }
       );
 
@@ -329,7 +329,20 @@ router.post(
         }
       );
 
-      res.json({ accessToken: accessToken, refreshToken: refreshToken });
+      // res.json({ accessToken: accessToken, refreshToken: refreshToken });
+      res.cookie("accessToken", accessToken, {
+        maxAge: 3600000,
+        httpOnly: true,
+        secure: true,
+        path: "/",
+      });
+      res.cookie("refreshToken", refreshToken, {
+        maxAge: 2592000000,
+        httpOnly: true,
+        secure: true,
+        path: "/",
+      });
+      res.status(200).json({ message: "ログインに成功しました" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
@@ -359,7 +372,13 @@ router.post(
       const token = jwt.sign(payload, secret, {
         expiresIn: "30d",
       });
-      return res.json({ token: token });
+      // return res.json({ token: token });
+      return res.cookie("sitePasswordToken", token, {
+        maxAge: 2592000000,
+        httpOnly: true,
+        secure: true,
+        path: "/",
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
