@@ -57,6 +57,15 @@ CREATE TABLE `technologies` (
     PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `tools` (
+    `id` INT UNSIGNED AUTO_INCREMENT,
+    `name` VARCHAR(30) NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` DATETIME,
+    PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `jobs` (
     `id` INT UNSIGNED AUTO_INCREMENT,
     `name` VARCHAR(30) NOT NULL,
@@ -154,7 +163,7 @@ CREATE TABLE `works_data_genres` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at` DATETIME,
     FOREIGN KEY (`works_data_id`) REFERENCES works_data(`id`),
-    FOREIGN KEY (`genres_id`) REFERENCES genres(`id`)
+    FOREIGN KEY (`genres_id` ) REFERENCES genres(`id`)
 );
 
 CREATE TABLE `works_data_technologies` (
@@ -165,6 +174,16 @@ CREATE TABLE `works_data_technologies` (
     `deleted_at` DATETIME,
     FOREIGN KEY (`works_data_id`) REFERENCES works_data(`id`),
     FOREIGN KEY (`technologies_id`) REFERENCES technologies(`id`)
+);
+
+CREATE TABLE `works_data_tools` (
+    `works_data_id` INT UNSIGNED NOT NULL,
+    `tools_id` INT UNSIGNED NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `deleted_at` DATETIME,
+    FOREIGN KEY (`works_data_id`) REFERENCES works_data(`id`),
+    FOREIGN KEY (`tools_id`) REFERENCES tools(`id`)
 );
 
 CREATE TABLE `works_data_images` (

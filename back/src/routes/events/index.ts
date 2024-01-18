@@ -71,6 +71,7 @@ router.get("/:id?/works", authenticate, async (req: Request, res: Response) => {
             select: {
               genres: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -80,6 +81,7 @@ router.get("/:id?/works", authenticate, async (req: Request, res: Response) => {
             select: {
               technologies: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },

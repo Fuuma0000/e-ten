@@ -165,7 +165,7 @@ export default function MyProfileSet() {
               marginLeft: "8px",
             }}
           >
-            <InputLabel id="graduation_year-select-label">入学年次</InputLabel>
+            <InputLabel id="graduation_year-select-label">卒業年次</InputLabel>
             <Select
               labelId="graduation_year-select-label"
               id="graduation_year-select"

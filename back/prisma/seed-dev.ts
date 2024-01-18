@@ -16,8 +16,8 @@ async function main() {
   // 管理者ユーザー
   const user_01 = await prisma.users.create({
     data: {
-      username: "テストユーザー01",
-      email: "test01@mail.com",
+      username: "管理ユーザー01",
+      email: "admin01@mail.com",
       password:
         "0394a2ede332c9a13eb82e9b24631604c31df978b4e2f0fbd2c549944f9d79a536ceea9b92c6170cbbf0153ef33a4ff57321e17b7a5fadc33f7023ddd325da47",
       salt: "salt",
@@ -36,6 +36,82 @@ async function main() {
     },
   });
 
+  // 出展ユーザー
+  const exhibitor_users = [
+    {
+      username: "福留 正大",
+      email: "exhibitor02@email.com",
+      password: "",
+      salt: "",
+      courses_id: 1,
+      enrollment_year: 2022,
+      graduation_year: 2026,
+      is_job_hunt_completed: false,
+    },
+    {
+      username: "鎌野 陽向",
+      email: "exhibitor03@email.com",
+      password: "",
+      salt: "",
+      courses_id: 1,
+      enrollment_year: 2022,
+      graduation_year: 2026,
+      is_job_hunt_completed: false,
+    },
+    {
+      username: "篠原 晴哉",
+      email: "exhibitor04@email.com",
+      password: "",
+      salt: "",
+      courses_id: 1,
+      enrollment_year: 2022,
+      graduation_year: 2026,
+      is_job_hunt_completed: false,
+    },
+    {
+      username: "大西 琉斗",
+      email: "exhibitor05@email.com",
+      password: "",
+      salt: "",
+      courses_id: 1,
+      enrollment_year: 2022,
+      graduation_year: 2026,
+      is_job_hunt_completed: false,
+    },
+    {
+      username: "神 さくら",
+      email: "exhibitor06@email.com",
+      password: "",
+      salt: "",
+      courses_id: 1,
+      enrollment_year: 2022,
+      graduation_year: 2026,
+      is_job_hunt_completed: false,
+    },
+  ];
+
+  for (let i = 0; i < exhibitor_users.length; i++) {
+    await prisma.users.create({
+      data: {
+        username: exhibitor_users[i].username,
+        email: exhibitor_users[i].email,
+        password: exhibitor_users[i].password,
+        salt: exhibitor_users[i].salt,
+        courses_id: exhibitor_users[i].courses_id,
+        enrollment_year: exhibitor_users[i].enrollment_year,
+        graduation_year: exhibitor_users[i].graduation_year,
+        is_job_hunt_completed: exhibitor_users[i].is_job_hunt_completed,
+        icon_url: "",
+        event_users_roles: {
+          create: {
+            events_id: 1,
+            roles_id: 2,
+          },
+        },
+      },
+    });
+  }
+
   const work_01 = await prisma.works.create({
     data: {
       events_id: 1,
@@ -46,13 +122,15 @@ async function main() {
   const work_data_01 = await prisma.works_data.create({
     data: {
       works_id: 1,
-      name: "テスト作品01",
-      catch_copy: "テスト作品01のキャッチコピー",
-      description: "テスト作品01の説明",
+      name: "起床点結RTA",
+      catch_copy: "起床点結RTA	起きてタッチでRTA！ 家族とタイムを競い合おう！",
+      description:
+        "毎日2度寝をしてしまう、楽しい朝を迎えたい、そんなあなたに必見です！1日の始まりを、全力ダッシュで楽しみませんか？",
       works_url: "https://example.com",
       movie_url: "",
       system_diagram_url: "",
-      detail: "テスト作品01の概要",
+      detail:
+        "このアプリは、毎日起きるのが楽しみになるゲームアプリです。名前がついた5つのNFCタグを、家のさまざまなところに設置します。アラームが鳴ると、画面に表示された順にNFCタグをタッチしていき、最後のタグをタッチするとRTAが終了します。このアプリには同居家族との対戦機能があり、ランキングを更新するとポイントが付与されます。貯まったポイントでガチャを回し、入手した景品でアプリをカスタマイズすることも可能です。また、キャラクターがその日の天気を教えてくれます。サポーターズ主催の京都キャラバンハッカソンで優秀賞、渋谷で行われた技育キャンプアドバンスでは副大賞を受賞した作品です。楽しい朝を迎えたい人、二度寝をしてしまう人に、ぜひ使っていただけたらなと思います。",
       works_data_images: {
         createMany: {
           data: [
@@ -74,12 +152,16 @@ async function main() {
       },
       works_data_technologies: {
         createMany: {
-          data: [{ technologies_id: 1 }, { technologies_id: 2 }],
+          data: [
+            { technologies_id: 6 },
+            { technologies_id: 15 },
+            { technologies_id: 63 },
+          ],
         },
       },
       works_data_users: {
         createMany: {
-          data: [{ users_id: 1, role_explanation: "リーダー" }],
+          data: [{ users_id: 2, role_explanation: "リーダー" }],
         },
       },
     },
@@ -295,12 +377,12 @@ main()
   });
 
 //  切った関数の実行
-insertProfileSeedData()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+// insertProfileSeedData()
+//   .then(async () => {
+//     await prisma.$disconnect();
+//   })
+//   .catch(async (e) => {
+//     console.error(e);
+//     await prisma.$disconnect();
+//     process.exit(1);
+//   });

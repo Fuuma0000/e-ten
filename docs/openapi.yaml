@@ -350,7 +350,38 @@ paths:
           application/json:
             schema:
               type: object
-              $ref: "#/components/schemas/Work"
+              properties:
+                name:
+                  type: string
+                genres_id:
+                  type: array
+                  items:
+                    type: integer
+                technologies_id:
+                  type: array
+                  items:
+                    type: integer
+                catch_copy:
+                  type: string
+                description:
+                  type: string
+                images:
+                  type: array
+                  items:
+                    type: string
+                movie:
+                  type: string
+                works_url:
+                  type: string
+                users:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      user_id:
+                        type: integer
+                      role:
+                        type: string
       responses:
         201:
           description: OK

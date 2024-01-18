@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import {
   Autocomplete,
   Box,
@@ -8,7 +8,10 @@ import {
   CardMedia,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Tab,
   Tabs,
@@ -42,8 +45,12 @@ export default function Event() {
       // TODO:ページ遷移時にログイントークンとリフレッシュトークンを引き継げてないのを福留にきく
 
       try {
-        const eventsResponse = await axiosClient.get(`/events/${dynamicRoutingId}/works`);
-        const profilesResponse = await axiosClient.get(`/events/${dynamicRoutingId}/students`);
+        const eventsResponse = await axiosClient.get(
+          `/events/${dynamicRoutingId}/works`
+        );
+        const profilesResponse = await axiosClient.get(
+          `/events/${dynamicRoutingId}/students`
+        );
 
         // TODO:確認したら消す
         console.log("=----------------------------");
@@ -54,14 +61,13 @@ export default function Event() {
 
         setEventsData(eventsResponse.data);
         setProfilesData(profilesResponse.data);
-
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           console.log(e.response.data);
           setErrorMessage(e.response.data);
         }
       }
-    }
+    };
 
     asyncWrapper();
   }, []);
@@ -70,7 +76,7 @@ export default function Event() {
     setValue(newValue);
   };
 
-  return ( 
+  return (
     <Box>
       <Stack
         sx={{
@@ -173,7 +179,7 @@ export default function Event() {
               <Stack
                 sx={{
                   flexDirection: { md: "row" },
-                  width: "100%",
+                  width: "80%",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: { xs: "16px", md: "40px" },
@@ -193,7 +199,7 @@ export default function Event() {
                       placeholder="Favorites"
                     />
                   )}
-                  sx={{ width: { xs: "90%", md: "40%" } }}
+                  sx={{ width: "100%" }}
                 />
                 <Autocomplete
                   multiple
@@ -209,7 +215,7 @@ export default function Event() {
                       placeholder="Favorites"
                     />
                   )}
-                  sx={{ width: { xs: "90%", md: "40%" } }}
+                  sx={{ width: "100%" }}
                 />
               </Stack>
               <Button
@@ -316,47 +322,81 @@ export default function Event() {
                 gap: "16px",
               }}
             >
+              <Autocomplete
+                multiple
+                limitTags={2}
+                id="job"
+                options={top100Films}
+                getOptionLabel={(option) => option.title}
+                defaultValue={[]}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="希望職種"
+                    placeholder="Favorites"
+                  />
+                )}
+                sx={{ width: "80%" }}
+              />
               <Stack
                 sx={{
                   flexDirection: { md: "row" },
-                  width: "100%",
+                  width: "80%",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: { xs: "16px", md: "40px" },
                 }}
               >
-                <Autocomplete
-                  multiple
-                  limitTags={2}
-                  id="multiple-limit-tags"
-                  options={top100Films}
-                  getOptionLabel={(option) => option.title}
-                  defaultValue={[]}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="ジャンル"
-                      placeholder="Favorites"
-                    />
-                  )}
-                  sx={{ width: { xs: "90%", md: "40%" } }}
-                />
-                <Autocomplete
-                  multiple
-                  limitTags={2}
-                  id="multiple-limit-tags"
-                  options={top100Films}
-                  getOptionLabel={(option) => option.title}
-                  defaultValue={[]}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="技術"
-                      placeholder="Favorites"
-                    />
-                  )}
-                  sx={{ width: { xs: "90%", md: "40%" } }}
-                />
+                <Typography
+                  component={"div"}
+                  sx={{
+                    width: "100%",
+                    marginLeft: "8px",
+                  }}
+                >
+                  <InputLabel id="graduation_year-select-label">
+                    卒業年次
+                  </InputLabel>
+                  <Select
+                    labelId="graduation_year-select-label"
+                    id="graduation_year-select"
+                    label="graduation_year"
+                    defaultValue={0}
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <MenuItem value={0}>全て</MenuItem>
+                    <MenuItem value={2020}>2024</MenuItem>
+                    <MenuItem value={2021}>2025</MenuItem>
+                    <MenuItem value={2022}>2026</MenuItem>
+                    <MenuItem value={2023}>2027</MenuItem>
+                  </Select>
+                </Typography>
+                <Typography
+                  component={"div"}
+                  sx={{
+                    width: "100%",
+                    marginLeft: "8px",
+                  }}
+                >
+                  <InputLabel id="job-hunting-state-select-label">
+                    就活状況
+                  </InputLabel>
+                  <Select
+                    labelId="job-hunting-state-select-label"
+                    id="job-hunting-state-select"
+                    label="job-hunting-state"
+                    defaultValue={0}
+                    sx={{
+                      width: "100%",
+                    }}
+                  >
+                    <MenuItem value={0}>全て</MenuItem>
+                    <MenuItem value={1}>就活中</MenuItem>
+                    <MenuItem value={2}>内定済み</MenuItem>
+                  </Select>
+                </Typography>
               </Stack>
               <Button
                 variant="contained"
