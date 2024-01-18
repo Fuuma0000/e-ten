@@ -55,7 +55,7 @@ async function sendEmail(email: string, token: string) {
     text: `${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}`,
   };
 
-  await transporter.sendMail(mailOptions, (info: any) => {
+  transporter.sendMail(mailOptions, (info: any) => {
     console.log("Message sent: %s", info.messageId);
   });
 
