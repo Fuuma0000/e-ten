@@ -373,12 +373,15 @@ router.post(
         expiresIn: "30d",
       });
       // return res.json({ token: token });
-      return res.cookie("sitePasswordToken", token, {
+      res.cookie("x-site-password-token", token, {
         maxAge: 2592000000,
         httpOnly: true,
-        secure: true,
+        // secure: true,
         path: "/",
       });
+      return res
+        .status(200)
+        .json({ message: "サイトパスワードの認証に成功しました" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
