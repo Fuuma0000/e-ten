@@ -17,12 +17,37 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { addHeaderMiddleware } from "@/lib/apiClient";
+import axios from "axios";
 
-export default function Event({ eventsData, usersData }: any) {
+export default function Event() {
   const [value, setValue] = React.useState(0);
+  const [bookmarkData, setBookmarkData] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      const axiosClient = addHeaderMiddleware();
+
+      try {
+        const response = await axiosClient.get("/bookmark");
+        console.log("--------------------------------");
+        console.log(response);
+        console.log("--------------------------------");
+
+        setBookmarkData(response.data);
+      } catch (e) {
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }
+    }
+
+    asyncWrapper();
+  }, []);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);

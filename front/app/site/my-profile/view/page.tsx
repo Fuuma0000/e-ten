@@ -20,8 +20,36 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import SettingsIcon from "@mui/icons-material/Settings";
 import BuildCircleIcon from "@mui/icons-material/BuildCircle";
+import { useEffect, useState } from "react";
+import { addHeaderMiddleware } from "@/lib/apiClient";
+import axios from "axios";
 
 export default function MyProfileView() {
+  const [myProfileData, setMyProfiledata] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+  useEffect(() => {
+    const asyncWrapper = async () => {
+      const axiosClient = addHeaderMiddleware();
+
+      try {
+        const response = await axiosClient.get("/myprofile");
+        console.log("--------------------------------------");
+        console.log(response);
+        console.log("--------------------------------------");
+  
+        setMyProfiledata(response.data);
+      } catch (e) {
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }  
+    }
+  
+    asyncWrapper();
+  }, []);
+
   return (
     <Box>
       <Typography component={"a"} href="./set">

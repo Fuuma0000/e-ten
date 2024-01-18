@@ -25,14 +25,46 @@ import {
   styled,
 } from "@mui/material";
 import { blue, grey } from "@mui/material/colors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { addHeaderMiddleware } from "@/lib/apiClient";
 
 export default function MyProfileSet() {
   const [linkNum, setlinkNum] = useState(1);
+  const [myProfileData, setMyProfileData] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+
+
+  useEffect(() => {
+    const axiosClient = addHeaderMiddleware();
+
+    const asyncWrapper = async () => {
+      try {
+        const myProfileResponse = await axiosClient.get("/myprofile");
+
+        console.log("--------------------------------");
+        console.log(myProfileResponse);
+        console.log("--------------------------------");
+
+        setMyProfileData(myProfileResponse.data);
+      } catch (e) {
+        if (axios.isAxiosError(e) && e.response) {
+          console.log(e.response.data);
+          setErrorMessage(e.response.data);
+        }
+      }
+    }
+
+    asyncWrapper();
+  }, []);
 
   const addLinkForm = () => {
     setlinkNum((linkNum) => linkNum + 1);
   };
+
+  const clickHandler = () => {
+    
+  }
 
   return (
     <Box>
@@ -268,7 +300,7 @@ export default function MyProfileSet() {
         >
           <Button
             variant="contained"
-            onClick={addLinkForm}
+            onClick={clickHandler}
             sx={{
               width: "70%",
               marginTop: "24px",
