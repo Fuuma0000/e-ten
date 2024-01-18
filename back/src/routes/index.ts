@@ -330,16 +330,16 @@ router.post(
       );
 
       // res.json({ accessToken: accessToken, refreshToken: refreshToken });
-      res.cookie("accessToken", accessToken, {
+      res.cookie("x-access-token", accessToken, {
         maxAge: 3600000,
         httpOnly: true,
-        secure: true,
+        // secure: true,
         path: "/",
       });
-      res.cookie("refreshToken", refreshToken, {
+      res.cookie("x-refresh-token", refreshToken, {
         maxAge: 2592000000,
         httpOnly: true,
-        secure: true,
+        // secure: true,
         path: "/",
       });
       res.status(200).json({ message: "ログインに成功しました" });
