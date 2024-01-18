@@ -23,11 +23,16 @@ const convertWorksData = (input: any[]) => {
       icon_url: work_data_ref?.works_data_images[0]?.url,
       catch_copy: work_data_ref?.catch_copy,
       genres: work_data_ref?.works_data_genres.map(
-        (genre: { genres: { name: any } }) => genre.genres.name
+        (genre: { genres: { id: any; name: any } }) => ({
+          id: genre.genres.id,
+          name: genre.genres.name,
+        })
       ),
       technologies: work_data_ref?.works_data_technologies.map(
-        (technology: { technologies: { name: any } }) =>
-          technology.technologies.name
+        (technology: { technologies: { id: any; name: any } }) => ({
+          id: technology.technologies.id,
+          name: technology.technologies.name,
+        })
       ),
     };
   });
