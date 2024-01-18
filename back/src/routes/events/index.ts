@@ -46,7 +46,7 @@ router.get("/:id?", async (req: Request, res: Response) => {
 });
 
 // 作品一覧の取得
-router.get("/:id?/works", async (req: Request, res: Response) => {
+router.get("/:id?/works", authenticate, async (req: Request, res: Response) => {
   // worksからevents_idが一致するものを検索
   // works_dataのidとworksのlatest_reviewed_idが一致 -> 取得
   const works = await prisma.works.findMany({
@@ -71,7 +71,6 @@ router.get("/:id?/works", async (req: Request, res: Response) => {
             select: {
               genres: {
                 select: {
-                  // TODO: genre_idの取得
                   id: true,
                   name: true,
                 },
