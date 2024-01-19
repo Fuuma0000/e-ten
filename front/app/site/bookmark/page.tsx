@@ -32,7 +32,7 @@ export default function Event() {
       const axiosClient = addHeaderMiddleware();
 
       try {
-        const response = await axiosClient.get("/bookmark");
+        const response = await axiosClient.get("/bookmarks");
         console.log("--------------------------------");
         console.log(response);
         console.log("--------------------------------");

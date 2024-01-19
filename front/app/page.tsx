@@ -27,8 +27,6 @@ export default function Index() {
     const response = await sendSitePassword(sitePasswordToSend);
     if (response?.errorFlag === false) {
       console.log("正当なリクエストが通った時に発火します。");
-      // set-cookie渡ってくるようになったからクライアントで書き換えない
-      // document.cookie = `x-site-password-token=${response.token}`;s
   
       router.push("/sign/up");
     } else {

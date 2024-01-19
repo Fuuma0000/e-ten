@@ -25,7 +25,7 @@ export default function Events() {
       // TODO:エラーの文言をステートに詰める必要あるか？.どうせログインページに飛ばすのに？.聞く
 
       try {
-        const eventsResponse = await axiosClient.get("/events");
+        const eventsResponse = await axiosClient.get("/events", { withCredentials: true });
         const eventsData = eventsResponse.data;
         console.log(eventsData);
         setEventData(eventData);

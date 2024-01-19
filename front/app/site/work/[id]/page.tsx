@@ -37,7 +37,7 @@ export default function Event() {
       const axiosClient = addHeaderMiddleware();
   
       try {
-        const response = await axiosClient.get(`/works/${dynamicRoutingId}`); 
+        const response = await axiosClient.get(`/works/${dynamicRoutingId}`, { withCredentials: true }); 
 
         // TODO:確認したら消す
         console.log("----------------------");

@@ -46,10 +46,12 @@ export default function Event() {
 
       try {
         const eventsResponse = await axiosClient.get(
-          `/events/${dynamicRoutingId}/works`
+          `/events/${dynamicRoutingId}/works`,
+          { withCredentials: true }
         );
         const profilesResponse = await axiosClient.get(
-          `/events/${dynamicRoutingId}/students`
+          `/events/${dynamicRoutingId}/students`,
+          { withCredentials: true }
         );
 
         // TODO:確認したら消す

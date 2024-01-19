@@ -33,14 +33,14 @@ export default function SignIn() {
     const axiosClient = addSitePasswordHeader();
 
     try {
-      const loginResponse = await axiosClient.post("/signin", {
+      await axiosClient.post("/signin", {
         email: data.get("email"),
         password: data.get("password")
-      });
+      }, { withCredentials: true });
 
       // トークン保持
-      document.cookie = `x-login-token=${loginResponse.data.accessToken}`;
-      document.cookie = `x-refresh-token=${loginResponse.data.refreshToken}`;
+      // document.cookie = `x-login-token=${loginResponse.data.accessToken}`;
+      // document.cookie = `x-refresh-token=${loginResponse.data.refreshToken}`;
 
       // TODO:リフレッシュトークン切れてたときみたいなやつまだやってないから後でやる
 

@@ -33,9 +33,9 @@ export default function MyProfileView() {
       const axiosClient = addHeaderMiddleware();
 
       try {
-        const response = await axiosClient.get("/myprofile");
+        const response = await axiosClient.get("/myprofile", { withCredentials: true });
         console.log("--------------------------------------");
-        console.log(response);
+        console.log(response.data);
         console.log("--------------------------------------");
   
         setMyProfiledata(response.data);

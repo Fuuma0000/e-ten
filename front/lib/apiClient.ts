@@ -6,51 +6,45 @@ const EXPRESS_URL = "http://localhost:8000";
 // ミドルウェア通す関数
 const addHeaderMiddleware = () => {
   // 認証用ヘッダの取得
-  const sitePasswordToken: string = document.cookie.replace(
-    /(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/,
-    "$1"
-  );
-  const accessToken: string = document.cookie.replace(
-    /(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/,
-    "$1"
-  );
+  // TODO:header使わなくなったので後で消す
+  // const sitePasswordToken: string = document.cookie.replace(
+  //   /(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/,
+  //   "$1"
+  // );
+  // const accessToken: string = document.cookie.replace(
+  //   /(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/,
+  //   "$1"
+  // );
 
   return axios.create({
     baseURL: EXPRESS_URL,
     headers: {
       "Content-Type": "application/json",
-      "x-site-password-token": sitePasswordToken,
-      Authorization: `Bearer ${accessToken}`,
+      // "x-site-password-token": sitePasswordToken,
+      // Authorization: `Bearer ${accessToken}`,
     },
   });
 };
 
 const addSitePasswordHeader = () => {
-  const sitePasswordToken = document.cookie.replace(
-    /(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/,
-    "$1"
-  );
+  // TODO:headerに乗せなくなったので後で消す
+  // const sitePasswordToken = document.cookie.replace(
+  //   /(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/,
+  //   "$1"
+  // );
 
   return axios.create({
     baseURL: EXPRESS_URL,
     headers: {
       "Content-Type": "application/json",
-      "x-site-password-token": sitePasswordToken,
+      // "x-site-password-token": sitePasswordToken,
     },
   });
 };
 
 const sendSitePassword = async (sitePassword: String) => {
   try {
-    const response = await axios.post(
-      `${EXPRESS_URL}/site-password`,
-      {
-        password: sitePassword,
-      },
-      {
-        withCredentials: true,
-      }
-    );
+    const response = await axios.post(`${EXPRESS_URL}/site-password`, { password: sitePassword }, { withCredentials: true } );
 
     console.log(response);
     console.log(response.data.token);

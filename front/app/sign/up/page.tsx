@@ -37,7 +37,7 @@ export default function SignUp() {
       const response = await axiosClient.post("/signup", {
         email: data.get("email"),
         password: data.get("password")
-      });
+      }, { withCredentials: true });
 
     // TODO:ステータスコードにより飛び先変更する
       console.log(response.data);

@@ -35,7 +35,7 @@ export default function User() {
       const axiosClient = addHeaderMiddleware();
       
       try {
-        const response = await axiosClient.get(`/profiles/${dynamicRoutingId}`);
+        const response = await axiosClient.get(`/profiles/${dynamicRoutingId}`, { withCredentials: true });
         
         // TODO:確認したら消す
         console.log("-------------------------------");
