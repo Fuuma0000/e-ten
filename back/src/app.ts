@@ -12,11 +12,28 @@ import { router as profileRoute } from "./routes/profiles";
 import { router as workRoute } from "./routes/works";
 import { router as bookmarkRoute } from "./routes/bookmarks";
 import { router as myprofileRoute } from "./routes/myprofile";
+import { CorsOptions } from "cors";
 const cors = require("cors");
 
 const app = express();
 
-app.use(cors()); // すべてのリクエストに対してCORSを有効にする
+const allowedOrigins = ["http://localhost:3000"];
+
+const corsOptions: CorsOptions = {
+  origin: function (
+    origin: any,
+    callback: (arg0: Error | null, arg1: boolean | undefined) => void
+  ) {
+    // 許可されたオリジンか、もしくは未定義（同一オリジンの場合）であれば許可
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+    }
+  },
+  credentials: true, // クッキーや認証ヘッダーの送信を有効にする
+};
+
+app.use(cors(corsOptions)); // すべてのリクエストに対してCORSを有効にする
 
 // view engine setup
 app.set("views", path.join("views")); //__dirNameと書いてある箇所を除く！

@@ -55,7 +55,7 @@ async function sendEmail(email: string, token: string) {
     text: `${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}`,
   };
 
-  await transporter.sendMail(mailOptions, (info: any) => {
+  transporter.sendMail(mailOptions, (info: any) => {
     console.log("Message sent: %s", info.messageId);
   });
 
@@ -333,13 +333,15 @@ router.post(
       res.cookie("x-access-token", accessToken, {
         maxAge: 3600000,
         httpOnly: true,
-        // secure: true,
+        secure: true,
+        sameSite: "none",
         path: "/",
       });
       res.cookie("x-refresh-token", refreshToken, {
         maxAge: 2592000000,
         httpOnly: true,
-        // secure: true,
+        secure: true,
+        sameSite: "none",
         path: "/",
       });
       res.status(200).json({ message: "ログインに成功しました" });
@@ -375,7 +377,8 @@ router.post(
       res.cookie("x-site-password-token", token, {
         maxAge: 2592000000,
         httpOnly: true,
-        // secure: true,
+        secure: true,
+        sameSite: "none",
         path: "/",
       });
       return res
@@ -404,7 +407,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
     res.cookie("x-access-token", accessToken, {
       maxAge: 3600000,
       httpOnly: true,
-      // secure: true,
+      secure: true,
       path: "/",
     });
 
