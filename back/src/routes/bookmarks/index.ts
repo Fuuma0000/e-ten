@@ -1,12 +1,13 @@
 import { Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { authenticate } from "../auth";
 import { convertBookmarkData } from "./json-convert";
 
 const router: Router = Router();
 const prisma = new PrismaClient();
 
 // ブックマークの取得
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authenticate, async (req: Request, res: Response) => {
   const users_id = Number(req.user);
 
   const bookmark = await prisma.bookmarks.findMany({
@@ -60,7 +61,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // ブックマークの追加・削除
-router.post("/:id", async (req: Request, res: Response) => {
+router.post("/:id", authenticate, async (req: Request, res: Response) => {
   const users_id = Number(req.user);
   const works_id = Number(req.params.id);
 
