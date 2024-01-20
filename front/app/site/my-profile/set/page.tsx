@@ -28,6 +28,7 @@ import { blue, grey } from "@mui/material/colors";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { addHeaderMiddleware } from "@/lib/apiClient";
+import { link } from "fs";
 
 export default function MyProfileSet() {
   const [linkNum, setlinkNum] = useState(1);
@@ -59,11 +60,45 @@ export default function MyProfileSet() {
   }, []);
 
   const addLinkForm = () => {
-    setlinkNum((linkNum) => linkNum + 1);
+    const nextLinks = [...links];
+    nextLinks.push({name: "", url: ""});
+    setLinks(nextLinks);
   };
 
+  const chengeLinkName = (index: number, newName: string) => {
+    const newLinks = [...links];
+    newLinks[index].name = newName;
+    setLinks(newLinks)
+  }
+  const chengeLinkUrl = (index: number, newUrl: string) => {
+    const newLinks = [...links];
+    newLinks[index].url = newUrl;
+    setLinks(newLinks)
+  }
+
+  const [image, setImage] = useState<FileList | null>(null);
+  const [name, setName] = useState("");
+  const [mail, setMail] = useState("");
+  const [cource, setCource] = useState(0);
+  const [enrollmentYear, setEnrollmentYear] = useState("2020");
+  const [graduationYear, setGraduationYear] = useState("2024");
+  const [job, setJob] = useState(0);
+  const [jobHuntState, setJobHuntState] = useState(false);
+  const [pr, setPr] = useState("");
+  const [links, setLinks] = useState([{name: "", url: ""}]);
   const clickHandler = () => {
-    
+    console.log("画像：")
+    console.log(image);
+    console.log("ユーザー名：" + name);
+    console.log("メールアドレス：" + mail);
+    console.log("コーズ：" + cource);
+    console.log("入学年次：" + enrollmentYear);
+    console.log("卒業年次：" + graduationYear);
+    console.log("希望職種：" + job);
+    console.log("就活状況：" + jobHuntState);
+    console.log("自己PR：" + pr);
+    console.log("リンク集：");
+    console.log(links);
   }
 
   return (
@@ -85,7 +120,7 @@ export default function MyProfileSet() {
         >
           MyProfile編集
         </Typography>
-        <Typography component={"input"} type="file" accept="image/*" />
+        <Typography component={"input"} type="file" accept="image/*" onChange={(e) => {setImage(e.target.files)}}/>
         <TextField
           id="outlined-password-input"
           label="ユーザー名"
@@ -95,7 +130,8 @@ export default function MyProfileSet() {
             width: "100%",
             marginBottom: "8px",
           }}
-          value={"aaaaa"}
+          value={name}
+          onChange={(e)=> {setName(e.target.value);}}
         />
         <TextField
           id="outlined-password-input"
@@ -106,7 +142,8 @@ export default function MyProfileSet() {
             width: "100%",
             marginBottom: "8px",
           }}
-          value={"aaaaa"}
+          value={mail}
+          onChange={(e) => {setMail(e.target.value)}}
         />
         <Typography
           component={"div"}
@@ -122,6 +159,8 @@ export default function MyProfileSet() {
             sx={{
               width: "100%",
             }}
+            defaultValue={cource}
+            onChange={(e) => {setCource(Number(e.target.value))}}
           >
             <MenuItem value={0}>IT</MenuItem>
             <MenuItem value={1}>WEB</MenuItem>
@@ -150,6 +189,8 @@ export default function MyProfileSet() {
               sx={{
                 width: "100%",
               }}
+              defaultValue={enrollmentYear}
+              onChange={(e) => {setEnrollmentYear(e.target.value)}}
             >
               <MenuItem value={2020}>2020</MenuItem>
               <MenuItem value={2021}>2021</MenuItem>
@@ -173,11 +214,13 @@ export default function MyProfileSet() {
               sx={{
                 width: "100%",
               }}
+              defaultValue={graduationYear}
+              onChange={(e) => {setGraduationYear(e.target.value)}}
             >
-              <MenuItem value={2020}>2024</MenuItem>
-              <MenuItem value={2021}>2025</MenuItem>
-              <MenuItem value={2022}>2026</MenuItem>
-              <MenuItem value={2023}>2027</MenuItem>
+              <MenuItem value={2024}>2024</MenuItem>
+              <MenuItem value={2025}>2025</MenuItem>
+              <MenuItem value={2026}>2026</MenuItem>
+              <MenuItem value={2027}>2027</MenuItem>
             </Select>
           </Typography>
         </Stack>
@@ -190,6 +233,8 @@ export default function MyProfileSet() {
           sx={{
             width: "100%",
           }}
+          defaultValue={job}
+          onChange={(e) => {setJob(Number(e.target.value))}}
         >
           <MenuItem value={0}>WEBエンジニア</MenuItem>
           <MenuItem value={1}>インフラエンジニア</MenuItem>
@@ -200,11 +245,12 @@ export default function MyProfileSet() {
         <InputLabel id="is_job_hunt_completed-label">就活状況</InputLabel>
         <RadioGroup
           aria-labelledby="is_job_hunt_completed-label"
-          defaultValue="false"
           name="radio-buttons-group"
+          defaultValue={jobHuntState}
+          onChange={(e) => {setJobHuntState(Boolean(e.target.value))}}
         >
-          <FormControlLabel value="false" control={<Radio />} label="就活中" />
-          <FormControlLabel value="true" control={<Radio />} label="内定済み" />
+          <FormControlLabel value={false} control={<Radio />} label="就活中" />
+          <FormControlLabel value={true} control={<Radio />} label="内定済み" />
         </RadioGroup>
 
         <InputLabel id="pr-label">自己PR</InputLabel>
@@ -216,6 +262,8 @@ export default function MyProfileSet() {
             padding: "8px 12px",
             borderRadius: "8px",
           }}
+          defaultValue={pr}
+          onChange={(e) => {setPr(e.target.value)}}
         ></TextareaAutosize>
 
         <InputLabel id="pr-label">link集</InputLabel>
@@ -230,9 +278,9 @@ export default function MyProfileSet() {
 
             {(() => {
               const items = [];
-              for (let i = 0; i < linkNum; i++) {
+              for (let i = 0; i < links.length; i++) {
                 items.push(
-                  <TableRow id={"link-" + i}>
+                  <TableRow id={"link-" + i} key={i}>
                     <TableCell>
                       <TextField
                         id={"link-name" + i}
@@ -241,6 +289,8 @@ export default function MyProfileSet() {
                         sx={{
                           width: "100%",
                         }}
+                        defaultValue={links[i].name}
+                        onChange={(e) => {chengeLinkName(i, e.target.value)}}
                       />
                     </TableCell>
                     <TableCell>
@@ -251,6 +301,8 @@ export default function MyProfileSet() {
                         sx={{
                           width: "100%",
                         }}
+                        defaultValue={links[i].url}
+                        onChange={(e) => {chengeLinkUrl(i, e.target.value)}}
                       />
                     </TableCell>
                   </TableRow>
