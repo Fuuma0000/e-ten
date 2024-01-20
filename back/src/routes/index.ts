@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
 import { body } from "express-validator";
+require('dotenv').config();
 
 const router: Router = Router();
 const crypto = require("crypto");
