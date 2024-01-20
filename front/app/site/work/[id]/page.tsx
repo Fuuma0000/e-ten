@@ -23,21 +23,30 @@ import { addHeaderMiddleware } from "@/lib/apiClient";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 
 // 認証を一貫して通せないとデータが取得出来ずにエラーによりコンポーネントが描画されなくなってしまうのでpropsに渡した状態で留めています
 export default function Event() {
   const [detailWorksData, setDetailWorksData] = useState();
   const [errorMessage, setErrorMessage] = useState();
+  const [isBookMarked, setIsBookMarked] = useState(true);
 
   const params = useParams();
+
+  const clickBookMark = () => {
+    const newBookMark = !isBookMarked;
+    setIsBookMarked(newBookMark);
+  }
 
   useEffect(() => {
     const asyncWrapper = async () => {
       const dynamicRoutingId = params.id;
       const axiosClient = addHeaderMiddleware();
-  
+
       try {
-        const response = await axiosClient.get(`/works/${dynamicRoutingId}`, { withCredentials: true }); 
+        const response = await axiosClient.get(`/works/${dynamicRoutingId}`, {
+          withCredentials: true,
+        });
 
         // TODO:確認したら消す
         console.log("----------------------");
@@ -52,13 +61,26 @@ export default function Event() {
           setErrorMessage(e.response.data);
         }
       }
-    }
+    };
 
     asyncWrapper();
   }, []);
 
   return (
     <Box>
+      <IconButton onClick={clickBookMark}>
+        <BookmarkIcon
+          sx={{
+            width: { xs: "58px", sm: "80px", md: "100px" },
+            height: { xs: "58px", sm: "80px", md: "100px" },
+            color: isBookMarked ? "gray.dark" : "primary.main",
+            position: "fixed",
+            bottom: { xs: "16px", md: "24px" },
+            right: { xs: "8px", md: "24px" },
+            zIndex: 1
+          }}
+        />
+      </IconButton>
       <Stack
         sx={{
           width: "90vw",
@@ -70,7 +92,7 @@ export default function Event() {
         <Typography
           component={"h2"}
           sx={{
-            fontSize: {xs: "h5.fontSize", md:"h2.fontSize"},
+            fontSize: { xs: "h5.fontSize", md: "h2.fontSize" },
           }}
         >
           Welking Helper
@@ -317,14 +339,13 @@ export default function Event() {
                 >
                   名前
                 </Typography>
-                &ensp;
-                久乗建汰
+                &ensp; 久乗建汰
               </Typography>
               <Typography
-               component={"p"}
-               sx={{
-                marginTop:"8px"
-               }}
+                component={"p"}
+                sx={{
+                  marginTop: "8px",
+                }}
               >
                 <Typography
                   component={"span"}
@@ -334,8 +355,7 @@ export default function Event() {
                 >
                   担当
                 </Typography>
-                &ensp;
-                フロント画面コーディング
+                &ensp; フロント画面コーディング
               </Typography>
             </Paper>
           </Grid>
@@ -345,11 +365,9 @@ export default function Event() {
   );
 }
 
-
-
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   const { id } = context.query;
-  
+
 //   const axiosClient = addHeaderMiddleware();
 
 //   const detailWorkData = await axiosClient.get(`/works/${id}`);
