@@ -1,15 +1,24 @@
 import { NextFunction, Request, Response, Router } from "express";
 // TODO: prismaclientのimportまとめる
 import { PrismaClient } from "@prisma/client";
-import nodemailer from "nodemailer";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
 import { body } from "express-validator";
-require("dotenv").config();
+const { SES } = require("@aws-sdk/client-ses");
 
 const router: Router = Router();
 const crypto = require("crypto");
 const prisma = new PrismaClient();
+
+const SES_CONFIG = {
+  region: process.env.SES_REGION,
+  credentials: {
+    accessKeyId: process.env.SES_ACCESS_KEY_ID,
+    secretAccessKey: process.env.SES_SECRET_ACCESS_KEY,
+  },
+};
+
+const AWS_SES = new SES(SES_CONFIG);
 
 // パスワードをハッシュ化する関数
 function hashPassword(password: string, salt: string): string {
@@ -35,33 +44,37 @@ async function isEmailRegistered(email: string): Promise<{ bool: boolean }> {
   return { bool: false };
 }
 
-// メールを送信する関数
-async function sendEmail(email: string, token: string) {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // SSL
-    auth: {
-      user: process.env.GMAIL_ADDRESS,
-      pass: process.env.GMAIL_PASSWORD,
+const sendEmail = async (email: string, token: string) => {
+  let params = {
+    Source: process.env.SES_SENDER as string,
+    Destination: {
+      ToAddresses: [email],
     },
-  });
-
-  // 本来はメールの内容を HTML で記述する
-  // 今回は簡単のため、テキストのみでメールを送信する
-  const mailOptions = {
-    from: process.env.GMAIL_ADDRESS,
-    to: email,
-    subject: "メールアドレス確認",
-    text: `${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}`,
+    ReplyToAddresses: [],
+    Message: {
+      Body: {
+        Html: {
+          Charset: "UTF-8",
+          // TODO: 本番環境用のURLに変更する
+          // TODO: 本文をちゃんと書く
+          Data: `<html><body><h1>リンクをクリックしてください</h1><p>${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}</p></body></html>`,
+        },
+      },
+      Subject: {
+        Charset: "UTF-8",
+        Data: "メールアドレス確認",
+      },
+    },
   };
 
-  transporter.sendMail(mailOptions, (info: any) => {
-    console.log("Message sent: %s", info.messageId);
-  });
-
-  return;
-}
+  try {
+    const res = await AWS_SES.sendEmail(params);
+    console.log("Email has been sent " + res);
+  } catch (err) {
+    console.log(err);
+    throw new Error("メール送信に失敗しました");
+  }
+};
 
 // パスワードをハッシュ化する関数
 function generateSalt(): string {
@@ -214,7 +227,7 @@ router.post(
       // メールを送信する
       await sendEmail(email, token);
 
-      res.json("メールを送信しました");
+      res.status(200).json({ message: "仮登録が完了しました" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
@@ -260,7 +273,7 @@ router.get(
         temporaryUser.salt
       );
 
-      res.json("本登録が完了しました");
+      res.status(200).json({ message: "本登録が完了しました" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
