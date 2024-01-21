@@ -1,0 +1,6 @@
+username,email,password,salt,courses_id,enrollment_year,graduation_year,is_job_hunt_completed
+"福留 正大",exhibitor02@email.com,password,salt,1,2022,2026,false
+"鎌野 陽向",exhibitor03@email.com,password,salt,1,2022,2026,false
+"篠原 晴哉",exhibitor04@email.com,password,salt,1,2022,2026,false
+"大西 琉斗",exhibitor05@email.com,password,salt,1,2022,2026,false
+"神 さくら",exhibitor06@email.com,password,salt,1,2022,2026,false

@@ -1,5 +1,52 @@
 import { PrismaClient } from "@prisma/client";
+import { ParseResult, parse } from "papaparse";
+import { promises as fsPromises } from "fs";
 const prisma = new PrismaClient();
+
+interface ExhibitorUser {
+  username: string;
+  email: string;
+  password: string;
+  salt: string;
+  courses_id: number;
+  enrollment_year: number;
+  graduation_year: number;
+  is_job_hunt_completed: boolean;
+}
+
+interface Work {
+  name: string;
+  catch_copy: string;
+  lear: string;
+  description: string;
+  works_url: string;
+  movie_url: string;
+  system_diagram_url: string;
+}
+
+// CSVファイルをパースする関数
+const fileParser = async <T>(filePath: string): Promise<T[]> => {
+  try {
+    const fileContent = await fsPromises.readFile(filePath, "utf8");
+
+    const results: ParseResult<T> = parse(fileContent, {
+      header: true,
+      dynamicTyping: true,
+    });
+
+    if (results.errors && results.errors.length > 0) {
+      throw new Error(
+        `CSV parsing errors: ${results.errors
+          .map((error) => error.message)
+          .join(", ")}`
+      );
+    }
+
+    return results?.data || [];
+  } catch (error: any) {
+    throw new Error(`Failed to parse CSV file: ${error.message}`);
+  }
+};
 
 async function main() {
   // 前期+E展情報
@@ -37,70 +84,21 @@ async function main() {
   });
 
   // 出展ユーザー
-  const exhibitor_users = [
-    {
-      username: "福留 正大",
-      email: "exhibitor02@email.com",
-      password: "",
-      salt: "",
-      courses_id: 1,
-      enrollment_year: 2022,
-      graduation_year: 2026,
-      is_job_hunt_completed: false,
-    },
-    {
-      username: "鎌野 陽向",
-      email: "exhibitor03@email.com",
-      password: "",
-      salt: "",
-      courses_id: 1,
-      enrollment_year: 2022,
-      graduation_year: 2026,
-      is_job_hunt_completed: false,
-    },
-    {
-      username: "篠原 晴哉",
-      email: "exhibitor04@email.com",
-      password: "",
-      salt: "",
-      courses_id: 1,
-      enrollment_year: 2022,
-      graduation_year: 2026,
-      is_job_hunt_completed: false,
-    },
-    {
-      username: "大西 琉斗",
-      email: "exhibitor05@email.com",
-      password: "",
-      salt: "",
-      courses_id: 1,
-      enrollment_year: 2022,
-      graduation_year: 2026,
-      is_job_hunt_completed: false,
-    },
-    {
-      username: "神 さくら",
-      email: "exhibitor06@email.com",
-      password: "",
-      salt: "",
-      courses_id: 1,
-      enrollment_year: 2022,
-      graduation_year: 2026,
-      is_job_hunt_completed: false,
-    },
-  ];
+  const exhibitors_users: ExhibitorUser[] = await fileParser<ExhibitorUser>(
+    "prisma/seed-data/exhibitors_data.csv"
+  );
 
-  for (let i = 0; i < exhibitor_users.length; i++) {
+  for (let i = 0; i < exhibitors_users.length; i++) {
     await prisma.users.create({
       data: {
-        username: exhibitor_users[i].username,
-        email: exhibitor_users[i].email,
-        password: exhibitor_users[i].password,
-        salt: exhibitor_users[i].salt,
-        courses_id: exhibitor_users[i].courses_id,
-        enrollment_year: exhibitor_users[i].enrollment_year,
-        graduation_year: exhibitor_users[i].graduation_year,
-        is_job_hunt_completed: exhibitor_users[i].is_job_hunt_completed,
+        username: exhibitors_users[i].username,
+        email: exhibitors_users[i].email,
+        password: exhibitors_users[i].password,
+        salt: exhibitors_users[i].salt,
+        courses_id: exhibitors_users[i].courses_id,
+        enrollment_year: exhibitors_users[i].enrollment_year,
+        graduation_year: exhibitors_users[i].graduation_year,
+        is_job_hunt_completed: exhibitors_users[i].is_job_hunt_completed,
         icon_url: "",
         event_users_roles: {
           create: {
@@ -112,80 +110,51 @@ async function main() {
     });
   }
 
-  const work_01 = await prisma.works.create({
-    data: {
-      events_id: 1,
-      latest_reviewed_id: null,
-    },
-  });
+  // 作品情報
+  const work_data: Work[] = await fileParser<Work>(
+    "prisma/seed-data/works_data.csv"
+  );
 
-  const work_data_01 = await prisma.works_data.create({
-    data: {
-      works_id: 1,
-      name: "起床点結RTA",
-      catch_copy: "起床点結RTA	起きてタッチでRTA！ 家族とタイムを競い合おう！",
-      description:
-        "毎日2度寝をしてしまう、楽しい朝を迎えたい、そんなあなたに必見です！1日の始まりを、全力ダッシュで楽しみませんか？",
-      works_url: "https://example.com",
-      movie_url: "",
-      system_diagram_url: "",
-      detail:
-        "このアプリは、毎日起きるのが楽しみになるゲームアプリです。名前がついた5つのNFCタグを、家のさまざまなところに設置します。アラームが鳴ると、画面に表示された順にNFCタグをタッチしていき、最後のタグをタッチするとRTAが終了します。このアプリには同居家族との対戦機能があり、ランキングを更新するとポイントが付与されます。貯まったポイントでガチャを回し、入手した景品でアプリをカスタマイズすることも可能です。また、キャラクターがその日の天気を教えてくれます。サポーターズ主催の京都キャラバンハッカソンで優秀賞、渋谷で行われた技育キャンプアドバンスでは副大賞を受賞した作品です。楽しい朝を迎えたい人、二度寝をしてしまう人に、ぜひ使っていただけたらなと思います。",
-      works_data_images: {
-        createMany: {
-          data: [
-            {
-              url: "https://placehold.jp/800x600.png",
-              order: 1,
-            },
-            {
-              url: "https://placehold.jp/640x480.png",
-              order: 2,
-            },
-          ],
-        },
+  // 作品をwork_dataの数だけ登録
+  for (let i = 0; i < work_data.length; i++) {
+    await prisma.works.create({
+      data: {
+        events_id: 1,
+        latest_reviewed_id: null,
       },
-      works_data_genres: {
-        createMany: {
-          data: [{ genres_id: 1 }, { genres_id: 2 }],
-        },
+    });
+  }
+
+  // 作品情報をworkd_dataに登録
+  for (let i = 0; i < work_data.length; i++) {
+    const work = await prisma.works_data.create({
+      data: {
+        works_id: i + 1,
+        name: work_data[i].name,
+        catch_copy: work_data[i].catch_copy,
+        description: work_data[i].description,
+        works_url: work_data[i].works_url,
+        movie_url: work_data[i].movie_url,
+        system_diagram_url: work_data[i].system_diagram_url,
+        // TODO: works_data_users, works_data_genres, works_data_technologies, works_data_images
       },
-      works_data_technologies: {
-        createMany: {
-          data: [
-            { technologies_id: 6 },
-            { technologies_id: 15 },
-            { technologies_id: 63 },
-          ],
-        },
-      },
-      works_data_users: {
-        createMany: {
-          data: [{ users_id: 2, role_explanation: "リーダー" }],
-        },
-      },
-    },
-    include: {
-      works_data_genres: true,
-      works_data_technologies: true,
-      works_data_users: true,
-    },
-  });
+    });
+  }
 
   // 校閲後の作品データ
-  await prisma.works.update({
-    where: { id: 1 },
-    data: {
-      latest_reviewed_id: 1,
-    },
-  });
+  // 作品の数分アップデート
+  for (let i = 0; i < work_data.length; i++) {
+    await prisma.works.update({
+      where: { id: i + 1 },
+      data: {
+        latest_reviewed_id: i + 1,
+      },
+    });
+  }
 
   // ブックマーク
   await prisma.bookmarks.createMany({
-    data: [
-      { users_id: 1, works_id: 1 },
-      // { users_id: 1, works_id: 2 },
-    ],
+    data: [{ users_id: 1, works_id: 1 }],
   });
 }
 
