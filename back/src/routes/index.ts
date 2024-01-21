@@ -227,7 +227,7 @@ router.post(
       // メールを送信する
       await sendEmail(email, token);
 
-      res.json("メールを送信しました");
+      res.status(200).json({ message: "仮登録が完了しました" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
@@ -273,7 +273,7 @@ router.get(
         temporaryUser.salt
       );
 
-      res.json("本登録が完了しました");
+      res.status(200).json({ message: "本登録が完了しました" });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "サーバーエラーが発生しました" });
