@@ -147,7 +147,7 @@ async function main() {
     for (let j = 0; j < genreIdArray.length; j++) {
       await prisma.works_data_genres.create({
         data: {
-          works_data_id: work.id,
+          works_data_id: i + 1,
           genres_id: genreIdArray[j],
         },
       });
