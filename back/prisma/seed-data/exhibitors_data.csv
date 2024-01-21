@@ -1,6 +1,123 @@
-username,email,password,salt,courses_id,enrollment_year,graduation_year,is_job_hunt_completed
-"福留 正大",exhibitor02@email.com,password,salt,1,2022,2026,false
-"鎌野 陽向",exhibitor03@email.com,password,salt,1,2022,2026,false
-"篠原 晴哉",exhibitor04@email.com,password,salt,1,2022,2026,false
-"大西 琉斗",exhibitor05@email.com,password,salt,1,2022,2026,false
-"神 さくら",exhibitor06@email.com,password,salt,1,2022,2026,false
+username,email,password,salt,courses_id,enrollment_year,graduation_year,is_job_hunt_completed,events_id,roles_id
+admin user,admin1@mail.com,password,salt,,,,,1,1
+福留 正大,exhibitor2@mail.com,password,salt,1,2022,2026,FALSE,1,2
+鎌野 陽向,exhibitor3@mail.com,password,salt,1,2022,2026,FALSE,1,2
+篠原 晴哉,exhibitor4@mail.com,password,salt,1,2022,2026,FALSE,1,2
+大西 琉斗,exhibitor5@mail.com,password,salt,1,2022,2026,FALSE,1,2
+神 さくら,exhibitor6@mail.com,password,salt,1,2022,2026,FALSE,1,2
+杉本童麻,exhibitor7@mail.com,password,salt,1,2022,2026,FALSE,1,2
+ジェイソン　ング,exhibitor8@mail.com,password,salt,1,2022,2026,FALSE,1,2
+上之薗和人,exhibitor9@mail.com,password,salt,1,2022,2026,FALSE,1,2
+大澤心春,exhibitor10@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中井　侑吾,exhibitor11@mail.com,password,salt,1,2022,2026,FALSE,1,2
+福村晃弘,exhibitor12@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中木屋 十夢,exhibitor13@mail.com,password,salt,1,2022,2026,FALSE,1,2
+日比恵多,exhibitor14@mail.com,password,salt,1,2022,2026,FALSE,1,2
+穐田 成,exhibitor15@mail.com,password,salt,1,2022,2026,FALSE,1,2
+川嶋　雄大,exhibitor16@mail.com,password,salt,1,2022,2026,FALSE,1,2
+岡田未希,exhibitor17@mail.com,password,salt,1,2022,2026,FALSE,1,2
+リン ウェイトン,exhibitor18@mail.com,password,salt,1,2022,2026,FALSE,1,2
+久下楓珠,exhibitor19@mail.com,password,salt,1,2022,2026,FALSE,1,2
+森尾優菜,exhibitor20@mail.com,password,salt,1,2022,2026,FALSE,1,2
+バンレイナルドナサニエル,exhibitor21@mail.com,password,salt,1,2022,2026,FALSE,1,2
+林良輝,exhibitor22@mail.com,password,salt,1,2022,2026,FALSE,1,2
+砂原彩花,exhibitor23@mail.com,password,salt,1,2022,2026,FALSE,1,2
+柳田 大心,exhibitor24@mail.com,password,salt,1,2022,2026,FALSE,1,2
+平田晃大,exhibitor25@mail.com,password,salt,1,2022,2026,FALSE,1,2
+藤井雄也,exhibitor26@mail.com,password,salt,1,2022,2026,FALSE,1,2
+岩下翔紀,exhibitor27@mail.com,password,salt,1,2022,2026,FALSE,1,2
+勝田紳太郎,exhibitor28@mail.com,password,salt,1,2022,2026,FALSE,1,2
+山野錬磨,exhibitor29@mail.com,password,salt,1,2022,2026,FALSE,1,2
+阪本 陸,exhibitor30@mail.com,password,salt,1,2022,2026,FALSE,1,2
+永岡ひかり,exhibitor31@mail.com,password,salt,1,2022,2026,FALSE,1,2
+本村　永遠,exhibitor32@mail.com,password,salt,1,2022,2026,FALSE,1,2
+薛 思穏,exhibitor33@mail.com,password,salt,1,2022,2026,FALSE,1,2
+須崎魁人,exhibitor34@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中木屋 十夢,exhibitor35@mail.com,password,salt,1,2022,2026,FALSE,1,2
+和田卓斗,exhibitor36@mail.com,password,salt,1,2022,2026,FALSE,1,2
+神崎未希,exhibitor37@mail.com,password,salt,1,2022,2026,FALSE,1,2
+細田 海斗,exhibitor38@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中井 侑吾,exhibitor39@mail.com,password,salt,1,2022,2026,FALSE,1,2
+グエンドゥックフィン,exhibitor40@mail.com,password,salt,1,2022,2026,FALSE,1,2
+上森拓翔,exhibitor41@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中野優,exhibitor42@mail.com,password,salt,1,2022,2026,FALSE,1,2
+山地咲愛,exhibitor43@mail.com,password,salt,1,2022,2026,FALSE,1,2
+カワカミアヤカ,exhibitor44@mail.com,password,salt,1,2022,2026,FALSE,1,2
+ソンスヨン,exhibitor45@mail.com,password,salt,1,2022,2026,FALSE,1,2
+林 煜昭,exhibitor46@mail.com,password,salt,1,2022,2026,FALSE,1,2
+本田有人,exhibitor47@mail.com,password,salt,1,2022,2026,FALSE,1,2
+小淵颯太,exhibitor48@mail.com,password,salt,1,2022,2026,FALSE,1,2
+アウン　コ　テッ,exhibitor49@mail.com,password,salt,1,2022,2026,FALSE,1,2
+岸本たく,exhibitor50@mail.com,password,salt,1,2022,2026,FALSE,1,2
+好田圭吾,exhibitor51@mail.com,password,salt,1,2022,2026,FALSE,1,2
+チェジョンウォン,exhibitor52@mail.com,password,salt,1,2022,2026,FALSE,1,2
+ダレン デブ プトラ ガンリン,exhibitor53@mail.com,password,salt,1,2022,2026,FALSE,1,2
+大澤心春,exhibitor54@mail.com,password,salt,1,2022,2026,FALSE,1,2
+沓名洸太,exhibitor55@mail.com,password,salt,1,2022,2026,FALSE,1,2
+養父豊,exhibitor56@mail.com,password,salt,1,2022,2026,FALSE,1,2
+森田 翔太郎,exhibitor57@mail.com,password,salt,1,2022,2026,FALSE,1,2
+成瀨　陽,exhibitor58@mail.com,password,salt,1,2022,2026,FALSE,1,2
+ダン　ズアン　ナム,exhibitor59@mail.com,password,salt,1,2022,2026,FALSE,1,2
+草野初実,exhibitor60@mail.com,password,salt,1,2022,2026,FALSE,1,2
+森幸弥,exhibitor61@mail.com,password,salt,1,2022,2026,FALSE,1,2
+湯浅智樹,exhibitor62@mail.com,password,salt,1,2022,2026,FALSE,1,2
+バンレイナルドナサニエル,exhibitor63@mail.com,password,salt,1,2022,2026,FALSE,1,2
+松岡優輝,exhibitor64@mail.com,password,salt,1,2022,2026,FALSE,1,2
+沓脱 誠治朗,exhibitor65@mail.com,password,salt,1,2022,2026,FALSE,1,2
+青木蒼馬,exhibitor66@mail.com,password,salt,1,2022,2026,FALSE,1,2
+大西　勲武,exhibitor67@mail.com,password,salt,1,2022,2026,FALSE,1,2
+北村綾,exhibitor68@mail.com,password,salt,1,2022,2026,FALSE,1,2
+西條晋一,exhibitor69@mail.com,password,salt,1,2022,2026,FALSE,1,2
+牛尾知希,exhibitor70@mail.com,password,salt,1,2022,2026,FALSE,1,2
+水原　樹,exhibitor71@mail.com,password,salt,1,2022,2026,FALSE,1,2
+水原樹,exhibitor72@mail.com,password,salt,1,2022,2026,FALSE,1,2
+金牧泰成,exhibitor73@mail.com,password,salt,1,2022,2026,FALSE,1,2
+高本　龍信,exhibitor74@mail.com,password,salt,1,2022,2026,FALSE,1,2
+下河寛宗,exhibitor75@mail.com,password,salt,1,2022,2026,FALSE,1,2
+藤本聖広,exhibitor76@mail.com,password,salt,1,2022,2026,FALSE,1,2
+塩入楓真,exhibitor77@mail.com,password,salt,1,2022,2026,FALSE,1,2
+伊藤優也,exhibitor78@mail.com,password,salt,1,2022,2026,FALSE,1,2
+外園知靖,exhibitor79@mail.com,password,salt,1,2022,2026,FALSE,1,2
+鶴巻小志,exhibitor80@mail.com,password,salt,1,2022,2026,FALSE,1,2
+林佳寿浩,exhibitor81@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中島悠斗,exhibitor82@mail.com,password,salt,1,2022,2026,FALSE,1,2
+五十嵐兼斗,exhibitor83@mail.com,password,salt,1,2022,2026,FALSE,1,2
+道上康介,exhibitor84@mail.com,password,salt,1,2022,2026,FALSE,1,2
+中尾光希,exhibitor85@mail.com,password,salt,1,2022,2026,FALSE,1,2
+橋本宙,exhibitor86@mail.com,password,salt,1,2022,2026,FALSE,1,2
+鎌野 陽向,exhibitor87@mail.com,password,salt,1,2022,2026,FALSE,1,2
+篠原晴哉,exhibitor88@mail.com,password,salt,1,2022,2026,FALSE,1,2
+橋本一輝,exhibitor89@mail.com,password,salt,1,2022,2026,FALSE,1,2
+平田祐希斗,exhibitor90@mail.com,password,salt,1,2022,2026,FALSE,1,2
+ダムゴックハウ,exhibitor91@mail.com,password,salt,1,2022,2026,FALSE,1,2
+荻野遼太郎,exhibitor92@mail.com,password,salt,1,2022,2026,FALSE,1,2
+大串陽翔,exhibitor93@mail.com,password,salt,1,2022,2026,FALSE,1,2
+張　友富　チョウ　ユウフ,exhibitor94@mail.com,password,salt,1,2022,2026,FALSE,1,2
+松坂こはる,exhibitor95@mail.com,password,salt,1,2022,2026,FALSE,1,2
+チョウ　ユウフ,exhibitor96@mail.com,password,salt,1,2022,2026,FALSE,1,2
+ゲン　キョクセイ,exhibitor97@mail.com,password,salt,1,2022,2026,FALSE,1,2
+松井晃輝,exhibitor98@mail.com,password,salt,1,2022,2026,FALSE,1,2
+山崎泰一,exhibitor99@mail.com,password,salt,1,2022,2026,FALSE,1,2
+駿河　遼,exhibitor100@mail.com,password,salt,1,2022,2026,FALSE,1,2
+SUTHUMPOL LAOMANACHAROEN,exhibitor101@mail.com,password,salt,1,2022,2026,FALSE,1,2
+マンスヴ　ヤシュナルフジャ　ナシル　ウグリ,exhibitor102@mail.com,password,salt,1,2022,2026,FALSE,1,2
+小西勘太,exhibitor103@mail.com,password,salt,1,2022,2026,FALSE,1,2
+橋本一輝,exhibitor104@mail.com,password,salt,1,2022,2026,FALSE,1,2
+アーロンジュリオイヴァンセン,exhibitor105@mail.com,password,salt,1,2022,2026,FALSE,1,2
+渕上大暉,exhibitor106@mail.com,password,salt,1,2022,2026,FALSE,1,2
+福村晃弘,exhibitor107@mail.com,password,salt,1,2022,2026,FALSE,1,2
+小澤 栞,exhibitor108@mail.com,password,salt,1,2022,2026,FALSE,1,2
+山本至恩,exhibitor109@mail.com,password,salt,1,2022,2026,FALSE,1,2
+原祐太,exhibitor110@mail.com,password,salt,1,2022,2026,FALSE,1,2
+清水翔太,exhibitor111@mail.com,password,salt,1,2022,2026,FALSE,1,2
+森 桐真,exhibitor112@mail.com,password,salt,1,2022,2026,FALSE,1,2
+新川悠生,exhibitor113@mail.com,password,salt,1,2022,2026,FALSE,1,2
+田中隼人,exhibitor114@mail.com,password,salt,1,2022,2026,FALSE,1,2
+内原夕葵,exhibitor115@mail.com,password,salt,1,2022,2026,FALSE,1,2
+榊󠄀木匠,exhibitor116@mail.com,password,salt,1,2022,2026,FALSE,1,2
+堀田恭之介,exhibitor117@mail.com,password,salt,1,2022,2026,FALSE,1,2
+室　紘基,exhibitor118@mail.com,password,salt,1,2022,2026,FALSE,1,2
+林威彤,exhibitor119@mail.com,password,salt,1,2022,2026,FALSE,1,2
+内原夕葵,exhibitor120@mail.com,password,salt,1,2022,2026,FALSE,1,2
+後呂岡諒,exhibitor121@mail.com,password,salt,1,2022,2026,FALSE,1,2
+岸本大空,exhibitor122@mail.com,password,salt,1,2022,2026,FALSE,1,2
