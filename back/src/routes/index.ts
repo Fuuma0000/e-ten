@@ -5,7 +5,7 @@ import nodemailer from "nodemailer";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
 import { body } from "express-validator";
-require('dotenv').config();
+require("dotenv").config();
 
 const router: Router = Router();
 const crypto = require("crypto");
@@ -395,7 +395,7 @@ router.post(
 
 router.post("/refresh", async (req: Request, res: Response) => {
   try {
-    const refreshToken = req.headers["x-refresh-token"] as string;
+    const refreshToken = req.cookies["x-refresh-token"] as string;
     const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET as string;
     const decoded = jwt.verify(refreshToken, refreshTokenSecret) as JwtPayload;
     const userId = Number(decoded.userId);
