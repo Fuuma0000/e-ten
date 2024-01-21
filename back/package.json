@@ -15,6 +15,7 @@
     "db:reset": "npx prisma migrate reset"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.496.0",
     "@prisma/client": "^5.6.0",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",
