@@ -83,21 +83,13 @@ export default function Index() {
         }}
       >
         <Typography
-          component="h1"
+          component="img"
+          src="/e_pluse_pluse_logo.png"
           sx={{
-            color: "primary.main",
-            fontSize: {
-              xs: "h2.fontSize",
-              md: "h1.fontSize",
-              lg: "h1.fontSize",
-            },
-            fontWeight: "bold",
-            marginBottom: "80px",
-            alignItems: "center",
+            width: {xs: "200px", md: "400px" },
+            marginBottom: {xs: "32px",md:"104px"}
           }}
-        >
-          サイト名
-        </Typography>
+        />
 
         <Typography
           component="div"
