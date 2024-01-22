@@ -21,20 +21,34 @@ export default function SiteLayout({
           minHeight: "8vh",
         }}
       >
-        <Typography
-          component={"h1"}
+        <Stack
           sx={{
-            marginY: "auto",
-            textAlign: "center",
             width: "25%",
-            fontSize: { xs: "h5.fontSize", md: "h3.fontSize" },
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          E++
-        </Typography>
+          <Typography component={"a"} href="/site/events">
+            <Typography
+              component={"img"}
+              src="/e_pluse_pluse_logo.png"
+              sx={{
+                marginY: "auto",
+                textAlign: "center",
+                width: {xs: "48px", md:"152px"},
+                marginLeft: "",
+                fontSize: { xs: "h5.fontSize", md: "h3.fontSize" },
+              }}
+            />
+          </Typography>
+        </Stack>
+
         <Stack
           direction={"row"}
           sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
             alignItems: "center",
             justifyContent: "end",
             backgroundColor: "primary.light",
@@ -51,7 +65,7 @@ export default function SiteLayout({
               position: "absolute",
               top: 0,
               right: 0,
-              width: "75%",
+              width: "calc(100% + 10px)",
               height: "8vh",
               borderRadius: "32px 0px 0px 180px / 0px 0px 0px 150px",
               borderBottom: "10px solid",
@@ -68,7 +82,7 @@ export default function SiteLayout({
               display: "inline-block",
               height: "64px",
               width: "64px",
-              marginX: "8px"
+              marginX: "8px",
             }}
           >
             <BookmarkIcon
@@ -86,7 +100,7 @@ export default function SiteLayout({
               display: "inline-block",
               height: "64px",
               width: "64px",
-              marginX: "8px"
+              marginX: "8px",
             }}
           >
             <AccountCircleIcon
