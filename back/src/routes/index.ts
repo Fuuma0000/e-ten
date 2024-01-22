@@ -5,6 +5,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
 import { body } from "express-validator";
 const { SES } = require("@aws-sdk/client-ses");
+require('dotenv').config();
 
 const router: Router = Router();
 const crypto = require("crypto");

@@ -23,12 +23,41 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import React, { useEffect, useState } from "react";
 import { addHeaderMiddleware } from "@/lib/apiClient";
 import { useParams } from "next/navigation";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+type EVENT = {
+  id: any,
+  name: any,
+  start_at: any,
+  end_at: any,
+  icon_url: any,
+  description: any,
+  created_at: any,
+  updated_at: any,
+  deleted_at: any,
+}
+
+type WORK = {
+  work_id: any,
+  name: any,
+  catch_copy : any,
+  genres: any,
+  technologies: any
+}
+
+type STUDENT = {
+  user_id: any,
+  username: any,
+  enrollment_year: any,
+  graduation_year: any,
+  job: any,
+}
 
 export default function Event() {
   const [value, setValue] = React.useState(0);
-  const [eventsData, setEventsData] = useState();
-  const [profilesData, setProfilesData] = useState();
+  const [eventData, setEventData] = useState<EVENT>();
+  const [eventsData, setEventsData] = useState<WORK[]>();
+  const [profilesData, setProfilesData] = useState<STUDENT[]>();
   const [errorMessage, setErrorMessage] = useState();
 
   const params = useParams();
@@ -48,21 +77,40 @@ export default function Event() {
         const eventsResponse = await axiosClient.get(
           `/events/${dynamicRoutingId}/works`,
           { withCredentials: true }
-        );
+        ).then((res: AxiosResponse<WORK[]>) => {
+          const { data, status } = res;
+          console.log(res)
+          return data
+        });
         const profilesResponse = await axiosClient.get(
           `/events/${dynamicRoutingId}/students`,
           { withCredentials: true }
-        );
+        ).then((res: AxiosResponse<STUDENT[]>) => {
+          const { data, status } = res;
+          console.log(res)
+          return data
+        });
+
+        const eventResponse = await axiosClient.get(
+          `/events/${dynamicRoutingId}`,
+          { withCredentials: true }
+        ).then((res: AxiosResponse<EVENT>) => {
+          const { data, status } = res;
+          console.log(res)
+          return data
+        });
 
         // TODO:確認したら消す
+        console.log("=----------------------------");
+        console.log(eventResponse);
         console.log("=----------------------------");
         console.log(eventsResponse);
         console.log("-------------------------------------------");
         console.log(profilesResponse);
         console.log("---------------------------------------------");
 
-        setEventsData(eventsResponse.data);
-        setProfilesData(profilesResponse.data);
+        setEventsData(eventsResponse);
+        setProfilesData(profilesResponse);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           console.log(e.response.data);
@@ -106,7 +154,7 @@ export default function Event() {
             paddingX: "8px",
           }}
         >
-          ＋E展 2024・Spring
+          {eventData?.description}
         </Typography>
         <Typography
           component={"div"}
@@ -136,7 +184,7 @@ export default function Event() {
                 marginLeft: "8px",
               }}
             >
-              2024年2月2日（Mon）0:00 ～ 2024年2月3日（Sat）23:59
+              {eventData?.start_at + " ～ " + eventData?.end_at}
             </Typography>
           </Stack>
         </Typography>
@@ -242,11 +290,11 @@ export default function Event() {
               paddingX: "32px",
             }}
           >
-            {Array.from(Array(8)).map((_, index) => (
+            {eventsData?.map((value, index) => (
               <Grid item xs={4} sm={4} md={3} key={index}>
                 <Typography
                   component={"a"}
-                  href={`../work/${index}`}
+                  href={`../work/${value.work_id}`}
                   sx={{
                     textDecoration: "none",
                   }}
@@ -278,7 +326,7 @@ export default function Event() {
                           marginBottom: "8px",
                         }}
                       >
-                        あああ
+                        {value.name}
                       </Typography>
                       <Typography
                         component={"p"}
@@ -287,7 +335,7 @@ export default function Event() {
                           wordBreak: "break-word",
                         }}
                       >
-                        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                        {value.catch_copy}
                       </Typography>
                     </Stack>
                   </Item>
@@ -422,11 +470,11 @@ export default function Event() {
               paddingX: "32px",
             }}
           >
-            {Array.from(Array(8)).map((_, index) => (
+            {profilesData?.map((value, index) => (
               <Grid item xs={4} sm={4} md={3} key={index}>
                 <Typography
                   component={"a"}
-                  href={`../work/${index}`}
+                  href={`../user/${value.user_id}`}
                   sx={{
                     textDecoration: "none",
                   }}
@@ -458,7 +506,7 @@ export default function Event() {
                           marginBottom: "8px",
                         }}
                       >
-                        あああ
+                        {value.username}
                       </Typography>
                       <Typography
                         component={"p"}
@@ -467,7 +515,7 @@ export default function Event() {
                           wordBreak: "break-word",
                         }}
                       >
-                        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                        {value.enrollment_year + " 〜 " + value.graduation_year}
                       </Typography>
                     </Stack>
                   </Item>
