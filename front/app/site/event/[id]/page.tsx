@@ -10,6 +10,8 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
+  Pagination,
+  PaginationItem,
   Paper,
   Select,
   Stack,
@@ -20,44 +22,50 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useEffect, useState } from "react";
 import { addHeaderMiddleware } from "@/lib/apiClient";
 import { useParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 
 type EVENT = {
-  id: any,
-  name: any,
-  start_at: any,
-  end_at: any,
-  icon_url: any,
-  description: any,
-  created_at: any,
-  updated_at: any,
-  deleted_at: any,
-}
+  id: any;
+  name: any;
+  start_at: any;
+  end_at: any;
+  icon_url: any;
+  description: any;
+  created_at: any;
+  updated_at: any;
+  deleted_at: any;
+};
 
 type WORK = {
-  work_id: any,
-  name: any,
-  catch_copy : any,
-  genres: any,
-  technologies: any
-}
+  work_id: any;
+  name: any;
+  catch_copy: any;
+  genres: any;
+  technologies: any;
+};
 
 type STUDENT = {
-  user_id: any,
-  username: any,
-  enrollment_year: any,
-  graduation_year: any,
-  job: any,
-}
+  user_id: any;
+  username: any;
+  enrollment_year: any;
+  graduation_year: any;
+  job: any;
+};
 
 export default function Event() {
   const [value, setValue] = React.useState(0);
   const [eventData, setEventData] = useState<EVENT>();
   const [eventsData, setEventsData] = useState<WORK[]>();
+  const [viewEventsData, setViewEventsData] = useState<WORK[][]>();
+  const [eventsNum, setEventsNum] = useState(1);
   const [profilesData, setProfilesData] = useState<STUDENT[]>();
+  const [viewProfilesData, setViewProfilesData] = useState<STUDENT[][]>();
+  const [profilesNum, setProfilesNum] = useState(1);
   const [errorMessage, setErrorMessage] = useState();
 
   const params = useParams();
@@ -65,6 +73,7 @@ export default function Event() {
   // TODO:ダイナミックルーティングの値を取得する
   // それ使ってレスポンスを受け取る
   // stateに詰めて描画に使う
+
   useEffect(() => {
     const asyncWrapper = async () => {
       const dynamicRoutingId = params.id;
@@ -74,31 +83,30 @@ export default function Event() {
       // TODO:ページ遷移時にログイントークンとリフレッシュトークンを引き継げてないのを福留にきく
 
       try {
-        const eventsResponse = await axiosClient.get(
-          `/events/${dynamicRoutingId}/works`,
-          { withCredentials: true }
-        ).then((res: AxiosResponse<WORK[]>) => {
-          const { data, status } = res;
-          console.log(res)
-          return data
-        });
-        const profilesResponse = await axiosClient.get(
-          `/events/${dynamicRoutingId}/students`,
-          { withCredentials: true }
-        ).then((res: AxiosResponse<STUDENT[]>) => {
-          const { data, status } = res;
-          console.log(res)
-          return data
-        });
+        const eventsResponse = await axiosClient
+          .get(`/events/${dynamicRoutingId}/works`, { withCredentials: true })
+          .then((res: AxiosResponse<WORK[]>) => {
+            const { data, status } = res;
+            console.log(res);
+            return data;
+          });
+        const profilesResponse = await axiosClient
+          .get(`/events/${dynamicRoutingId}/students`, {
+            withCredentials: true,
+          })
+          .then((res: AxiosResponse<STUDENT[]>) => {
+            const { data, status } = res;
+            console.log(res);
+            return data;
+          });
 
-        const eventResponse = await axiosClient.get(
-          `/events/${dynamicRoutingId}`,
-          { withCredentials: true }
-        ).then((res: AxiosResponse<EVENT>) => {
-          const { data, status } = res;
-          console.log(res)
-          return data
-        });
+        const eventResponse = await axiosClient
+          .get(`/events/${dynamicRoutingId}`, { withCredentials: true })
+          .then((res: AxiosResponse<EVENT>) => {
+            const { data, status } = res;
+            console.log(res);
+            return data;
+          });
 
         // TODO:確認したら消す
         console.log("=----------------------------");
@@ -111,6 +119,16 @@ export default function Event() {
 
         setEventsData(eventsResponse);
         setProfilesData(profilesResponse);
+
+        const sliceByNumber = (array: Array<any>, number: number) => {
+          const length = Math.ceil(array.length / number);
+          return new Array(length)
+            .fill("")
+            .map((_, i) => array.slice(i * number, (i + 1) * number));
+        };
+
+        setViewEventsData(sliceByNumber(eventsResponse, 18));
+        setViewProfilesData(sliceByNumber(profilesResponse, 18));
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           console.log(e.response.data);
@@ -290,8 +308,8 @@ export default function Event() {
               paddingX: "32px",
             }}
           >
-            {eventsData?.map((value, index) => (
-              <Grid item xs={4} sm={4} md={3} key={index}>
+            {viewEventsData != undefined  ? viewEventsData![eventsNum - 1].map((value, index) => (
+              <Grid item xs={4} sm={4} md={4} key={index}>
                 <Typography
                   component={"a"}
                   href={`../work/${value.work_id}`}
@@ -322,8 +340,12 @@ export default function Event() {
                       <Typography
                         component={"h4"}
                         sx={{
+                          display: "-webkit-box",
                           fontSize: "h6.fontSize",
                           marginBottom: "8px",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 1,
+                          overflow: "hidden",
                         }}
                       >
                         {value.name}
@@ -331,8 +353,13 @@ export default function Event() {
                       <Typography
                         component={"p"}
                         sx={{
+                          display: "-webkit-box",
                           fontSize: "p.fontSize",
                           wordBreak: "break-word",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 2,
+                          overflow: "hidden",
+                          minHeight: "3em",
                         }}
                       >
                         {value.catch_copy}
@@ -341,8 +368,16 @@ export default function Event() {
                   </Item>
                 </Typography>
               </Grid>
-            ))}
+            )): ""}
           </Grid>
+          <Stack style={{ textAlign: "center" , alignItems: "center"}}>
+            <Pagination
+              count={viewEventsData != undefined ?  viewEventsData?.length : 0} //総ページ数
+              color="primary" //ページネーションの色
+              onChange={(e, num) => setEventsNum(num)} //変更されたときに走る関数。第2引数にページ番号が入る
+              page={eventsNum} //現在のページ番号
+            />
+          </Stack>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
           <Stack
@@ -470,8 +505,8 @@ export default function Event() {
               paddingX: "32px",
             }}
           >
-            {profilesData?.map((value, index) => (
-              <Grid item xs={4} sm={4} md={3} key={index}>
+            {viewProfilesData != undefined ? viewProfilesData[profilesNum - 1].map((value, index) => (
+              <Grid item xs={4} sm={4} md={4} key={index}>
                 <Typography
                   component={"a"}
                   href={`../user/${value.user_id}`}
@@ -521,8 +556,16 @@ export default function Event() {
                   </Item>
                 </Typography>
               </Grid>
-            ))}
+            )) : ""}
           </Grid>
+          <Stack style={{ textAlign: "center" , alignItems: "center"}}>
+            <Pagination
+              count={viewProfilesData != undefined ?  viewProfilesData?.length : 0} //総ページ数
+              color="primary" //ページネーションの色
+              onChange={(e, num) => setProfilesNum(num)} //変更されたときに走る関数。第2引数にページ番号が入る
+              page={profilesNum} //現在のページ番号
+            />
+          </Stack>
         </CustomTabPanel>
       </Stack>
     </Box>
