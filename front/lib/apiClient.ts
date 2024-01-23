@@ -65,40 +65,30 @@ const sendSitePassword = async (sitePassword: String) => {
 }
 
 // ログインから1時間経ってログイントークンが切れた時に発火する関数
-const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string) => {
-  // cookieに詰まってるリフレッシュトークンを取得する
-  const refreshToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-refresh-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-  // post送信するheaderを詰めたオブジェクト
-  const headers = {
-    "Content-Type": "application/json",
-    "x-refresh-token": refreshToken
-  }
-  const response = await axios.post(`${EXPRESS_URL}/refresh`, {}, { headers })
-
+// authenticateミドルウェアから401かつ"トークンの有効期限が切れています"を判定条件にする
+const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, postDataToSend?: Object) => {
+  const response = await axios.post(`${EXPRESS_URL}/refresh`, {}, {
+    withCredentials: true
+  });
+  
   console.log("/refreshからのresponse");
   console.log(response);
 
   // この時点で新しいアクセストークンがcookieに保存されているはず
-
-  // cookieからサイトパスワードトークン・アクセストークンを取得する
-  const sitePasswordToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-site-password-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-  const accessToken = document.cookie.replace(/(?:(?:^|.*;\s*)x-login-token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-
-  // 新しいアクセストークン使って任意の投げ先に投げる.引数でパス取ってくるつもり
-  const newHeaders = {
-    "x-site-password-token": sitePasswordToken,
-    "Authorization": `Bearer ${accessToken}`
-  }
   if (sendMethodFlag === "GET") {
-    const newResponse = await axios.get(`${EXPRESS_URL}/${requestUrl}`, { headers: newHeaders });
+    const newResponse = await axios.get(`${EXPRESS_URL}/${requestUrl}`, { 
+      withCredentials: true
+    });
+
     const newResopnseData = newResponse.data;
     return {
       status: "OK",
       responseData: newResopnseData
     };
   } else if (sendMethodFlag === "POST") {
-    const newResponse = await axios.post(`${EXPRESS_URL}/${requestUrl}`, { headers: newHeaders });
+    const newResponse = await axios.post(`${EXPRESS_URL}/${requestUrl}`, postDataToSend, {
+      withCredentials: true
+    });
     const newResponseData = newResponse.data;
     return {
       status: "OK",
@@ -108,7 +98,8 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string) =>
     console.log("flagが適切な値になっていない");
     return {
       status: "NG",
+      responseData: "flagが適切な値になっていない"
     };
   }
 }
-export { addHeaderMiddleware, addSitePasswordHeader, sendSitePassword }
+export { addHeaderMiddleware, addSitePasswordHeader, sendSitePassword, handleExpiredToken }
