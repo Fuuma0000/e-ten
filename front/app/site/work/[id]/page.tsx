@@ -33,9 +33,26 @@ export default function Event() {
 
   const params = useParams();
 
-  const clickBookMark = () => {
+  const clickBookMark = async () => {
     const newBookMark = !isBookMarked;
     setIsBookMarked(newBookMark);
+
+    // bookmark用にworks_idを取得する
+    const dynamicRoutingId = params.id;
+    const axiosClient = addHeaderMiddleware();
+
+    try {
+      const response = await axiosClient.post(`/bookmarks/${dynamicRoutingId}`, {}, {
+        withCredentials: true
+      });
+      console.log(response);
+    } catch (e) {
+      // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
+      if (axios.isAxiosError(e) && e.response) {
+        console.log(e.response.data);
+        // setErrorMessage(e.response.data);
+      }      
+    }
   }
 
   useEffect(() => {

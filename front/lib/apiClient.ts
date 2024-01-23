@@ -74,7 +74,7 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string) =>
     "Content-Type": "application/json",
     "x-refresh-token": refreshToken
   }
-  const response = await axios.post(`${EXPRESS_URL}/refresh`, null, { headers })
+  const response = await axios.post(`${EXPRESS_URL}/refresh`, {}, { headers })
 
   console.log("/refreshからのresponse");
   console.log(response);
