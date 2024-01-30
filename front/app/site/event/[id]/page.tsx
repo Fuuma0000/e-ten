@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Chip,
   Grid,
   IconButton,
   InputLabel,
@@ -45,8 +46,8 @@ type WORK = {
   work_id: any;
   name: any;
   catch_copy: any;
-  genres: any;
-  technologies: any;
+  genres: GENRE[];
+  technologies: TECHNOLOGIE[];
 };
 
 type STUDENT = {
@@ -57,16 +58,40 @@ type STUDENT = {
   job: any;
 };
 
+type TECHNOLOGIE = {
+  id: any;
+  name: any;
+};
+
+type GENRE = {
+  id: any;
+  name: any;
+};
+
+type JOBS = {
+  id: any;
+  name: any;
+};
+
 export default function Event() {
+  const [technologies, setTechnologies] = useState<TECHNOLOGIE[]>([]);
+  const [jobs, setJobs] = useState<JOBS[]>([]);
+
   const [value, setValue] = React.useState(0);
   const [eventData, setEventData] = useState<EVENT>();
-  const [eventsData, setEventsData] = useState<WORK[]>();
+  const [eventsData, setEventsData] = useState<WORK[]>([]);
   const [viewEventsData, setViewEventsData] = useState<WORK[][]>();
   const [eventsNum, setEventsNum] = useState(1);
-  const [profilesData, setProfilesData] = useState<STUDENT[]>();
+  const [profilesData, setProfilesData] = useState<STUDENT[]>([]);
   const [viewProfilesData, setViewProfilesData] = useState<STUDENT[][]>();
   const [profilesNum, setProfilesNum] = useState(1);
   const [errorMessage, setErrorMessage] = useState();
+
+  const [searchGenres, setSearchGenres] = useState<GENRE[]>([]);
+  const [searchTechnologies, setSearchTechnologies] = useState<TECHNOLOGIE[]>([]);
+  const [searchJobs, setSearchJobs] = useState<JOBS[]>([]);
+  const [searchGraduation_year, setSearchGraduation_year] = useState<number>(0);
+  const [searchJobHuntingState, setSearchJobHuntingState] = useState<number>(0)
 
   const params = useParams();
 
@@ -83,11 +108,22 @@ export default function Event() {
       // TODO:ページ遷移時にログイントークンとリフレッシュトークンを引き継げてないのを福留にきく
 
       try {
+        const technologiesResponse = await axiosClient
+          .get(`/events/technologies`, { withCredentials: true })
+          .then((res: AxiosResponse<TECHNOLOGIE[]>) => {
+            const { data, status } = res;
+            return data;
+          });
+        const jobsResponse = await axiosClient
+          .get(`/events/jobs`, { withCredentials: true })
+          .then((res: AxiosResponse<JOBS[]>) => {
+            const { data, status } = res;
+            return data;
+          });
         const eventsResponse = await axiosClient
           .get(`/events/${dynamicRoutingId}/works`, { withCredentials: true })
           .then((res: AxiosResponse<WORK[]>) => {
             const { data, status } = res;
-            console.log(res);
             return data;
           });
         const profilesResponse = await axiosClient
@@ -96,7 +132,6 @@ export default function Event() {
           })
           .then((res: AxiosResponse<STUDENT[]>) => {
             const { data, status } = res;
-            console.log(res);
             return data;
           });
 
@@ -104,34 +139,21 @@ export default function Event() {
           .get(`/events/${dynamicRoutingId}`, { withCredentials: true })
           .then((res: AxiosResponse<EVENT>) => {
             const { data, status } = res;
-            console.log(res);
             return data;
           });
 
         // TODO:確認したら消す
-        console.log("=----------------------------");
-        console.log(eventResponse);
-        console.log("=----------------------------");
-        console.log(eventsResponse);
-        console.log("-------------------------------------------");
         console.log(profilesResponse);
-        console.log("---------------------------------------------");
 
+        setTechnologies(technologiesResponse);
+        setJobs(jobsResponse);
         setEventsData(eventsResponse);
         setProfilesData(profilesResponse);
-
-        const sliceByNumber = (array: Array<any>, number: number) => {
-          const length = Math.ceil(array.length / number);
-          return new Array(length)
-            .fill("")
-            .map((_, i) => array.slice(i * number, (i + 1) * number));
-        };
 
         setViewEventsData(sliceByNumber(eventsResponse, 18));
         setViewProfilesData(sliceByNumber(profilesResponse, 18));
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
           setErrorMessage(e.response.data);
         }
       }
@@ -255,11 +277,28 @@ export default function Event() {
               >
                 <Autocomplete
                   multiple
-                  limitTags={2}
-                  id="multiple-limit-tags"
-                  options={top100Films}
-                  getOptionLabel={(option) => option.title}
+                  limitTags={1}
+                  id="multiple-genres-tags"
+                  isOptionEqualToValue={(option, v) => option.id === v.id}
+                  options={genres}
+                  getOptionLabel={(option) => option.name}
                   defaultValue={[]}
+                  renderOption={(props, option) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(tagValue, getTagProps) => {
+                    return tagValue.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option.id}
+                        label={option.name}
+                      />
+                    ));
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -268,14 +307,34 @@ export default function Event() {
                     />
                   )}
                   sx={{ width: "100%" }}
+                  onChange={(event, newValue) => {
+                    setSearchGenres(newValue);
+                  }}
                 />
                 <Autocomplete
                   multiple
-                  limitTags={2}
-                  id="multiple-limit-tags"
-                  options={top100Films}
-                  getOptionLabel={(option) => option.title}
+                  limitTags={1}
+                  id="multiple-technologies-tags"
+                  isOptionEqualToValue={(option, v) => option.id === v.id}
+                  options={technologies}
+                  getOptionLabel={(option) => option.name}
                   defaultValue={[]}
+                  renderOption={(props, option) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(tagValue, getTagProps) => {
+                    return tagValue.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option.id}
+                        label={option.name}
+                      />
+                    ));
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -284,6 +343,9 @@ export default function Event() {
                     />
                   )}
                   sx={{ width: "100%" }}
+                  onChange={(event, newValue) => {
+                    setSearchTechnologies(newValue);
+                  }}
                 />
               </Stack>
               <Button
@@ -293,6 +355,37 @@ export default function Event() {
                   fontSize: "h6.fontSize",
                   color: "gray.light",
                   width: "40%",
+                }}
+                onClick={(e) => {
+                  var newEventsData: WORK[] = eventsData;
+                  if (searchGenres.length) {
+                    newEventsData = newEventsData.filter((value) => {
+                      var flag = false;
+                      for (const genre of value.genres) {
+                        for (const searchGenre of searchGenres) {
+                          if (genre.id == searchGenre.id && !flag) {
+                            flag = true;
+                          }
+                        }
+                      }
+                      return flag;
+                    });
+                  }
+                  if (searchTechnologies.length) {
+                    newEventsData = newEventsData.filter((value) => {
+                      var flag = false;
+                      for (const genre of value.technologies) {
+                        for (const searchTechnologie of searchTechnologies) {
+                          if (genre.id == searchTechnologie.id && !flag) {
+                            flag = true;
+                          }
+                        }
+                      }
+                      return flag;
+                    });
+                  }
+
+                  setViewEventsData(sliceByNumber(newEventsData, 18));
                 }}
               >
                 検索
@@ -308,71 +401,73 @@ export default function Event() {
               paddingX: "32px",
             }}
           >
-            {viewEventsData != undefined  ? viewEventsData![eventsNum - 1].map((value, index) => (
-              <Grid item xs={4} sm={4} md={4} key={index}>
-                <Typography
-                  component={"a"}
-                  href={`../work/${value.work_id}`}
-                  sx={{
-                    textDecoration: "none",
-                  }}
-                >
-                  <Item>
-                    <Stack
+            {viewEventsData != undefined && viewEventsData.length
+              ? viewEventsData[eventsNum - 1].map((value, index) => (
+                  <Grid item xs={4} sm={4} md={4} key={index}>
+                    <Typography
+                      component={"a"}
+                      href={`../work/${value.work_id}`}
                       sx={{
-                        alignItems: "center",
+                        textDecoration: "none",
                       }}
                     >
-                      <Typography
-                        component={"img"}
-                        src="/event_1.png"
-                        sx={{
-                          width: "60%",
-                        }}
-                      />
-                    </Stack>
-                    <Stack
-                      sx={{
-                        backgroundColor: "gray.light",
-                        padding: "8px 16px",
-                      }}
-                    >
-                      <Typography
-                        component={"h4"}
-                        sx={{
-                          display: "-webkit-box",
-                          fontSize: "h6.fontSize",
-                          marginBottom: "8px",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 1,
-                          overflow: "hidden",
-                        }}
-                      >
-                        {value.name}
-                      </Typography>
-                      <Typography
-                        component={"p"}
-                        sx={{
-                          display: "-webkit-box",
-                          fontSize: "p.fontSize",
-                          wordBreak: "break-word",
-                          WebkitBoxOrient: "vertical",
-                          WebkitLineClamp: 2,
-                          overflow: "hidden",
-                          minHeight: "3em",
-                        }}
-                      >
-                        {value.catch_copy}
-                      </Typography>
-                    </Stack>
-                  </Item>
-                </Typography>
-              </Grid>
-            )): ""}
+                      <Item>
+                        <Stack
+                          sx={{
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography
+                            component={"img"}
+                            src="/event_1.png"
+                            sx={{
+                              width: "60%",
+                            }}
+                          />
+                        </Stack>
+                        <Stack
+                          sx={{
+                            backgroundColor: "gray.light",
+                            padding: "8px 16px",
+                          }}
+                        >
+                          <Typography
+                            component={"h4"}
+                            sx={{
+                              display: "-webkit-box",
+                              fontSize: "h6.fontSize",
+                              marginBottom: "8px",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 1,
+                              overflow: "hidden",
+                            }}
+                          >
+                            {value.name}
+                          </Typography>
+                          <Typography
+                            component={"p"}
+                            sx={{
+                              display: "-webkit-box",
+                              fontSize: "p.fontSize",
+                              wordBreak: "break-word",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 2,
+                              overflow: "hidden",
+                              minHeight: "3em",
+                            }}
+                          >
+                            {value.catch_copy}
+                          </Typography>
+                        </Stack>
+                      </Item>
+                    </Typography>
+                  </Grid>
+                ))
+              : ""}
           </Grid>
-          <Stack style={{ textAlign: "center" , alignItems: "center"}}>
+          <Stack style={{ textAlign: "center", alignItems: "center" }}>
             <Pagination
-              count={viewEventsData != undefined ?  viewEventsData?.length : 0} //総ページ数
+              count={viewEventsData != undefined ? viewEventsData?.length : 0} //総ページ数
               color="primary" //ページネーションの色
               onChange={(e, num) => setEventsNum(num)} //変更されたときに走る関数。第2引数にページ番号が入る
               page={eventsNum} //現在のページ番号
@@ -408,21 +503,41 @@ export default function Event() {
               }}
             >
               <Autocomplete
-                multiple
-                limitTags={2}
-                id="job"
-                options={top100Films}
-                getOptionLabel={(option) => option.title}
-                defaultValue={[]}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="希望職種"
-                    placeholder="Favorites"
-                  />
-                )}
-                sx={{ width: "80%" }}
-              />
+                  multiple
+                  limitTags={3}
+                  id="multiple-jobs-tags"
+                  isOptionEqualToValue={(option, v) => option.id === v.id}
+                  options={jobs}
+                  getOptionLabel={(option) => option.name}
+                  defaultValue={[]}
+                  renderOption={(props, option) => {
+                    return (
+                      <li {...props} key={option.id}>
+                        {option.name}
+                      </li>
+                    );
+                  }}
+                  renderTags={(tagValue, getTagProps) => {
+                    return tagValue.map((option, index) => (
+                      <Chip
+                        {...getTagProps({ index })}
+                        key={option.id}
+                        label={option.name}
+                      />
+                    ));
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="希望職種"
+                      placeholder="Favorites"
+                    />
+                  )}
+                  sx={{ width: "80%" }}
+                  onChange={(event, newValue) => {
+                    setSearchJobs(newValue);
+                  }}
+                />
               <Stack
                 sx={{
                   flexDirection: { md: "row" },
@@ -450,12 +565,15 @@ export default function Event() {
                     sx={{
                       width: "100%",
                     }}
+                    onChange={(e) => {
+                      setSearchGraduation_year(Number(e.target.value));
+                    }}
                   >
                     <MenuItem value={0}>全て</MenuItem>
-                    <MenuItem value={2020}>2024</MenuItem>
-                    <MenuItem value={2021}>2025</MenuItem>
-                    <MenuItem value={2022}>2026</MenuItem>
-                    <MenuItem value={2023}>2027</MenuItem>
+                    <MenuItem value={2024}>2024</MenuItem>
+                    <MenuItem value={2025}>2025</MenuItem>
+                    <MenuItem value={2026}>2026</MenuItem>
+                    <MenuItem value={2027}>2027</MenuItem>
                   </Select>
                 </Typography>
                 <Typography
@@ -476,6 +594,9 @@ export default function Event() {
                     sx={{
                       width: "100%",
                     }}
+                    onChange={(e) => {
+                      setSearchJobHuntingState(Number(e.target.value));
+                    }}
                   >
                     <MenuItem value={0}>全て</MenuItem>
                     <MenuItem value={1}>就活中</MenuItem>
@@ -491,6 +612,45 @@ export default function Event() {
                   color: "gray.light",
                   width: "40%",
                 }}
+                onClick={(e) => {
+                  var newProfilesData: STUDENT[] = profilesData;
+                  if (searchGraduation_year != 0) {
+                    newProfilesData = newProfilesData.filter((value) => {
+                      return value.graduation_year == searchGraduation_year;
+                    });
+                  }
+
+                  //就活状況のデータがまだ組み込まれていないので追加されたらフィルターをかける
+                  // if (searchJobHuntingState != 0){
+                  //   newProfilesData = newProfilesData.filter((value) => {
+                  //     if(searchJobHuntingState == 1){
+                  //       return value.jobHuntingState; 
+                  //     }
+                  //     return !value.jobHuntingState;
+                  //   })
+                  // }
+
+                  // とってきた参加学生の値に希望職種のでもデータが入っていないため現状はできない
+                  // テストデータが入ったらテストします
+                  // if (searchJobs.length) {
+                  //   newProfilesData = newProfilesData.filter((value) => {
+                  //     var flag = false;
+                  //     for (const j of value.job) {
+                  //       for (const searchJob of searchJobs) {
+                  //         if (j.id == searchJob.id && !flag) {
+                  //           flag = true;
+                  //         }
+                  //       }
+                  //     }
+                  //     return flag;
+                  //   });
+
+
+                  setViewProfilesData(sliceByNumber(newProfilesData, 18));
+                  
+                  console.log(searchJobs);
+                  console.log(newProfilesData);
+                }}
               >
                 検索
               </Button>
@@ -505,62 +665,68 @@ export default function Event() {
               paddingX: "32px",
             }}
           >
-            {viewProfilesData != undefined ? viewProfilesData[profilesNum - 1].map((value, index) => (
-              <Grid item xs={4} sm={4} md={4} key={index}>
-                <Typography
-                  component={"a"}
-                  href={`../user/${value.user_id}`}
-                  sx={{
-                    textDecoration: "none",
-                  }}
-                >
-                  <Item>
-                    <Stack
+            {viewProfilesData != undefined && viewProfilesData.length
+              ? viewProfilesData[profilesNum - 1].map((value, index) => (
+                  <Grid item xs={4} sm={4} md={4} key={index}>
+                    <Typography
+                      component={"a"}
+                      href={`../user/${value.user_id}`}
                       sx={{
-                        alignItems: "center",
+                        textDecoration: "none",
                       }}
                     >
-                      <Typography
-                        component={"img"}
-                        src="/event_1.png"
-                        sx={{
-                          width: "60%",
-                        }}
-                      />
-                    </Stack>
-                    <Stack
-                      sx={{
-                        backgroundColor: "gray.light",
-                        padding: "8px 16px",
-                      }}
-                    >
-                      <Typography
-                        component={"h4"}
-                        sx={{
-                          fontSize: "h6.fontSize",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        {value.username}
-                      </Typography>
-                      <Typography
-                        component={"p"}
-                        sx={{
-                          fontSize: "p.fontSize",
-                          wordBreak: "break-word",
-                        }}
-                      >
-                        {value.enrollment_year + " 〜 " + value.graduation_year}
-                      </Typography>
-                    </Stack>
-                  </Item>
-                </Typography>
-              </Grid>
-            )) : ""}
+                      <Item>
+                        <Stack
+                          sx={{
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography
+                            component={"img"}
+                            src="/event_1.png"
+                            sx={{
+                              width: "60%",
+                            }}
+                          />
+                        </Stack>
+                        <Stack
+                          sx={{
+                            backgroundColor: "gray.light",
+                            padding: "8px 16px",
+                          }}
+                        >
+                          <Typography
+                            component={"h4"}
+                            sx={{
+                              fontSize: "h6.fontSize",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            {value.username}
+                          </Typography>
+                          <Typography
+                            component={"p"}
+                            sx={{
+                              fontSize: "p.fontSize",
+                              wordBreak: "break-word",
+                            }}
+                          >
+                            {value.enrollment_year +
+                              " 〜 " +
+                              value.graduation_year}
+                          </Typography>
+                        </Stack>
+                      </Item>
+                    </Typography>
+                  </Grid>
+                ))
+              : ""}
           </Grid>
-          <Stack style={{ textAlign: "center" , alignItems: "center"}}>
+          <Stack style={{ textAlign: "center", alignItems: "center" }}>
             <Pagination
-              count={viewProfilesData != undefined ?  viewProfilesData?.length : 0} //総ページ数
+              count={
+                viewProfilesData != undefined ? viewProfilesData?.length : 0
+              } //総ページ数
               color="primary" //ページネーションの色
               onChange={(e, num) => setProfilesNum(num)} //変更されたときに走る関数。第2引数にページ番号が入る
               page={profilesNum} //現在のページ番号
@@ -601,10 +767,12 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
-const top100Films = [
-  { title: "IT", key: 1 },
-  { title: "WEB", key: 2 },
-  { title: "経営情報", key: 3 },
+const genres: GENRE[] = [
+  { id: 1, name: "Web・アプリデザイン" },
+  { id: 2, name: "Webシステム" },
+  { id: 3, name: "モバイルアプリ" },
+  { id: 4, name: "AI" },
+  { id: 5, name: "IoT" },
 ];
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -613,6 +781,12 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+const sliceByNumber = (array: Array<any>, number: number) => {
+  const length = Math.ceil(array.length / number);
+  return new Array(length)
+    .fill("")
+    .map((_, i) => array.slice(i * number, (i + 1) * number));
+};
 // export const getServerSideProps: GetServerSideProps = async (context) => {
 //   const { id } = context.query;
 
