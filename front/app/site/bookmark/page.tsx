@@ -19,7 +19,7 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import axios from "axios";
 
 export default function Event() {
@@ -32,7 +32,7 @@ export default function Event() {
       const axiosClient = addHeaderMiddleware();
 
       try {
-        const response = await axiosClient.get("/bookmarks");
+        const response = await axiosClient.get("/bookmarks", { withCredentials: true });
         console.log("--------------------------------");
         console.log(response);
         console.log("--------------------------------");
@@ -40,8 +40,22 @@ export default function Event() {
         setBookmarkData(response.data);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
-          setErrorMessage(e.response.data);
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken("/bookmarks", "GET");
+
+            console.log("-----再取得したレスポンス-----");
+            console.log(response);
+
+            if (response.status === "OK") {
+              setBookmarkData(response.responseData);
+            } else {
+              // ここが発火することはないはず
+              setErrorMessage(response.responseData);
+            }
+          } else {
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+          }
         }
       }
     }

@@ -26,7 +26,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useEffect, useState } from "react";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { useParams } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 
@@ -104,9 +104,6 @@ export default function Event() {
       const dynamicRoutingId = params.id;
       const axiosClient = addHeaderMiddleware();
 
-      // TODO:レスポンスによって飛び先変える
-      // TODO:ページ遷移時にログイントークンとリフレッシュトークンを引き継げてないのを福留にきく
-
       try {
         const technologiesResponse = await axiosClient
           .get(`/events/technologies`, { withCredentials: true })
@@ -154,7 +151,14 @@ export default function Event() {
         setViewProfilesData(sliceByNumber(profilesResponse, 18));
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          setErrorMessage(e.response.data);
+          // アクセストークンの有効期限が切れていた時
+          // TODO:多分レスポンスそのまま詰めるとまずいはず
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken(`/events/${dynamicRoutingId}/works`, "GET");
+          } else {
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+          }
         }
       }
     };

@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { GetServerSideProps } from "next";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -49,8 +49,16 @@ export default function Event() {
     } catch (e) {
       // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
       if (axios.isAxiosError(e) && e.response) {
-        console.log(e.response.data);
-        // setErrorMessage(e.response.data);
+        // アクセストークンの有効期限が切れていた時
+        if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+          const response = await handleExpiredToken(`/bookmarks/${dynamicRoutingId}`, "POST", {});
+
+          console.log("-----再取得したレスポンス-----");
+          console.log(response);
+        } else {
+          console.log(e.response.data);
+          // setErrorMessage(e.response.data);
+        }
       }      
     }
   }
@@ -74,8 +82,22 @@ export default function Event() {
       } catch (e) {
         // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
-          setErrorMessage(e.response.data);
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken(`/works/${dynamicRoutingId}`, "GET");
+            
+            console.log("-----再取得したレスポンス-----");
+            console.log(response);
+
+            if (response.status === "OK") {
+              setDetailWorksData(response.responseData);
+            } else {
+              // 多分発火せん
+              setErrorMessage(response.responseData);
+            }
+          } else {
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+          }
         }
       }
     };
