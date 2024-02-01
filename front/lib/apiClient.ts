@@ -103,7 +103,7 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, po
       console.log("flagが適切な値になっていない");
       return {
         status: "NG",
-        responseData: "flagが適切な値になっていない"
+        responseData: "flagが適切な値になっていません。"
       };
     }
   } catch (e) {
@@ -113,12 +113,12 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, po
 
       return {
         status: "NG",
-        responseData: "GET.POST再送信でエラーが発生した"
+        responseData: "GET.POST再送信でエラーが発生しました。"
       }
     }
     return {
       status: "NG",
-      responseData: "判定出来ないエラーを返す"
+      responseData: "判定出来ないエラーが発生しました。"
     }
   }
 }

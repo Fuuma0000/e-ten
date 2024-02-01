@@ -21,7 +21,7 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import SettingsIcon from "@mui/icons-material/Settings";
 import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 import { useEffect, useState } from "react";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import axios from "axios";
 
 export default function MyProfileView() {
@@ -41,8 +41,21 @@ export default function MyProfileView() {
         setMyProfiledata(response.data);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
-          setErrorMessage(e.response.data);
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken("/myprofile", "GET");
+
+            console.log("-----再取得したレスポンス-----");
+            console.log(response);
+            if (response.status === "OK") {
+              setMyProfiledata(response.responseData);
+            } else {
+              // 発火しないはず
+              setErrorMessage(response.responseData);
+            }
+          } else {
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+          }
         }
       }  
     }

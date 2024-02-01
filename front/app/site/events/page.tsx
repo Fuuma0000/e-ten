@@ -38,10 +38,10 @@ export default function Events() {
             console.log("-----再取得したレスポンス-----");
             console.log(response);
             if (response.status === "OK") {
-              setEventData(eventData);
+              setEventData(response.responseData);
             } else {
               // ここが発火することはないはず
-              setErrorMessage(e.response.data);
+              setErrorMessage(response.responseData);
             }
           } else {
             // トークンの有効切れに関係ないエラー処理

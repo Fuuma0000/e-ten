@@ -20,7 +20,7 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import axios from "axios";
 
 export default function User() {
@@ -46,8 +46,22 @@ export default function User() {
       } catch (e) {
         // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
-          setErrorMessage(e.response.data);
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken(`/profiles/${dynamicRoutingId}`, "GET");
+
+            console.log("-----再取得したレスポンス-----");
+            console.log(response);
+            
+            if (response.status === "OK") {
+              setDetailProfileData(response.responseData);
+            } else {
+              // ここが発火することはないはず
+              setErrorMessage(response.responseData);
+            }
+          } else {
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+          }
         }
       }
     }
