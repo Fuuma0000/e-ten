@@ -114,6 +114,7 @@ router.get(
             username: true,
             enrollment_year: true,
             graduation_year: true,
+            is_job_hunt_completed: true,
             users_jobs: {
               select: {
                 jobs: {
