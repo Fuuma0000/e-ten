@@ -5,7 +5,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { authenticate, authenticateSitePassword } from "./auth";
 import { body } from "express-validator";
 const { SES } = require("@aws-sdk/client-ses");
-require('dotenv').config();
+require("dotenv").config();
 
 const router: Router = Router();
 const crypto = require("crypto");
@@ -44,7 +44,7 @@ async function isEmailRegistered(email: string): Promise<{ bool: boolean }> {
 
   return { bool: false };
 }
-
+// <a href="${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}">メールアドレスを認証する</a>
 const sendEmail = async (email: string, token: string) => {
   let params = {
     Source: process.env.SES_SENDER as string,
@@ -58,7 +58,17 @@ const sendEmail = async (email: string, token: string) => {
           Charset: "UTF-8",
           // TODO: 本番環境用のURLに変更する
           // TODO: 本文をちゃんと書く
-          Data: `<html><body><h1>リンクをクリックしてください</h1><p>${process.env.SITE_URL_DEV}/verify?email=${email}&token=${token}</p></body></html>`,
+          Data: `<html>
+                  <body>
+                    <h1>ECC＋＋</h1>
+                    <p>メールアドレスを認証して、アカウントの本登録を完了してください。</p>
+                    <form method="get" action="http://localhost:3000/sign/check">
+                      <input type="hidden" name="email" value="${email}">
+                      <input type="hidden" name="token" value="${token}">
+                      <button type="submit">メールアドレスを認証する</button>
+                    </form>
+                  </body>
+                </html>`,
         },
       },
       Subject: {
