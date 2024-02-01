@@ -31,6 +31,7 @@ export default function Index() {
       router.push("/sign/up");
     } else {
       console.log("正当なリクエストが通らなかった時に発火します。");
+      // console.log(response);
       setErrorMessage(response?.message);
       setInputValue("");
     }

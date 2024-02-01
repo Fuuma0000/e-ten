@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -31,8 +31,23 @@ export default function Events() {
         setEventData(eventData);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
-          setErrorMessage(e.response.data);
+          // アクセストークンの有効期限が切れていた時
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken("/events", "GET");
+
+            console.log("-----再取得したレスポンス-----");
+            console.log(response);
+            if (response.status === "OK") {
+              setEventData(eventData);
+            } else {
+              // ここが発火することはないはず
+              setErrorMessage(e.response.data);
+            }
+          } else {
+            // トークンの有効切れに関係ないエラー処理
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+          }
         }
       }
     }

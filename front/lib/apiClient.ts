@@ -55,6 +55,8 @@ const sendSitePassword = async (sitePassword: String) => {
     };
   } catch (e) {
     if (axios.isAxiosError(e) && e.response) {
+      console.log(e);
+      console.log(e.response);
       console.log(e.response.data.message);
       return {
         errorFlag: true,
@@ -64,8 +66,10 @@ const sendSitePassword = async (sitePassword: String) => {
   }
 }
 
+
 // ログインから1時間経ってログイントークンが切れた時に発火する関数
 // authenticateミドルウェアから401かつ"トークンの有効期限が切れています"を判定条件にする
+// e.response.data.message -> エラーメッセージが詰まってる. e.response.status -> ステータスコードが詰まってる
 const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, postDataToSend?: Object) => {
   const response = await axios.post(`${EXPRESS_URL}/refresh`, {}, {
     withCredentials: true
@@ -75,31 +79,47 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, po
   console.log(response);
 
   // この時点で新しいアクセストークンがcookieに保存されているはず
-  if (sendMethodFlag === "GET") {
-    const newResponse = await axios.get(`${EXPRESS_URL}/${requestUrl}`, { 
-      withCredentials: true
-    });
+  try {
+    if (sendMethodFlag === "GET") {
+      const newResponse = await axios.get(`${EXPRESS_URL}/${requestUrl}`, { 
+        withCredentials: true
+      });
+  
+      const newResopnseData = newResponse.data;
+      return {
+        status: "OK",
+        responseData: newResopnseData
+      };
+    } else if (sendMethodFlag === "POST") {
+      const newResponse = await axios.post(`${EXPRESS_URL}/${requestUrl}`, postDataToSend, {
+        withCredentials: true
+      });
+      const newResponseData = newResponse.data;
+      return {
+        status: "OK",
+        responseData: newResponseData
+      };
+    } else {
+      console.log("flagが適切な値になっていない");
+      return {
+        status: "NG",
+        responseData: "flagが適切な値になっていない"
+      };
+    }
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response) {
+      console.log("GET.POST再送信でエラーが発生した");
+      console.log(e.response);
 
-    const newResopnseData = newResponse.data;
-    return {
-      status: "OK",
-      responseData: newResopnseData
-    };
-  } else if (sendMethodFlag === "POST") {
-    const newResponse = await axios.post(`${EXPRESS_URL}/${requestUrl}`, postDataToSend, {
-      withCredentials: true
-    });
-    const newResponseData = newResponse.data;
-    return {
-      status: "OK",
-      responseData: newResponseData
-    };
-  } else {
-    console.log("flagが適切な値になっていない");
+      return {
+        status: "NG",
+        responseData: "GET.POST再送信でエラーが発生した"
+      }
+    }
     return {
       status: "NG",
-      responseData: "flagが適切な値になっていない"
-    };
+      responseData: "判定出来ないエラーを返す"
+    }
   }
 }
 export { addHeaderMiddleware, addSitePasswordHeader, sendSitePassword, handleExpiredToken }
