@@ -1,0 +1,18 @@
+
+Invalid `prisma.users_urls.createMany()` invocation in
+/app/src/routes/profiles/index.ts:244:33
+
+  241 
+  242 // ログインユーザのusers_jobsテーブルにリクエスト全追加
+  243 if (typeof reqUrlObjects !== "undefined") {
+→ 244   await prisma.users_urls.createMany({
+          data: [
+            {
+              name: "byiubyiu",
+              url: "byiuyiub",
+              users_id: 10
+            }
+          ]
+        })
+
+Argument `url_name` is missing.
