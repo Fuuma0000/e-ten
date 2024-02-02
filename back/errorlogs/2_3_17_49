@@ -1,0 +1,9 @@
+
+Invalid `prisma.users.update()` invocation in
+/app/src/routes/profiles/index.ts:162:26
+
+  159 const body: RequestBody = req.body;
+  160 
+  161 try {
+→ 162   await prisma.users.update(
+Foreign key constraint failed on the field: `courses_id`
