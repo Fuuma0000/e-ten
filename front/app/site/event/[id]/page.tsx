@@ -26,8 +26,8 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useEffect, useState } from "react";
-import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
-import { useParams } from "next/navigation";
+import { addHeaderMiddleware, handleExpiredToken, EXPRESS_URL } from "@/lib/apiClient";
+import { useParams, useRouter } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 
 type EVENT = {
@@ -94,6 +94,7 @@ export default function Event() {
   const [searchJobHuntingState, setSearchJobHuntingState] = useState<number>(0)
 
   const params = useParams();
+  const router = useRouter();
 
   // TODO:ダイナミックルーティングの値を取得する
   // それ使ってレスポンスを受け取る
@@ -152,12 +153,62 @@ export default function Event() {
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           // アクセストークンの有効期限が切れていた時
-          // TODO:多分レスポンスそのまま詰めるとまずいはず
           if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
-            const response = await handleExpiredToken(`/events/${dynamicRoutingId}/works`, "GET");
+            const response = await axios.post(`${EXPRESS_URL}/refresh`, {}, {
+              withCredentials: true
+            });
+
+            // 複数のエンドポイント叩いてるからべた書きしてる
+            try {
+              const technologiesResponse = await axiosClient
+                .get(`/events/technologies`, { withCredentials: true })
+                .then((res: AxiosResponse<TECHNOLOGIE[]>) => {
+                  const { data, status } = res;
+                  return data;
+                });
+              const jobsResponse = await axiosClient
+                .get(`/events/jobs`, { withCredentials: true })
+                .then((res: AxiosResponse<JOBS[]>) => {
+                  const { data, status } = res;
+                  return data;
+                });
+              const eventsResponse = await axiosClient
+                .get(`/events/${dynamicRoutingId}/works`, { withCredentials: true })
+                .then((res: AxiosResponse<WORK[]>) => {
+                  const { data, status } = res;
+                  return data;
+                });
+              const profilesResponse = await axiosClient
+                .get(`/events/${dynamicRoutingId}/students`, {
+                  withCredentials: true,
+                })
+                .then((res: AxiosResponse<STUDENT[]>) => {
+                  const { data, status } = res;
+                  return data;
+                });
+              const eventResponse = await axiosClient
+                .get(`/events/${dynamicRoutingId}`, { withCredentials: true })
+                .then((res: AxiosResponse<EVENT>) => {
+                  const { data, status } = res;
+                  return data;
+                });
+
+              setTechnologies(technologiesResponse);
+              setJobs(jobsResponse);
+              setEventsData(eventsResponse);
+              setProfilesData(profilesResponse);
+        
+              setViewEventsData(sliceByNumber(eventsResponse, 18));
+              setViewProfilesData(sliceByNumber(profilesResponse, 18));
+            } catch (e) {
+              console.log("-----再取得時にエラーが発生した-----");
+              console.log(e);
+            }
           } else {
             console.log(e.response.data);
             setErrorMessage(e.response.data);
+
+            router.push("/");
           }
         }
       }

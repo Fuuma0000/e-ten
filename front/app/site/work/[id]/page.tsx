@@ -20,7 +20,7 @@ import {
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { GetServerSideProps } from "next";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
@@ -32,6 +32,7 @@ export default function Event() {
   const [isBookMarked, setIsBookMarked] = useState(true);
 
   const params = useParams();
+  const router = useRouter();
 
   const clickBookMark = async () => {
     const newBookMark = !isBookMarked;
@@ -57,7 +58,7 @@ export default function Event() {
           console.log(response);
         } else {
           console.log(e.response.data);
-          // setErrorMessage(e.response.data);
+          setErrorMessage(e.response.data);
         }
       }      
     }
@@ -97,6 +98,8 @@ export default function Event() {
           } else {
             console.log(e.response.data);
             setErrorMessage(e.response.data);
+
+            router.push("/");
           }
         }
       }

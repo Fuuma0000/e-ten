@@ -11,6 +11,8 @@ import {
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+
 
 export default function Events() {
   const [eventData, setEventData] = useState();
@@ -19,6 +21,7 @@ export default function Events() {
   useEffect(() => {
     const asyncWrapper = async () => {
       const axiosClient = addHeaderMiddleware();
+      const router = useRouter();
       
       // TODO:レスポンスによって飛ばし先を変える
       // TODO:現在の日時と終了日時・開始日時を比較して画面に描画する文字列を返す関数を記述する
@@ -47,6 +50,8 @@ export default function Events() {
             // トークンの有効切れに関係ないエラー処理
             console.log(e.response.data);
             setErrorMessage(e.response.data);
+
+            router.push("/");
           }
         }
       }

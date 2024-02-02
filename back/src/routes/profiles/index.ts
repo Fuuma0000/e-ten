@@ -110,7 +110,7 @@ router.get("/:id", authenticate, async (req: Request, res: Response) => {
   res.json(returnVal);
 });
 
-router.put(
+router.post(
   "/:id",
   [
     body("username")
@@ -223,60 +223,83 @@ router.put(
         });
       }
 
-      const dbUrlObjects = await prisma.users_urls.findMany({
-        where: { users_id: accessUserId },
-        select: {
-          id: true,
-          url_name: true,
-          url: true,
-        },
-      });
+
+      // users_jobsテーブル全消しして全追加する
       const reqUrlObjects = body.urls;
 
+      /// ログインユーザのusers_jobsテーブル全消し
+      await prisma.users_urls.deleteMany({
+        where: {
+          users_id: accessUserId
+        }
+      });
+
+      // リクエストのオブジェクト配列にログイン中のユーザIDを追加する
+      reqUrlObjects?.map((reqUrlObject) => {
+        reqUrlObject.users_id = accessUserId;
+      })
+
+      // ログインユーザのusers_jobsテーブルにリクエスト全追加
       if (typeof reqUrlObjects !== "undefined") {
-        // リクエストにのみ含まれるusers_urls.url_name.users_url.users_url.idの組をオブジェクトとして抽出する
-        const uniqueReqUrls = reqUrlObjects.filter(
-          (reqUrlObject) =>
-            !dbUrlObjects.some(
-              (currentObject) =>
-                currentObject.url_name === reqUrlObject.url_name &&
-                currentObject.url === reqUrlObject.url
-            )
-        );
-        // DBにのみ含まれるusers_urls.url.users_url.url.users_urls.idの組をオブジェクトとして抽出する
-        const uniqueDbUrls = dbUrlObjects.filter(
-          (dbUsersUrlsObject) =>
-            !reqUrlObjects.some(
-              (requUrlsObject) =>
-                dbUsersUrlsObject.url_name === requUrlsObject.url_name &&
-                dbUsersUrlsObject.url === requUrlsObject.url
-            )
-        );
-
-        // 抽出したオブジェクトを元にinsert.delete
-        await prisma.$transaction(async (prisma) => {
-          await prisma.users_urls.createMany({
-            data: uniqueReqUrls.map((uniqueReqUrl) => ({
-              users_id: accessUserId,
-              url_name: uniqueReqUrl.url_name,
-              url: uniqueReqUrl.url,
-            })),
-          });
-
-          for (const uniqueDbUsersUrl of uniqueDbUrls) {
-            await prisma.users_urls.delete({
-              where: { id: uniqueDbUsersUrl.id },
-            });
-          }
-        });
-      } else {
-        // req.urlsが空の時に走る
-        await prisma.users_urls.deleteMany({
-          where: {
-            users_id: accessUserId,
-          },
-        });
+        await prisma.users_urls.createMany({
+          data: reqUrlObjects
+        })
       }
+
+      // const dbUrlObjects = await prisma.users_urls.findMany({
+      //   where: { users_id: accessUserId },
+      //   select: {
+      //     id: true,
+      //     url_name: true,
+      //     url: true,
+      //   },
+      // });
+
+
+      // if (typeof reqUrlObjects !== "undefined") {
+      //   // リクエストにのみ含まれるusers_urls.url_name.users_url.users_url.idの組をオブジェクトとして抽出する
+      //   const uniqueReqUrls = reqUrlObjects.filter(
+      //     (reqUrlObject) =>
+      //       !dbUrlObjects.some(
+      //         (currentObject) =>
+      //           currentObject.url_name === reqUrlObject.url_name &&
+      //           currentObject.url === reqUrlObject.url
+      //       )
+      //   );
+      //   // DBにのみ含まれるusers_urls.url.users_url.url.users_urls.idの組をオブジェクトとして抽出する
+      //   const uniqueDbUrls = dbUrlObjects.filter(
+      //     (dbUsersUrlsObject) =>
+      //       !reqUrlObjects.some(
+      //         (requUrlsObject) =>
+      //           dbUsersUrlsObject.url_name === requUrlsObject.url_name &&
+      //           dbUsersUrlsObject.url === requUrlsObject.url
+      //       )
+      //   );
+
+      //   // 抽出したオブジェクトを元にinsert.delete
+      //   await prisma.$transaction(async (prisma) => {
+      //     await prisma.users_urls.createMany({
+      //       data: uniqueReqUrls.map((uniqueReqUrl) => ({
+      //         users_id: accessUserId,
+      //         url_name: uniqueReqUrl.url_name,
+      //         url: uniqueReqUrl.url,
+      //       })),
+      //     });
+
+      //     for (const uniqueDbUsersUrl of uniqueDbUrls) {
+      //       await prisma.users_urls.delete({
+      //         where: { id: uniqueDbUsersUrl.id },
+      //       });
+      //     }
+      //   });
+      // } else {
+      //   // req.urlsが空の時に走る
+      //   await prisma.users_urls.deleteMany({
+      //     where: {
+      //       users_id: accessUserId,
+      //     },
+      //   });
+      // }
 
       res.status(200).json({ message: "Success" });
     } catch (err) {

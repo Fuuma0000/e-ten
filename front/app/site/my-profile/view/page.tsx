@@ -23,10 +23,13 @@ import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 import { useEffect, useState } from "react";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function MyProfileView() {
   const [myProfileData, setMyProfiledata] = useState();
   const [errorMessage, setErrorMessage] = useState();
+
+  const router = useRouter();
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -55,6 +58,8 @@ export default function MyProfileView() {
           } else {
             console.log(e.response.data);
             setErrorMessage(e.response.data);
+
+            router.push("/");
           }
         }
       }  
