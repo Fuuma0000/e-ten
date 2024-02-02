@@ -1,7 +1,9 @@
 "use client";
 import {
+  Autocomplete,
   Box,
   Button,
+  Chip,
   FormControlLabel,
   FormLabel,
   InputLabel,
@@ -26,12 +28,19 @@ import {
 } from "@mui/material";
 import { blue, grey } from "@mui/material/colors";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { link } from "fs";
 import { useParams, useRouter } from "next/navigation";
 
+type JOBS = {
+  id: any;
+  name: any;
+};
+
 export default function MyProfileSet() {
+  const [jobs, setJobs] = useState<JOBS[]>([]);
+  const [searchJobs, setSearchJobs] = useState<JOBS[]>([]);
   const [linkNum, setlinkNum] = useState(1);
   const [myProfileData, setMyProfileData] = useState();
   const [errorMessage, setErrorMessage] = useState();
@@ -44,22 +53,31 @@ export default function MyProfileSet() {
     const asyncWrapper = async () => {
       try {
         const myProfileResponse = await axiosClient.get("/myprofile", {
-          withCredentials: true
+          withCredentials: true,
         });
+        const jobsResponse = await axiosClient
+          .get(`/events/jobs`, { withCredentials: true })
+          .then((res: AxiosResponse<JOBS[]>) => {
+            const { data, status } = res;
+            return data;
+          });
 
         console.log("--------------------------------");
         console.log(myProfileResponse);
         console.log("--------------------------------");
-
+        setJobs(jobsResponse);
         setMyProfileData(myProfileResponse.data);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+          if (
+            e.response.status === 401 &&
+            e.response.data.message === "トークンの有効期限が切れています"
+          ) {
             const response = await handleExpiredToken("/myprofile", "GET");
 
             console.log("-----再取得したレスポンス-----");
             console.log(response);
-  
+
             if (response.status === "OK") {
               setMyProfileData(response.responseData);
             } else {
@@ -74,27 +92,27 @@ export default function MyProfileSet() {
           }
         }
       }
-    }
+    };
 
     asyncWrapper();
   }, []);
 
   const addLinkForm = () => {
     const nextLinks = [...links];
-    nextLinks.push({name: "", url: ""});
+    nextLinks.push({ name: "", url: "" });
     setLinks(nextLinks);
   };
 
   const chengeLinkName = (index: number, newName: string) => {
     const newLinks = [...links];
     newLinks[index].name = newName;
-    setLinks(newLinks)
-  }
+    setLinks(newLinks);
+  };
   const chengeLinkUrl = (index: number, newUrl: string) => {
     const newLinks = [...links];
     newLinks[index].url = newUrl;
-    setLinks(newLinks)
-  }
+    setLinks(newLinks);
+  };
 
   const [image, setImage] = useState<FileList | null>(null);
   const [name, setName] = useState("");
@@ -105,16 +123,17 @@ export default function MyProfileSet() {
   const [job, setJob] = useState(0);
   const [jobHuntState, setJobHuntState] = useState(false);
   const [pr, setPr] = useState("");
-  const [links, setLinks] = useState([{name: "", url: ""}]);
+  const [links, setLinks] = useState([{ name: "", url: "" }]);
   const clickHandler = async () => {
-    console.log("画像：")
+    console.log("画像：");
     console.log(image);
     console.log("ユーザー名：" + name);
     console.log("メールアドレス：" + mail);
     console.log("コーズ：" + cource);
     console.log("入学年次：" + enrollmentYear);
     console.log("卒業年次：" + graduationYear);
-    console.log("希望職種：" + job);
+    console.log("希望職種：");
+    console.log(searchJobs);
     console.log("就活状況：" + jobHuntState);
     console.log("自己PR：" + pr);
     console.log("リンク集：");
@@ -127,19 +146,23 @@ export default function MyProfileSet() {
 
       console.log("ここまで実行されてる2");
 
-      const response = await axiosClient.post(`/profiles/1`, {
-        user_name: name,
-        email: mail,
-        course_id: cource,
-        enrollment_year: enrollmentYear,
-        graduation_year: graduationYear,
-        jobs_id: job,
-        is_job_hunt_completed: jobHuntState,
-        self_introduction: pr,
-        urls: links
-      }, {
-        withCredentials: true
-      });
+      const response = await axiosClient.post(
+        `/profiles/1`,
+        {
+          user_name: name,
+          email: mail,
+          course_id: cource,
+          enrollment_year: enrollmentYear,
+          graduation_year: graduationYear,
+          jobs_id: job,
+          is_job_hunt_completed: jobHuntState,
+          self_introduction: pr,
+          urls: links,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response);
       console.log("ここまで実行されてる3");
     } catch (e) {
@@ -147,7 +170,7 @@ export default function MyProfileSet() {
         console.log(e);
       }
     }
-  }
+  };
 
   return (
     <Box>
@@ -168,7 +191,14 @@ export default function MyProfileSet() {
         >
           MyProfile編集
         </Typography>
-        <Typography component={"input"} type="file" accept="image/*" onChange={(e) => {setImage(e.target.files)}}/>
+        <Typography
+          component={"input"}
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            setImage(e.target.files);
+          }}
+        />
         <TextField
           id="outlined-password-input"
           label="ユーザー名"
@@ -179,7 +209,9 @@ export default function MyProfileSet() {
             marginBottom: "8px",
           }}
           value={name}
-          onChange={(e)=> {setName(e.target.value);}}
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
         />
         <TextField
           id="outlined-password-input"
@@ -191,7 +223,9 @@ export default function MyProfileSet() {
             marginBottom: "8px",
           }}
           value={mail}
-          onChange={(e) => {setMail(e.target.value)}}
+          onChange={(e) => {
+            setMail(e.target.value);
+          }}
         />
         <Typography
           component={"div"}
@@ -208,7 +242,9 @@ export default function MyProfileSet() {
               width: "100%",
             }}
             defaultValue={cource}
-            onChange={(e) => {setCource(Number(e.target.value))}}
+            onChange={(e) => {
+              setCource(Number(e.target.value));
+            }}
           >
             <MenuItem value={0}>IT</MenuItem>
             <MenuItem value={1}>WEB</MenuItem>
@@ -238,7 +274,9 @@ export default function MyProfileSet() {
                 width: "100%",
               }}
               defaultValue={enrollmentYear}
-              onChange={(e) => {setEnrollmentYear(e.target.value)}}
+              onChange={(e) => {
+                setEnrollmentYear(e.target.value);
+              }}
             >
               <MenuItem value={2020}>2020</MenuItem>
               <MenuItem value={2021}>2021</MenuItem>
@@ -263,7 +301,9 @@ export default function MyProfileSet() {
                 width: "100%",
               }}
               defaultValue={graduationYear}
-              onChange={(e) => {setGraduationYear(e.target.value)}}
+              onChange={(e) => {
+                setGraduationYear(e.target.value);
+              }}
             >
               <MenuItem value={2024}>2024</MenuItem>
               <MenuItem value={2025}>2025</MenuItem>
@@ -273,29 +313,47 @@ export default function MyProfileSet() {
           </Typography>
         </Stack>
 
-        <InputLabel id="jobs-select-label">希望職種</InputLabel>
-        <Select
-          labelId="jobs-select-label"
-          id="jobs-select"
-          label="jobs"
-          sx={{
-            width: "100%",
+        <Autocomplete
+          multiple
+          limitTags={3}
+          id="multiple-jobs-tags"
+          isOptionEqualToValue={(option, v) => option.id === v.id}
+          options={jobs}
+          getOptionLabel={(option) => option.name}
+          defaultValue={[]}
+          renderOption={(props, option) => {
+            return (
+              <li {...props} key={option.id}>
+                {option.name}
+              </li>
+            );
           }}
-          defaultValue={job}
-          onChange={(e) => {setJob(Number(e.target.value))}}
-        >
-          <MenuItem value={0}>WEBエンジニア</MenuItem>
-          <MenuItem value={1}>インフラエンジニア</MenuItem>
-          <MenuItem value={2}>システムエンジニア</MenuItem>
-          <MenuItem value={3}>ネットワークエンジニア</MenuItem>
-        </Select>
+          renderTags={(tagValue, getTagProps) => {
+            return tagValue.map((option, index) => (
+              <Chip
+                {...getTagProps({ index })}
+                key={option.id}
+                label={option.name}
+              />
+            ));
+          }}
+          renderInput={(params) => (
+            <TextField {...params} label="希望職種" placeholder="Favorites" />
+          )}
+          sx={{ width: "80%" }}
+          onChange={(event, newValue) => {
+            setSearchJobs(newValue);
+          }}
+        />
 
         <InputLabel id="is_job_hunt_completed-label">就活状況</InputLabel>
         <RadioGroup
           aria-labelledby="is_job_hunt_completed-label"
           name="radio-buttons-group"
           defaultValue={jobHuntState}
-          onChange={(e) => {setJobHuntState(Boolean(e.target.value))}}
+          onChange={(e) => {
+            setJobHuntState(Boolean(e.target.value));
+          }}
         >
           <FormControlLabel value={false} control={<Radio />} label="就活中" />
           <FormControlLabel value={true} control={<Radio />} label="内定済み" />
@@ -311,7 +369,9 @@ export default function MyProfileSet() {
             borderRadius: "8px",
           }}
           defaultValue={pr}
-          onChange={(e) => {setPr(e.target.value)}}
+          onChange={(e) => {
+            setPr(e.target.value);
+          }}
         ></TextareaAutosize>
 
         <InputLabel id="pr-label">link集</InputLabel>
@@ -338,7 +398,9 @@ export default function MyProfileSet() {
                           width: "100%",
                         }}
                         defaultValue={links[i].name}
-                        onChange={(e) => {chengeLinkName(i, e.target.value)}}
+                        onChange={(e) => {
+                          chengeLinkName(i, e.target.value);
+                        }}
                       />
                     </TableCell>
                     <TableCell>
@@ -350,7 +412,9 @@ export default function MyProfileSet() {
                           width: "100%",
                         }}
                         defaultValue={links[i].url}
-                        onChange={(e) => {chengeLinkUrl(i, e.target.value)}}
+                        onChange={(e) => {
+                          chengeLinkUrl(i, e.target.value);
+                        }}
                       />
                     </TableCell>
                   </TableRow>
@@ -395,7 +459,7 @@ export default function MyProfileSet() {
         <Typography
           component={"div"}
           sx={{
-            textAlign: "center"
+            textAlign: "center",
           }}
         >
           <Button
@@ -411,7 +475,6 @@ export default function MyProfileSet() {
               borderColor: "primary.light",
               boxShadow: 0,
               ":hover": {
-                
                 boxShadow: 0,
               },
               ":active": {
