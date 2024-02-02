@@ -99,13 +99,13 @@ export default function MyProfileSet() {
 
   const addLinkForm = () => {
     const nextLinks = [...links];
-    nextLinks.push({ name: "", url: "" });
+    nextLinks.push({ url_name: "", url: "" });
     setLinks(nextLinks);
   };
 
   const chengeLinkName = (index: number, newName: string) => {
     const newLinks = [...links];
-    newLinks[index].name = newName;
+    newLinks[index].url_name = newName;
     setLinks(newLinks);
   };
   const chengeLinkUrl = (index: number, newUrl: string) => {
@@ -123,7 +123,7 @@ export default function MyProfileSet() {
   const [job, setJob] = useState(0);
   const [jobHuntState, setJobHuntState] = useState(false);
   const [pr, setPr] = useState("");
-  const [links, setLinks] = useState([{ name: "", url: "" }]);
+  const [links, setLinks] = useState([{ url_name: "", url: "" }]);
   const clickHandler = async () => {
     console.log("画像：");
     console.log(image);
@@ -401,7 +401,7 @@ export default function MyProfileSet() {
                         sx={{
                           width: "100%",
                         }}
-                        defaultValue={links[i].name}
+                        defaultValue={links[i].url_name}
                         onChange={(e) => {
                           chengeLinkName(i, e.target.value);
                         }}
