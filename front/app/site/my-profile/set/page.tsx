@@ -40,7 +40,7 @@ type JOBS = {
 
 export default function MyProfileSet() {
   const [jobs, setJobs] = useState<JOBS[]>([]);
-  const [searchJobs, setSearchJobs] = useState<JOBS[]>([]);
+  const [searchJobs, setSearchJobs] = useState<Number[]>([]);
   const [linkNum, setlinkNum] = useState(1);
   const [myProfileData, setMyProfileData] = useState();
   const [errorMessage, setErrorMessage] = useState();
@@ -342,7 +342,11 @@ export default function MyProfileSet() {
           )}
           sx={{ width: "80%" }}
           onChange={(event, newValue) => {
-            setSearchJobs(newValue);
+            let newSearchJobs: Number[] = [];
+            for (const job of newValue){
+              newSearchJobs.push(job.id);
+            }
+            console.log(newSearchJobs)
           }}
         />
 
