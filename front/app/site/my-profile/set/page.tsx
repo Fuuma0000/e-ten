@@ -149,12 +149,12 @@ export default function MyProfileSet() {
       const response = await axiosClient.post(
         `/profiles/1`,
         {
-          user_name: name,
+          username: name,
           email: mail,
           course_id: cource,
           enrollment_year: enrollmentYear,
           graduation_year: graduationYear,
-          jobs_id: job,
+          jobs_id: searchJobs,
           is_job_hunt_completed: jobHuntState,
           self_introduction: pr,
           urls: links,

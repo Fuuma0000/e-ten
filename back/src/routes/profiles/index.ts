@@ -163,8 +163,8 @@ router.post(
         where: { id: accessUserId },
         data: {
           username: body.username ?? null,
-          enrollment_year: body.enrollment_year ?? null,
-          graduation_year: body.graduation_year ?? null,
+          enrollment_year: Number(body.enrollment_year) ?? null,
+          graduation_year: Number(body.graduation_year) ?? null,
           is_job_hunt_completed: body.is_job_hunt_completed ?? null,
           self_introduction: body.self_introduction ?? null,
           icon_url: body.icon_url ?? null,

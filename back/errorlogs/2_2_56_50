@@ -1,0 +1,24 @@
+
+Invalid `prisma.users.update()` invocation in
+/app/src/routes/profiles/index.ts:162:26
+
+  159 const body: RequestBody = req.body;
+  160 
+  161 try {
+→ 162   await prisma.users.update({
+          where: {
+            id: 10
+          },
+          data: {
+            username: null,
+            enrollment_year: "2020",
+                             ~~~~~~
+            graduation_year: "2024",
+            is_job_hunt_completed: false,
+            self_introduction: "muomiuioumioumioum",
+            icon_url: null,
+            courses_id: 0
+          }
+        })
+
+Argument `enrollment_year`: Invalid value provided. Expected Int, NullableIntFieldUpdateOperationsInput or Null, provided String.
