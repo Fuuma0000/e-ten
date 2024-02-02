@@ -141,10 +141,7 @@ export default function MyProfileSet() {
 
     // ユーザ情報変更処理
     try {
-      console.log("ここまで実行されてる1");
       const axiosClient = addHeaderMiddleware();
-
-      console.log("ここまで実行されてる2");
 
       const response = await axiosClient.post(
         `/profiles/1`,
@@ -164,7 +161,6 @@ export default function MyProfileSet() {
         }
       );
       console.log(response);
-      console.log("ここまで実行されてる3");
     } catch (e) {
       if (axios.isAxiosError(e) && e.response) {
         console.log(e);
