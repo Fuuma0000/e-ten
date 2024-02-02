@@ -27,21 +27,25 @@ import {
 import { blue, grey } from "@mui/material/colors";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { addHeaderMiddleware } from "@/lib/apiClient";
+import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { link } from "fs";
+import { useParams, useRouter } from "next/navigation";
 
 export default function MyProfileSet() {
   const [linkNum, setlinkNum] = useState(1);
   const [myProfileData, setMyProfileData] = useState();
   const [errorMessage, setErrorMessage] = useState();
 
+  const router = useRouter();
 
   useEffect(() => {
     const axiosClient = addHeaderMiddleware();
 
     const asyncWrapper = async () => {
       try {
-        const myProfileResponse = await axiosClient.get("/myprofile");
+        const myProfileResponse = await axiosClient.get("/myprofile", {
+          withCredentials: true
+        });
 
         console.log("--------------------------------");
         console.log(myProfileResponse);
@@ -50,8 +54,24 @@ export default function MyProfileSet() {
         setMyProfileData(myProfileResponse.data);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          console.log(e.response.data);
-          setErrorMessage(e.response.data);
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+            const response = await handleExpiredToken("/myprofile", "GET");
+
+            console.log("-----再取得したレスポンス-----");
+            console.log(response);
+  
+            if (response.status === "OK") {
+              setMyProfileData(response.responseData);
+            } else {
+              // 多分発火せん
+              setErrorMessage(response.responseData);
+            }
+          } else {
+            console.log(e.response.data);
+            setErrorMessage(e.response.data);
+
+            router.push("/");
+          }
         }
       }
     }
@@ -86,7 +106,7 @@ export default function MyProfileSet() {
   const [jobHuntState, setJobHuntState] = useState(false);
   const [pr, setPr] = useState("");
   const [links, setLinks] = useState([{name: "", url: ""}]);
-  const clickHandler = () => {
+  const clickHandler = async () => {
     console.log("画像：")
     console.log(image);
     console.log("ユーザー名：" + name);
@@ -99,6 +119,34 @@ export default function MyProfileSet() {
     console.log("自己PR：" + pr);
     console.log("リンク集：");
     console.log(links);
+
+    // ユーザ情報変更処理
+    try {
+      console.log("ここまで実行されてる1");
+      const axiosClient = addHeaderMiddleware();
+
+      console.log("ここまで実行されてる2");
+
+      const response = await axiosClient.post(`/profiles/1`, {
+        user_name: name,
+        email: mail,
+        course_id: cource,
+        enrollment_year: enrollmentYear,
+        graduation_year: graduationYear,
+        jobs_id: job,
+        is_job_hunt_completed: jobHuntState,
+        self_introduction: pr,
+        urls: links
+      }, {
+        withCredentials: true
+      });
+      console.log(response);
+      console.log("ここまで実行されてる3");
+    } catch (e) {
+      if (axios.isAxiosError(e) && e.response) {
+        console.log(e);
+      }
+    }
   }
 
   return (

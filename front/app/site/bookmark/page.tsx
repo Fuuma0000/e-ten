@@ -21,11 +21,14 @@ import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Event() {
   const [value, setValue] = React.useState(0);
   const [bookmarkData, setBookmarkData] = useState();
   const [errorMessage, setErrorMessage] = useState();
+
+  const router = useRouter();
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -40,7 +43,7 @@ export default function Event() {
         setBookmarkData(response.data);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {J
             const response = await handleExpiredToken("/bookmarks", "GET");
 
             console.log("-----再取得したレスポンス-----");
@@ -55,6 +58,8 @@ export default function Event() {
           } else {
             console.log(e.response.data);
             setErrorMessage(e.response.data);
+
+            router.push("/");
           }
         }
       }

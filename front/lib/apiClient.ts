@@ -81,7 +81,7 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, po
   // この時点で新しいアクセストークンがcookieに保存されているはず
   try {
     if (sendMethodFlag === "GET") {
-      const newResponse = await axios.get(`${EXPRESS_URL}/${requestUrl}`, { 
+      const newResponse = await axios.get(`${EXPRESS_URL}${requestUrl}`, { 
         withCredentials: true
       });
   
@@ -91,7 +91,7 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, po
         responseData: newResopnseData
       };
     } else if (sendMethodFlag === "POST") {
-      const newResponse = await axios.post(`${EXPRESS_URL}/${requestUrl}`, postDataToSend, {
+      const newResponse = await axios.post(`${EXPRESS_URL}${requestUrl}`, postDataToSend, {
         withCredentials: true
       });
       const newResponseData = newResponse.data;
@@ -122,4 +122,4 @@ const handleExpiredToken = async (requestUrl: string, sendMethodFlag: string, po
     }
   }
 }
-export { addHeaderMiddleware, addSitePasswordHeader, sendSitePassword, handleExpiredToken }
+export { addHeaderMiddleware, addSitePasswordHeader, sendSitePassword, handleExpiredToken, EXPRESS_URL }

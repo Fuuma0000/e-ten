@@ -17,7 +17,7 @@ type RequestBody = {
   course_id: number | undefined;
   jobs_id: number[] | undefined;
   urls: {
-    id: number;
+    users_id: number;
     url_name: string;
     url: string;
   }[] | undefined;

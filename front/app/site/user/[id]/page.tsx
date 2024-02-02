@@ -18,7 +18,7 @@ import {
   styled,
 } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import axios from "axios";
@@ -28,6 +28,7 @@ export default function User() {
   const [errorMessage, setErrorMessage] = useState();
 
   const params = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -61,6 +62,8 @@ export default function User() {
           } else {
             console.log(e.response.data);
             setErrorMessage(e.response.data);
+
+            router.push("/");
           }
         }
       }
