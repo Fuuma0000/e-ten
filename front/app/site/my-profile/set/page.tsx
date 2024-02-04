@@ -342,7 +342,7 @@ export default function MyProfileSet() {
             for (const job of newValue){
               newSearchJobs.push(job.id);
             }
-            console.log(newSearchJobs)
+            setSearchJobs(newSearchJobs)
           }}
         />
 
