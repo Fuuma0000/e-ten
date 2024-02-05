@@ -161,6 +161,7 @@ export default function MyProfileSet() {
         }
       );
       console.log(response);
+      router.push("/site/my-profile/view");
     } catch (e) {
       if (axios.isAxiosError(e) && e.response) {
         console.log(e);
