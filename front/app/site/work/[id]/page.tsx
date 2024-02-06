@@ -33,7 +33,7 @@ type WORK = {
   description: any;
   genres: any;
   images: string[];
-  is_bookmarked: any;
+  is_bookmarked: boolean;
   movie_url: any;
   technologies: TECHNOLOGIE[];
   users: USER[];
@@ -77,6 +77,19 @@ export default function Event() {
         }
       );
       console.log(response);
+      setDetailWorksData((state) => ({
+        work_id: state?.work_id,
+        name: state?.name,
+        catch_copy: state?.catch_copy,
+        description: state?.description,
+        genres: state?.genres,
+        images: state!.images,
+        is_bookmarked: !state?.is_bookmarked,
+        movie_url: state?.movie_url,
+        technologies: state!.technologies,
+        users: state!.users,
+        works_url: state?.works_url,
+      }));
     } catch (e) {
       // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
       if (axios.isAxiosError(e) && e.response) {
@@ -163,7 +176,9 @@ export default function Event() {
           sx={{
             width: { xs: "58px", sm: "80px", md: "100px" },
             height: { xs: "58px", sm: "80px", md: "100px" },
-            color: isBookMarked ? "gray.dark" : "primary.main",
+            color: detailWorksData?.is_bookmarked
+              ? "gray.dark"
+              : "primary.main",
             position: "fixed",
             bottom: { xs: "16px", md: "24px" },
             right: { xs: "8px", md: "24px" },
@@ -400,7 +415,7 @@ export default function Event() {
                 component={"a"}
                 href={`../user/${value.user_id}`}
                 sx={{
-                  textDecoration: "none"
+                  textDecoration: "none",
                 }}
               >
                 <Paper
