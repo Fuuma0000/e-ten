@@ -396,39 +396,47 @@ export default function Event() {
         >
           {detailWorksData?.users.map((value, index) => (
             <Grid item xs={4} sm={4} md={4}>
-              <Paper
+              <Typography
+                component={"a"}
+                href={`../user/${value.user_id}`}
                 sx={{
-                  padding: "16px 24px",
+                  textDecoration: "none"
                 }}
               >
-                <Typography component={"p"}>
-                  <Typography
-                    component={"span"}
-                    sx={{
-                      fontWeight: "bold",
-                    }}
-                  >
-                    名前
-                  </Typography>
-                  &ensp; {value.username}
-                </Typography>
-                <Typography
-                  component={"p"}
+                <Paper
                   sx={{
-                    marginTop: "8px",
+                    padding: "16px 24px",
                   }}
                 >
+                  <Typography component={"p"}>
+                    <Typography
+                      component={"span"}
+                      sx={{
+                        fontWeight: "bold",
+                      }}
+                    >
+                      名前
+                    </Typography>
+                    &ensp; {value.username}
+                  </Typography>
                   <Typography
-                    component={"span"}
+                    component={"p"}
                     sx={{
-                      fontWeight: "bold",
+                      marginTop: "8px",
                     }}
                   >
-                    担当
+                    <Typography
+                      component={"span"}
+                      sx={{
+                        fontWeight: "bold",
+                      }}
+                    >
+                      担当
+                    </Typography>
+                    &ensp; {value.role}
                   </Typography>
-                  &ensp; {value.role}
-                </Typography>
-              </Paper>
+                </Paper>
+              </Typography>
             </Grid>
           ))}
         </Grid>
