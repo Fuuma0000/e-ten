@@ -20,12 +20,26 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import React, { useEffect, useState } from "react";
 import { GetServerSideProps } from "next";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
+
+type BOOKMARKS = {
+  booksmarks_id: number;
+  works_id: number;
+  works: WORK;
+};
+
+type WORK = {
+  name: string;
+  icon_url: string;
+  catch_copy: string;
+  genres: [];
+  technologies: [];
+};
 
 export default function Event() {
   const [value, setValue] = React.useState(0);
-  const [bookmarkData, setBookmarkData] = useState();
+  const [bookmarkData, setBookmarkData] = useState<BOOKMARKS[]>([]);
   const [errorMessage, setErrorMessage] = useState();
 
   const router = useRouter();
@@ -35,15 +49,25 @@ export default function Event() {
       const axiosClient = addHeaderMiddleware();
 
       try {
-        const response = await axiosClient.get("/bookmarks", { withCredentials: true });
+        const response = await axiosClient
+          .get("/bookmarks", {
+            withCredentials: true,
+          })
+          .then((res: AxiosResponse<BOOKMARKS[]>) => {
+            const { data, status } = res;
+            return data;
+          });
         console.log("--------------------------------");
         console.log(response);
         console.log("--------------------------------");
 
-        setBookmarkData(response.data);
+        setBookmarkData(response);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {J
+          if (
+            e.response.status === 401 &&
+            e.response.data.message === "トークンの有効期限が切れています"
+          ) {
             const response = await handleExpiredToken("/bookmarks", "GET");
 
             console.log("-----再取得したレスポンス-----");
@@ -63,7 +87,7 @@ export default function Event() {
           }
         }
       }
-    }
+    };
 
     asyncWrapper();
   }, []);
@@ -87,7 +111,7 @@ export default function Event() {
           sx={{
             borderBottom: "1px solid",
             borderColor: "gray.main",
-            marginBottom: "24px"
+            marginBottom: "24px",
           }}
         >
           <Typography
@@ -108,56 +132,65 @@ export default function Event() {
             paddingX: "32px",
           }}
         >
-          {Array.from(Array(8)).map((_, index) => (
+          {bookmarkData.map((value, index) => (
             <Grid item xs={4} sm={4} md={3} key={index}>
               <Typography
-                component={"a"}
-                href={`../work/${index}`}
-                sx={{
-                  textDecoration: "none",
-                }}
-              >
-                <Item>
-                  <Stack
-                    sx={{
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      component={"img"}
-                      src="/event_1.png"
+                      component={"a"}
+                      href={`./work/${value.works_id}`}
                       sx={{
-                        width: "60%",
-                      }}
-                    />
-                  </Stack>
-                  <Stack
-                    sx={{
-                      backgroundColor: "gray.light",
-                      padding: "8px 16px",
-                    }}
-                  >
-                    <Typography
-                      component={"h4"}
-                      sx={{
-                        fontSize: "h6.fontSize",
-                        marginBottom: "8px",
+                        textDecoration: "none",
                       }}
                     >
-                      あああ
+                      <Item>
+                        <Stack
+                          sx={{
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography
+                            component={"img"}
+                            src="/event_1.png"
+                            sx={{
+                              width: "60%",
+                            }}
+                          />
+                        </Stack>
+                        <Stack
+                          sx={{
+                            backgroundColor: "gray.light",
+                            padding: "8px 16px",
+                          }}
+                        >
+                          <Typography
+                            component={"h4"}
+                            sx={{
+                              display: "-webkit-box",
+                              fontSize: "h6.fontSize",
+                              marginBottom: "8px",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 1,
+                              overflow: "hidden",
+                            }}
+                          >
+                            {value.works.name}
+                          </Typography>
+                          <Typography
+                            component={"p"}
+                            sx={{
+                              display: "-webkit-box",
+                              fontSize: "p.fontSize",
+                              wordBreak: "break-word",
+                              WebkitBoxOrient: "vertical",
+                              WebkitLineClamp: 2,
+                              overflow: "hidden",
+                              minHeight: "3em",
+                            }}
+                          >
+                            {value.works.catch_copy}
+                          </Typography>
+                        </Stack>
+                      </Item>
                     </Typography>
-                    <Typography
-                      component={"p"}
-                      sx={{
-                        fontSize: "p.fontSize",
-                        wordBreak: "break-word",
-                      }}
-                    >
-                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                    </Typography>
-                  </Stack>
-                </Item>
-              </Typography>
             </Grid>
           ))}
         </Grid>
