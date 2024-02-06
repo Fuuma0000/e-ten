@@ -22,11 +22,40 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import BuildCircleIcon from "@mui/icons-material/BuildCircle";
 import { useEffect, useState } from "react";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 
+type MYPROFILE = {
+  user_id: string;
+  icon_url: string;
+  username: string;
+  course: string;
+  enrollment_year: string;
+  graduation_year: string;
+  job: [];
+  is_job_hunt_completed: boolean;
+  email: string;
+  self_introduction: string;
+  url: [];
+  works: WORK[];
+};
+
+type WORK = {
+  work_id: any;
+  name: any;
+  catch_copy: any;
+  genres: any;
+  technologies: TECHNOLOGIE[];
+  icon_url: [];
+};
+
+type TECHNOLOGIE = {
+  id: any;
+  name: any;
+};
+
 export default function MyProfileView() {
-  const [myProfileData, setMyProfiledata] = useState();
+  const [myProfileData, setMyProfiledata] = useState<MYPROFILE>();
   const [errorMessage, setErrorMessage] = useState();
 
   const router = useRouter();
@@ -36,15 +65,25 @@ export default function MyProfileView() {
       const axiosClient = addHeaderMiddleware();
 
       try {
-        const response = await axiosClient.get("/myprofile", { withCredentials: true });
+        const response = await axiosClient
+          .get("/myprofile", {
+            withCredentials: true,
+          })
+          .then((res: AxiosResponse<MYPROFILE>) => {
+            const { data, status } = res;
+            return data;
+          });
         console.log("--------------------------------------");
-        console.log(response.data);
+        console.log(response);
         console.log("--------------------------------------");
-  
-        setMyProfiledata(response.data);
+
+        setMyProfiledata(response);
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
+          if (
+            e.response.status === 401 &&
+            e.response.data.message === "トークンの有効期限が切れています"
+          ) {
             const response = await handleExpiredToken("/myprofile", "GET");
 
             console.log("-----再取得したレスポンス-----");
@@ -62,9 +101,9 @@ export default function MyProfileView() {
             router.push("/");
           }
         }
-      }  
-    }
-  
+      }
+    };
+
     asyncWrapper();
   }, []);
 
@@ -134,7 +173,7 @@ export default function MyProfileView() {
                   borderBottom: "4px solid",
                 }}
               >
-                久乗建汰
+                {myProfileData?.username}
               </Typography>
               <Stack
                 sx={{
@@ -147,7 +186,7 @@ export default function MyProfileView() {
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  コース：IT開発エキスパートコース
+                  コース：{myProfileData?.course}
                 </Typography>
                 <Typography
                   component={"p"}
@@ -155,44 +194,51 @@ export default function MyProfileView() {
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  入学・卒業年次：{"2022"}〜{"2026"}
+                  入学・卒業年次：{myProfileData?.enrollment_year}〜
+                  {myProfileData?.graduation_year}
                 </Typography>
-                <Stack
-                  sx={{
-                    marginY: "8px",
-                  }}
-                >
-                  <Typography
-                    component={"p"}
+                {myProfileData?.job.length ? (
+                  <Stack
                     sx={{
-                      fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
-                    }}
-                  >
-                    希望職種
-                  </Typography>
-                  <Typography
-                    component={"ul"}
-                    sx={{
-                      paddingX: "3rem",
+                      marginY: "8px",
                     }}
                   >
                     <Typography
-                      component={"li"}
+                      component={"p"}
                       sx={{
                         fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                       }}
                     >
-                      WEBフロント
+                      希望職種
                     </Typography>
-                  </Typography>
-                </Stack>
+                    <Typography
+                      component={"ul"}
+                      sx={{
+                        paddingX: "3rem",
+                      }}
+                    >
+                      {myProfileData?.job.map((value, index) => (
+                        <Typography
+                          component={"li"}
+                          sx={{
+                            fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
+                          }}
+                        >
+                          {value}
+                        </Typography>
+                      ))}
+                    </Typography>
+                  </Stack>
+                ) : (
+                  ""
+                )}
                 <Typography
                   component={"p"}
                   sx={{
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  就活状況：{true ? "就活中" : "内定済み"}
+                  就活状況：{myProfileData?.is_job_hunt_completed ? "就活中" : "内定済み"}
                 </Typography>
                 <Typography
                   component={"p"}
@@ -200,7 +246,7 @@ export default function MyProfileView() {
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  メールアドレス：2220025@ecc.ac.jp
+                  メールアドレス：{myProfileData?.email}
                 </Typography>
               </Stack>
             </Stack>
@@ -227,7 +273,7 @@ export default function MyProfileView() {
                 lineHeight: "2.5rem",
               }}
             >
-              私はリーダーシップを発揮できる人材です。学生時代にサークル長として運営に携わった際に、リーダーシップを養うことができました。サークル長を務めていたフットボールサークルでは、練習場所や時間が取れないことや、連携を取り切れていないことが問題でした。そこで、大学生側に掛け合い週に2回の練習場所を確保し、時間を決め活動するようにメンバーに声掛けを行いました。さらに週末明けに今週の活動の詳細をメンバーに配信することで連携強化に努めた結果、サークル加入率を前年度の3倍まで伸ばすことができました。問題にしっかりと焦点を当て、迅速に対応していき、周りを良い意味で巻き込んでいくリーダーシップを御社でも活かしていきたいと考えております
+              {myProfileData?.self_introduction}
             </Typography>
           </Stack>
           <Stack
@@ -252,17 +298,19 @@ export default function MyProfileView() {
                 lineHeight: "2.5rem",
               }}
             >
-              <Typography component={"li"}>
-                <Typography
-                  component={"a"}
-                  href="https://mui.com/material-ui/api/button/"
-                  sx={{
-                    fontSize: { xs: "p.fontSize", md: "h6.fontSize" },
-                  }}
-                >
-                  X
+              {myProfileData?.url.map((value, index) => (
+                <Typography component={"li"}>
+                  <Typography
+                    component={"a"}
+                    href="https://mui.com/material-ui/api/button/"
+                    sx={{
+                      fontSize: { xs: "p.fontSize", md: "h6.fontSize" },
+                    }}
+                  >
+                    X
+                  </Typography>
                 </Typography>
-              </Typography>
+              ))}
             </Typography>
           </Stack>
         </Stack>
@@ -286,11 +334,11 @@ export default function MyProfileView() {
             paddingX: "32px",
           }}
         >
-          {Array.from(Array(3)).map((_, index) => (
+          {myProfileData?.works.map((value, index) => (
             <Grid item xs={4} sm={4} md={3} key={index}>
               <Typography
                 component={"a"}
-                href={`../work/${index}`}
+                href={`../work/${value.work_id}`}
                 sx={{
                   textDecoration: "none",
                 }}
@@ -322,7 +370,7 @@ export default function MyProfileView() {
                         marginBottom: "8px",
                       }}
                     >
-                      あああ
+                      {value.name}
                     </Typography>
                     <Typography
                       component={"p"}
@@ -331,7 +379,7 @@ export default function MyProfileView() {
                         wordBreak: "break-word",
                       }}
                     >
-                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                      {value.catch_copy}
                     </Typography>
                   </Stack>
                 </Item>
