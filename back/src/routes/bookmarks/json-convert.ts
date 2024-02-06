@@ -19,6 +19,13 @@ const convertBookmarkData = (input: any) => {
   input.forEach((bookmark: any) => {
     const work_data =
       bookmark.works.works_data_works_latest_reviewed_idToworks_data;
+
+    // TODO: icon_urlはworks_data_imagesが空の場合は""を返す
+    const icon_url =
+      work_data.works_data_images.length === 0
+        ? ""
+        : work_data.works_data_images[0].url;
+
     const work: work = {
       id: bookmark.works.id,
       name: work_data.name,
@@ -29,7 +36,7 @@ const convertBookmarkData = (input: any) => {
       technologies: work_data.works_data_technologies.map((technology: any) => {
         return technology.technologies.name;
       }),
-      icon_url: work_data.works_data_images[0].url,
+      icon_url: icon_url,
     };
     const convertedWork = {
       booksmarks_id: bookmark.id,
