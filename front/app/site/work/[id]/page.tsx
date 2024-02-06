@@ -176,7 +176,7 @@ export default function Event() {
           sx={{
             width: { xs: "58px", sm: "80px", md: "100px" },
             height: { xs: "58px", sm: "80px", md: "100px" },
-            color: detailWorksData?.is_bookmarked
+            color: !detailWorksData?.is_bookmarked
               ? "gray.dark"
               : "primary.main",
             position: "fixed",
