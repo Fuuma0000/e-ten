@@ -22,12 +22,38 @@ import { GetServerSideProps } from "next";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
+import { AspectRatio } from "@mui/icons-material";
+
+type WORK = {
+  work_id: any;
+  name: any;
+  catch_copy: any;
+  description: any;
+  genres: any;
+  images: string[];
+  is_bookmarked: any;
+  movie_url: any;
+  technologies: TECHNOLOGIE[];
+  users: USER[];
+  works_url: any;
+};
+
+type TECHNOLOGIE = {
+  id: any;
+  name: any;
+};
+
+type USER = {
+  user_id: Number;
+  username: string;
+  role: string;
+};
 
 // 認証を一貫して通せないとデータが取得出来ずにエラーによりコンポーネントが描画されなくなってしまうのでpropsに渡した状態で留めています
 export default function Event() {
-  const [detailWorksData, setDetailWorksData] = useState();
+  const [detailWorksData, setDetailWorksData] = useState<WORK>();
   const [errorMessage, setErrorMessage] = useState();
   const [isBookMarked, setIsBookMarked] = useState(true);
 
@@ -43,16 +69,27 @@ export default function Event() {
     const axiosClient = addHeaderMiddleware();
 
     try {
-      const response = await axiosClient.post(`/bookmarks/${dynamicRoutingId}`, {}, {
-        withCredentials: true
-      });
+      const response = await axiosClient.post(
+        `/bookmarks/${dynamicRoutingId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response);
     } catch (e) {
       // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
       if (axios.isAxiosError(e) && e.response) {
         // アクセストークンの有効期限が切れていた時
-        if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
-          const response = await handleExpiredToken(`/bookmarks/${dynamicRoutingId}`, "POST", {});
+        if (
+          e.response.status === 401 &&
+          e.response.data.message === "トークンの有効期限が切れています"
+        ) {
+          const response = await handleExpiredToken(
+            `/bookmarks/${dynamicRoutingId}`,
+            "POST",
+            {}
+          );
 
           console.log("-----再取得したレスポンス-----");
           console.log(response);
@@ -60,9 +97,9 @@ export default function Event() {
           console.log(e.response.data);
           setErrorMessage(e.response.data);
         }
-      }      
+      }
     }
-  }
+  };
 
   useEffect(() => {
     const asyncWrapper = async () => {
@@ -70,22 +107,33 @@ export default function Event() {
       const axiosClient = addHeaderMiddleware();
 
       try {
-        const response = await axiosClient.get(`/works/${dynamicRoutingId}`, {
-          withCredentials: true,
-        });
+        const response = await axiosClient
+          .get(`/works/${dynamicRoutingId}`, {
+            withCredentials: true,
+          })
+          .then((res: AxiosResponse<WORK>) => {
+            const { data, status } = res;
+            return data;
+          });
 
         // TODO:確認したら消す
         console.log("----------------------");
-        console.log(response.data);
+        console.log(response);
         console.log("----------------------");
 
-        setDetailWorksData(response.data);
+        setDetailWorksData(response);
       } catch (e) {
         // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
         if (axios.isAxiosError(e) && e.response) {
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
-            const response = await handleExpiredToken(`/works/${dynamicRoutingId}`, "GET");
-            
+          if (
+            e.response.status === 401 &&
+            e.response.data.message === "トークンの有効期限が切れています"
+          ) {
+            const response = await handleExpiredToken(
+              `/works/${dynamicRoutingId}`,
+              "GET"
+            );
+
             console.log("-----再取得したレスポンス-----");
             console.log(response);
 
@@ -119,7 +167,7 @@ export default function Event() {
             position: "fixed",
             bottom: { xs: "16px", md: "24px" },
             right: { xs: "8px", md: "24px" },
-            zIndex: 1
+            zIndex: 1,
           }}
         />
       </IconButton>
@@ -137,13 +185,22 @@ export default function Event() {
             fontSize: { xs: "h5.fontSize", md: "h2.fontSize" },
           }}
         >
-          Welking Helper
+          {detailWorksData?.name}
         </Typography>
-        <Typography
-          component={"video"}
-          controls
-          src="https://www.youtube.com/watch?v=0mvrFC7nKyY"
-        />
+        {detailWorksData?.movie_url ? (
+          <iframe
+            src={detailWorksData.movie_url}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{
+              aspectRatio: "16 / 9",
+            }}
+          ></iframe>
+        ) : (
+          ""
+        )}
         <Stack
           direction={"row"}
           sx={{
@@ -172,7 +229,7 @@ export default function Event() {
               fontSize: { xs: "p", md: "h5.fontSize" },
             }}
           >
-            IT
+            {detailWorksData?.genres[0]}
           </Typography>
         </Stack>
         <Stack
@@ -196,24 +253,20 @@ export default function Event() {
           >
             技術
           </Typography>
-          <Typography
-            component={"p"}
-            sx={{
-              textAlign: "center",
-              fontSize: { xs: "p", md: "h5.fontSize" },
-            }}
-          >
-            java
-          </Typography>
-          <Typography
-            component={"p"}
-            sx={{
-              textAlign: "center",
-              fontSize: { xs: "p", md: "h5.fontSize" },
-            }}
-          >
-            go
-          </Typography>
+          {detailWorksData?.technologies != undefined &&
+          detailWorksData?.technologies.length
+            ? detailWorksData.technologies.map((value) => (
+                <Typography
+                  component={"p"}
+                  sx={{
+                    textAlign: "center",
+                    fontSize: { xs: "p", md: "h5.fontSize" },
+                  }}
+                >
+                  {value.name}
+                </Typography>
+              ))
+            : ""}
         </Stack>
         <Stack
           direction={"row"}
@@ -244,7 +297,7 @@ export default function Event() {
               fontSize: { xs: "p", md: "h5.fontSize" },
             }}
           >
-            http://localhost:3000/
+            {detailWorksData?.works_url}
           </Typography>
         </Stack>
         <Typography
@@ -254,8 +307,7 @@ export default function Event() {
             fontSize: { xs: "p", md: "h5.fontSize" },
           }}
         >
-          最先端の生成 AI
-          モデルを活用して、あらゆる音楽からプロダンサーの振り付けを生成します。熟練したダンサーやアニメーターが時間と労力をかけて振り付けを制作するプロセスを自動化します。
+          {detailWorksData?.catch_copy}
         </Typography>
         <Typography
           component={"p"}
@@ -270,57 +322,46 @@ export default function Event() {
         >
           詳細情報
         </Typography>
-        <Stack
-          sx={{
-            alignItems: "center",
-            justifyContent: "center",
-            marginTop: "16px",
-            border: "8px solid",
-            borderColor: "primary.main",
-            borderRadius: "16px",
-            backgroundColor: "primary.light",
-            paddingY: "16px",
-          }}
-        >
-          <Typography
-            component={"ul"}
+        {detailWorksData?.images.length ? (
+          <Stack
             sx={{
-              display: "flex",
-              overflowX: "scroll",
-              whiteSpace: "nowrap",
-              WebkitOverflowScrolling: "touch",
-              listStyle: "none",
-              width: "80%",
-              aspectRatio: "5 / 3",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: "16px",
+              border: "8px solid",
+              borderColor: "primary.main",
+              borderRadius: "16px",
+              backgroundColor: "primary.light",
+              paddingY: "16px",
             }}
           >
             <Typography
-              component={"img"}
-              src="/event_1.png"
+              component={"ul"}
               sx={{
-                width: "100%",
+                display: "flex",
+                overflowX: "scroll",
+                whiteSpace: "nowrap",
+                WebkitOverflowScrolling: "touch",
+                listStyle: "none",
+                width: "80%",
                 aspectRatio: "5 / 3",
               }}
-            />
-
-            <Typography
-              component={"img"}
-              src="/event_1.png"
-              sx={{
-                width: "100%",
-                aspectRatio: "5 / 3",
-              }}
-            />
-            <Typography
-              component={"img"}
-              src="/event_1.png"
-              sx={{
-                width: "100%",
-                aspectRatio: "5 / 3",
-              }}
-            />
-          </Typography>
-        </Stack>
+            >
+              {detailWorksData?.images.map((value, index) => (
+                <Typography
+                  component={"img"}
+                  src={value}
+                  sx={{
+                    width: "100%",
+                    aspectRatio: "5 / 3",
+                  }}
+                />
+              ))}
+            </Typography>
+          </Stack>
+        ) : (
+          ""
+        )}
 
         <Typography
           component={"p"}
@@ -329,20 +370,7 @@ export default function Event() {
             fontSize: { xs: "p", md: "h5.fontSize" },
           }}
         >
-          最先端の生成 AI
-          モデルを活用して、あらゆる音楽からプロダンサーの振り付けを生成します。熟練したダンサーやアニメーターが時間と労力をかけて振り付けを制作するプロセスを自動化します。最先端の生成
-          AI
-          モデルを活用して、あらゆる音楽からプロダンサーの振り付けを生成します。熟練したダンサーやアニメーターが時間と労力をかけて振り付けを制作するプロセスを自動化します。
-          <br />
-          <br />
-          2023年 5 月に博多駅に設置された全国初の大型 LED ビジョンTHE HAKATA
-          VISI-ON STAGE で知人のダンサーが 3D アバ
-          ターと踊るインスタレーションに感銘を受け、常設可能なインスタレーションがあれば面白いと思い着想しました。当初は
-          音楽とステージ上で踊る人の動きにあわせて踊る生成 AI
-          ダンサーを実現しようと考えていました。実装を進める中で、モ
-          デルの訓練や音楽の特徴抽出やダンスの動きのリアルタイムの推論には多くの計算資源が必要であることがわかり、今回の
-          ハッカソンではアドホックで振り付けを生成する AI
-          ダンサーを実現することにしました。
+          {detailWorksData?.description}
         </Typography>
         <Typography
           component={"p"}
@@ -366,41 +394,43 @@ export default function Event() {
             marginY: "16px",
           }}
         >
-          <Grid item xs={4} sm={4} md={4}>
-            <Paper
-              sx={{
-                padding: "16px 24px",
-              }}
-            >
-              <Typography component={"p"}>
-                <Typography
-                  component={"span"}
-                  sx={{
-                    fontWeight: "bold",
-                  }}
-                >
-                  名前
-                </Typography>
-                &ensp; 久乗建汰
-              </Typography>
-              <Typography
-                component={"p"}
+          {detailWorksData?.users.map((value, index) => (
+            <Grid item xs={4} sm={4} md={4}>
+              <Paper
                 sx={{
-                  marginTop: "8px",
+                  padding: "16px 24px",
                 }}
               >
+                <Typography component={"p"}>
+                  <Typography
+                    component={"span"}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    名前
+                  </Typography>
+                  &ensp; {value.username}
+                </Typography>
                 <Typography
-                  component={"span"}
+                  component={"p"}
                   sx={{
-                    fontWeight: "bold",
+                    marginTop: "8px",
                   }}
                 >
-                  担当
+                  <Typography
+                    component={"span"}
+                    sx={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    担当
+                  </Typography>
+                  &ensp; {value.role}
                 </Typography>
-                &ensp; フロント画面コーディング
-              </Typography>
-            </Paper>
-          </Grid>
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
       </Stack>
     </Box>
