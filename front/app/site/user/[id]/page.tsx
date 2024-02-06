@@ -21,10 +21,39 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addHeaderMiddleware, handleExpiredToken } from "@/lib/apiClient";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+type USER = {
+  user_id: number;
+  icon_url: string;
+  username: string;
+  course: string;
+  enrollment_year: number;
+  graduation_year: number;
+  job: [];
+  is_job_hunt_completed: boolean;
+  "e-mail": string;
+  self_introduction: string;
+  urls: [];
+  works: WORK[];
+};
+
+type WORK = {
+  work_id: any;
+  name: any;
+  catch_copy: any;
+  genres: any;
+  technologies: TECHNOLOGIE[];
+  icon_url: []
+};
+
+type TECHNOLOGIE = {
+  id: any;
+  name: any;
+};
 
 export default function User() {
-  const [detailProfileData, setDetailProfileData] = useState();
+  const [detailProfileData, setDetailProfileData] = useState<USER>();
   const [errorMessage, setErrorMessage] = useState();
 
   const params = useParams();
@@ -34,25 +63,36 @@ export default function User() {
     const asyncWrapper = async () => {
       const dynamicRoutingId = params.id;
       const axiosClient = addHeaderMiddleware();
-      
+
       try {
-        const response = await axiosClient.get(`/profiles/${dynamicRoutingId}`, { withCredentials: true });
-        
+        const response = await axiosClient
+          .get(`/profiles/${dynamicRoutingId}`, { withCredentials: true })
+          .then((res: AxiosResponse<USER>) => {
+            const { data, status } = res;
+            return data;
+          });
+
         // TODO:確認したら消す
         console.log("-------------------------------");
-        console.log(response.data);
+        console.log(response);
         console.log("-------------------------------");
-        
-        setDetailProfileData(response.data);
+
+        setDetailProfileData(response);
       } catch (e) {
         // TODO:エラーでたらログインページに返すのにエラー詰める必要ある？
         if (axios.isAxiosError(e) && e.response) {
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
-            const response = await handleExpiredToken(`/profiles/${dynamicRoutingId}`, "GET");
+          if (
+            e.response.status === 401 &&
+            e.response.data.message === "トークンの有効期限が切れています"
+          ) {
+            const response = await handleExpiredToken(
+              `/profiles/${dynamicRoutingId}`,
+              "GET"
+            );
 
             console.log("-----再取得したレスポンス-----");
             console.log(response);
-            
+
             if (response.status === "OK") {
               setDetailProfileData(response.responseData);
             } else {
@@ -67,7 +107,7 @@ export default function User() {
           }
         }
       }
-    }
+    };
 
     asyncWrapper();
   }, []);
@@ -116,7 +156,7 @@ export default function User() {
             />
             <Stack
               sx={{
-                width: "100%"
+                width: "100%",
               }}
             >
               <Typography
@@ -126,7 +166,7 @@ export default function User() {
                   borderBottom: "4px solid",
                 }}
               >
-                久乗建汰
+                {detailProfileData?.username}
               </Typography>
               <Stack
                 sx={{
@@ -139,7 +179,7 @@ export default function User() {
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  コース：IT開発エキスパートコース
+                  コース：{detailProfileData?.course}
                 </Typography>
                 <Typography
                   component={"p"}
@@ -147,44 +187,53 @@ export default function User() {
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  入学・卒業年次：{"2022"}〜{"2026"}
+                  入学・卒業年次：{detailProfileData?.enrollment_year}〜
+                  {detailProfileData?.graduation_year}
                 </Typography>
-                <Stack
-                  sx={{
-                    marginY: "8px"
-                  }}
-                >
-                  <Typography
-                    component={"p"}
+                {
+                  detailProfileData?.job.length ?
+                  <Stack
                     sx={{
-                      fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
-                    }}
-                  >
-                    希望職種
-                  </Typography>
-                  <Typography
-                    component={"ul"}
-                    sx={{
-                      paddingX: "3rem",
+                      marginY: "8px",
                     }}
                   >
                     <Typography
-                      component={"li"}
+                      component={"p"}
                       sx={{
                         fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                       }}
                     >
-                      WEBフロント
+                      希望職種
                     </Typography>
-                  </Typography>
-                </Stack>
+                    <Typography
+                      component={"ul"}
+                      sx={{
+                        paddingX: "3rem",
+                      }}
+                    >
+                      {detailProfileData?.job.map((value, index) => (
+                        <Typography
+                          component={"li"}
+                          sx={{
+                            fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
+                          }}
+                        >
+                          {value}
+                        </Typography>
+                      ))}
+                    </Typography>
+                  </Stack>:""
+                }
                 <Typography
                   component={"p"}
                   sx={{
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  就活状況：{true ? "就活中" : "内定済み"}
+                  就活状況：
+                  {detailProfileData?.is_job_hunt_completed
+                    ? "就活中"
+                    : "内定済み"}
                 </Typography>
                 <Typography
                   component={"p"}
@@ -192,14 +241,14 @@ export default function User() {
                     fontSize: { xs: "h6.fontSize", md: "h4.fontSize" },
                   }}
                 >
-                  メールアドレス：2220025@ecc.ac.jp
+                  メールアドレス：{detailProfileData?.["e-mail"]}
                 </Typography>
               </Stack>
             </Stack>
           </Stack>
           <Stack
             sx={{
-              width: "100%"
+              width: "100%",
             }}
           >
             <Typography
@@ -219,12 +268,12 @@ export default function User() {
                 lineHeight: "2.5rem",
               }}
             >
-              私はリーダーシップを発揮できる人材です。学生時代にサークル長として運営に携わった際に、リーダーシップを養うことができました。サークル長を務めていたフットボールサークルでは、練習場所や時間が取れないことや、連携を取り切れていないことが問題でした。そこで、大学生側に掛け合い週に2回の練習場所を確保し、時間を決め活動するようにメンバーに声掛けを行いました。さらに週末明けに今週の活動の詳細をメンバーに配信することで連携強化に努めた結果、サークル加入率を前年度の3倍まで伸ばすことができました。問題にしっかりと焦点を当て、迅速に対応していき、周りを良い意味で巻き込んでいくリーダーシップを御社でも活かしていきたいと考えております
+              {detailProfileData?.self_introduction}
             </Typography>
           </Stack>
           <Stack
             sx={{
-              width: "100%"
+              width: "100%",
             }}
           >
             <Typography
@@ -244,19 +293,19 @@ export default function User() {
                 lineHeight: "2.5rem",
               }}
             >
-              <Typography
-                component={"li"}
-              >
-                <Typography
-                  component={"a"}
-                  href="https://mui.com/material-ui/api/button/"
-                  sx={{
-                    fontSize: { xs: "p.fontSize", md: "h6.fontSize" }
-                  }}
-                >
-                  X
+              {detailProfileData?.urls.map((value, index) => (
+                <Typography component={"li"}>
+                  <Typography
+                    component={"a"}
+                    href="https://mui.com/material-ui/api/button/"
+                    sx={{
+                      fontSize: { xs: "p.fontSize", md: "h6.fontSize" },
+                    }}
+                  >
+                    X
+                  </Typography>
                 </Typography>
-              </Typography>
+              ))}
             </Typography>
           </Stack>
         </Stack>
@@ -280,11 +329,11 @@ export default function User() {
             paddingX: "32px",
           }}
         >
-          {Array.from(Array(3)).map((_, index) => (
+          {detailProfileData?.works.map((value, index) => (
             <Grid item xs={4} sm={4} md={3} key={index}>
               <Typography
                 component={"a"}
-                href={`../work/${index}`}
+                href={`../work/${value.work_id}`}
                 sx={{
                   textDecoration: "none",
                 }}
@@ -316,7 +365,7 @@ export default function User() {
                         marginBottom: "8px",
                       }}
                     >
-                      あああ
+                      {value.name}
                     </Typography>
                     <Typography
                       component={"p"}
@@ -325,7 +374,7 @@ export default function User() {
                         wordBreak: "break-word",
                       }}
                     >
-                      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                      {value.catch_copy}
                     </Typography>
                   </Stack>
                 </Item>
