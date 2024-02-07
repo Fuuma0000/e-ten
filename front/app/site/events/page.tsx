@@ -17,11 +17,11 @@ import { useRouter } from "next/navigation";
 export default function Events() {
   const [eventData, setEventData] = useState();
   const [errorMessage, setErrorMessage] = useState();
+  const router = useRouter();
 
   useEffect(() => {
     const asyncWrapper = async () => {
       const axiosClient = addHeaderMiddleware();
-      const router = useRouter();
       
       // TODO:レスポンスによって飛ばし先を変える
       // TODO:現在の日時と終了日時・開始日時を比較して画面に描画する文字列を返す関数を記述する
