@@ -5,36 +5,25 @@ const prisma = new PrismaClient();
 
 interface User {
   username: string;
-  email: string;
-  password: string;
-  salt: string;
+  roles_id: number;
   courses_id: number;
   enrollment_year: number;
   graduation_year: number;
   is_job_hunt_completed: boolean;
   events_id: number;
-  roles_id: number;
 }
 
 interface Work {
   name: string;
+  genre: number;
   catch_copy: string;
-  lear: string;
   description: string;
+  technology: string;
+  tool: string;
   works_url: string;
-  movie_url: string;
   system_diagram_url: string;
-}
-
-interface WorksUsers {
-  works_id: number;
-  users_id: number;
+  user: string;
   role: string;
-}
-
-interface WorksGenres {
-  works_id: number;
-  genres_id: number;
 }
 
 // CSVファイルをパースする関数
@@ -74,26 +63,26 @@ async function main() {
   });
 
   // 出展ユーザー
-  const users: User[] = await fileParser<User>(
-    "prisma/seed-data/exhibitors_data.csv"
+  const user_data: User[] = await fileParser<User>(
+    "prisma/seed-data/user_data_2024.csv"
   );
 
-  for (let i = 0; i < users.length; i++) {
+  for (let i = 0; i < user_data.length; i++) {
     await prisma.users.create({
       data: {
-        username: users[i].username,
-        email: users[i].email,
-        password: users[i].password,
-        salt: users[i].salt,
-        courses_id: users[i].courses_id,
-        enrollment_year: users[i].enrollment_year,
-        graduation_year: users[i].graduation_year,
-        is_job_hunt_completed: users[i].is_job_hunt_completed,
+        username: user_data[i].username,
+        email: "example" + i + "@example.com",
+        password: "password",
+        salt: "salt",
+        courses_id: user_data[i].courses_id,
+        enrollment_year: user_data[i].enrollment_year,
+        graduation_year: user_data[i].graduation_year,
+        is_job_hunt_completed: user_data[i].is_job_hunt_completed,
         icon_url: "",
         event_users_roles: {
           create: {
-            events_id: users[i].events_id,
-            roles_id: users[i].roles_id,
+            events_id: user_data[i].events_id,
+            roles_id: user_data[i].roles_id,
           },
         },
       },
@@ -102,12 +91,7 @@ async function main() {
 
   // 作品情報
   const work_data: Work[] = await fileParser<Work>(
-    "prisma/seed-data/works_data.csv"
-  );
-
-  // 作品とジャンルの中間テーブル
-  const works_genres: WorksGenres[] = await fileParser<WorksGenres>(
-    "prisma/seed-data/works_genres_data.csv"
+    "prisma/seed-data/works_data_2024.csv"
   );
 
   // 作品をwork_dataの数だけ登録
@@ -120,9 +104,14 @@ async function main() {
     });
   }
 
-  // 作品情報をworkd_dataに登録
+  // 作品情報をworks_dataに登録
   for (let i = 0; i < work_data.length; i++) {
-    let genreIdArray: number[] = [];
+    const technologies: string[] = work_data[i].technology.split(",");
+    const tools: string[] = work_data[i].tool.split(",");
+
+    const user: string[] =
+      work_data[i] != null ? work_data[i].user.split(",") : [];
+    const role: string[] = work_data[i].role.split(",");
 
     const work = await prisma.works_data.create({
       data: {
@@ -131,28 +120,101 @@ async function main() {
         catch_copy: work_data[i].catch_copy,
         description: work_data[i].description,
         works_url: work_data[i].works_url,
-        movie_url: work_data[i].movie_url,
+        movie_url: "",
         system_diagram_url: work_data[i].system_diagram_url,
       },
     });
 
-    // work_dataのwork_idがi+1の時genres_idを取得
-    for (let j = 0; j < works_genres.length; j++) {
-      if (works_genres[j].works_id === i + 1) {
-        genreIdArray.push(works_genres[j].genres_id);
+    // 作品とユーザーの中間テーブル
+    for (let j = 0; j < user.length; j++) {
+      if (user[j] != " ") {
+        // userテーブルからuser[j]のidを取得
+        const currentUser = await prisma.users.findFirst({
+          where: { username: user[j].trim() },
+        });
+        // userがなければエラー
+        if (!currentUser) {
+          throw new Error("user not found:" + user[j]);
+        }
+        await prisma.works_data_users.create({
+          data: {
+            works_data_id: i + 1,
+            users_id: currentUser.id,
+            role_explanation: role[j] ? role[j].trim() : "",
+          },
+        });
       }
     }
 
     // 作品とジャンルの中間テーブル
-    for (let j = 0; j < genreIdArray.length; j++) {
-      await prisma.works_data_genres.create({
-        data: {
-          works_data_id: i + 1,
-          genres_id: genreIdArray[j],
-        },
-      });
+    await prisma.works_data_genres.create({
+      data: {
+        works_data_id: i + 1,
+        genres_id: work_data[i].genre,
+      },
+    });
+
+    // 作品と技術の中間テーブル
+    // technologies[j]がtechnologiesテーブルにあったらworks_data_technologiesに登録
+    // なかったらtechnologiesテーブルに登録してからworks_data_technologiesに登録
+    for (let j = 0; j < technologies.length; j++) {
+      if (technologies[j] != " ") {
+        const technology = await prisma.technologies.findFirst({
+          where: { name: technologies[j].trim() },
+        });
+        if (technology) {
+          await prisma.works_data_technologies.create({
+            data: {
+              works_data_id: i + 1,
+              technologies_id: technology.id,
+            },
+          });
+        } else {
+          const registedTechnology = await prisma.technologies.create({
+            data: {
+              name: technologies[j].trim(),
+            },
+          });
+          await prisma.works_data_technologies.create({
+            data: {
+              works_data_id: i + 1,
+              technologies_id: registedTechnology.id,
+            },
+          });
+        }
+      }
     }
-    // TODO: works_data_technologies, works_data_images
+
+    // 作品とツールの中間テーブル
+    for (let j = 0; j < tools.length; j++) {
+      if (tools[j] != " ") {
+        const tool = await prisma.tools.findFirst({
+          where: { name: tools[j].trim() },
+        });
+        if (tool) {
+          await prisma.works_data_tools.create({
+            data: {
+              works_data_id: i + 1,
+              tools_id: tool.id,
+            },
+          });
+        } else {
+          const registedTool = await prisma.tools.create({
+            data: {
+              name: tools[j].trim(),
+            },
+          });
+          await prisma.works_data_tools.create({
+            data: {
+              works_data_id: i + 1,
+              tools_id: registedTool.id,
+            },
+          });
+        }
+      }
+    }
+
+    // TODO:works_data_images
   }
 
   // 校閲後の作品データ
@@ -166,26 +228,6 @@ async function main() {
     });
   }
 
-  // 作品とユーザーを紐づける
-  const works_users: WorksUsers[] = await fileParser<WorksUsers>(
-    "prisma/seed-data/works_users_data.csv"
-  );
-
-  for (let i = 0; i < works_users.length; i++) {
-    await prisma.works_data_users.create({
-      data: {
-        works_data_id: works_users[i].works_id,
-        users_id: works_users[i].users_id,
-        role_explanation: works_users[i].role,
-      },
-    });
-  }
-
-  // ブックマーク
-  await prisma.bookmarks.createMany({
-    data: [{ users_id: 1, works_id: 1 }],
-  });
-
   // テスト用ユーザー
   const passwordTestList = [
     "d71c8601cef40e28aad6d15a88cf7311dc95cc96d4f20d989a90d1a5202789b07f75eff7ccb95c5400e2e4ca3b46c17f17a3646659b51689374b42a039a97528",
@@ -196,16 +238,16 @@ async function main() {
   for (let i = 0; i < 3; i++) {
     const registedUser = await prisma.users.create({
       data: {
-        email: `example${i}@example.com`,
+        email: `example${i}@ex.com`,
         password: passwordTestList[i],
         salt: `salt${i}`,
         username: "testuser",
         courses_id: 1,
-        enrollment_year: 2022,
-        graduation_year: 2026,
+        enrollment_year: 0,
+        graduation_year: 0,
         is_job_hunt_completed: false,
-        self_introduction: "ここに自己紹介のテキストが入ります",
-        icon_url: "https://cdn2.thecatapi.com/images/c5b.jpg",
+        self_introduction: "",
+        icon_url: "",
       },
     });
   }

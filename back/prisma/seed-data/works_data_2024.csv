@@ -1,0 +1,31 @@
+name,genre,catch_copy,description,technology,tool,works_url,system_diagram,user,role
+Cheifoon,5,普段の料理に一手間加えずシェフの味を再現します！,調味料を測ることがめんどくさい・・・」「料理を正確に作りたい！」など料理に対する悩みを解決するために、簡単に正確に調味料を測るアイテムcheifoon！このアイテム一つで料理の最中に発生する『調味料を測る手間』を省き、時短に繋がり効率up!!調味料って少量でも味は大きく変化しますよね！本当に正確に測れるのか・・・？それは試してみてからのお楽しみ・・！,"C / C++, Dart, Go, Flutter, M5, MySQL, SQLite, Nginx, Docker, Ubuntu, ","Canva, Discord, Figma, Fusion 360, GitHub, Notion, VS Code, Xcode, Postman",https://protopedia.net/prototype/4997,,"道上 康介,本杉 昂大, 濱 圭吾, 清水 勇太郎, 新川 悠生,片山 美結,上坂 竜哉","マイコン制御、電子回路,3DCAD,アプリ全般,ポスターデザイン,資料作成、声優,資料作成,マイコン制御、筐体デザイン"
+CRDS,5,見て回ろう。待たずに、スムーズでより効率的に。,"CRDSはAIを駆使し、リアルタイムで展示会やイベントの混雑情報を提供します。
+展示者は最適な展示戦略を構築でき、参加者はストレスなくイベントを訪れることができます。
+本システムを導入することでイベントをより円滑にまわることができます。","Python, Rust, CSS, TypeScript, Next.js, Raspberry Pi, Docker","Discord, Figma, GitHub, Notion, VS Code",https://github.com/Rate980/CRDS,,"松岡 優輝,濱 圭吾,橋本 宙,本杉 昂大,大橋 勇斗,篠原 晴哉","チームリーダー、フロント、バックエンド,フロントエンド,AI、プレゼン,AI、バックエンド,インターフェース設計、バックエンド,ハードウェア、AI"
+TechSeebo-Module,5,カメラ不要のユーザー認識 汎用赤外線モジュールで革新を,"この製品は、赤外線を利用した位置測定機能をモジュール化し、
+既存の機器に簡単に統合できるように設計されています。
+拡張性に優れ、ユーザー追従を始めとする様々な用途に応用できます。
+ベルトタイプの送信器から信号を発信し、狭い射角を持つ受信センサーでユーザーの位置を正確に検知します。
+また、赤外線の到達距離を変更し距離を測ることも可能です。
+カメラを使用せず、赤外線による検知を採用することでコストを抑えています。
+モジュール化により、筐体の依存を排除し、多様なシナリオでの利用が可能です。","C ／ C++, Arduino, ESP32, M5, PlatformIO, ESP-IDF","Discord, Figma, Fusion 360, Git, GitHub, KiCad, Notion, Quadcept, VS Code",https://protopedia.net/prototype/3975,,"黑田 直樹,石川 亜門","ソフトウェア、モジュール構想、プレゼン,基板構想・製造・発注・組み立て"
+KOTEAlert,5,ユーザー認証と切り忘れ防止通知で、未来の技術者を守る,"KOTEAlertは、はんだこてによる火災予防を目的に制作されました。
+ECC IoT部では、まだ先輩からの講習を受けたかどうかが不透明であり、これが原因で新入生が軽い火傷を負う事態が発生しました。同時に、はんだこての電源をつけたまま帰る危険なケースも報告されました。
+
+切り忘れに対する対策として、管理者と関係者に通知を送る仕組みを備えています。
+これにより、電源を切る習慣化を促進します。
+また予約機能も搭載されており、利用者の把握が容易です。
+KOTEAlertの導入により、安全性と利便性を向上させましょう。","C /C++, Dart, Flutter, Arduino, M5","Canva, Discord, Figma, Fusion 360, Git, GitHub, Notion, Quadcept, VS Code, PlatformIO ide",https://protopedia.net/prototype/4905,,"篠原 晴哉,小澤 栞,福留 正広,黑田 直樹,榊木 匠,岩田 和貴","ハードウェアの設計、3Dプリント、回路設計製造、プレゼン,モバイルアプリの実装・BLE通信・Firebaseでのバックエンド設計・開発,モバイルアプリの実装・Firebaseでのバックエンド設計・開発,M5の処理、指紋認証モジュールの設定を処理,UIデザイン,アプリデザイン"
+国会劇場,2,日本の未来の創造者 彼らが魅せる政治演劇 今日も開演,"このシステムは国会での発言内容を見ることが出来るWebサイトです。
+国会での発言内容を端的に要約して、チャット形式で分かりやすく表示します。政治に関心はあるが難しくて理解できない人や小学生や中学生など、選挙権を持つ前の人にも使ってもらえるようなサイトにしました。","Python, TypeScript, React.js, TailwindCSS, MySQL, Flask","Canva, Discord, Figma, Fusion 360, Git, GitHub, Notion, Quadcept, VS Code, PlatformIO ide",https://github.com/noonyuu/diet-theater,,"神 さくら,上坂 竜哉,清水 勇太郎,道上 康介","画面設計・フロント,バックエンド・DB,フロント・API・WBS,要約機能"
+TechSeebo,5,TechSeeboが3つの進化！ 自動追尾の革新体験。,"TechSeeboシリーズが
+ショッピング、点滴、運送、3つの進化モデルが仲間入り。
+バンドを身につければ、手ぶらのショッピング、医療の自在な移動、重量物の軽快な運搬が可能。
+モジュール化されたユーザー検知システムと需要に応じてカスタマイズ可能な筐体が魅力。
+未来のライフスタイルに革新と快適さをお届けします。","C / C++, Rust, Arduino, ESP32, Raspberry Pi, Flask","Canva, ChatGPT, Discord, Figma, Fusion 360, GitHub, KiCad, Notion, Quadcept, VS Code,",https://protopedia.net/prototype/3975,,"室 紘基,石川 亜門,黑田 直樹,大橋 勇斗,篠原 晴哉","タスク管理、LINEMessagingAPIの処理,回路の設計、発注、組み立て,Blutooth通信、赤外線の処理、SPRESENSE・GPS・カメラ、OpenAIの処理,モータドライバの処理、通信関係の設計、電装,車体設計、車体製造、プレゼン"
+meecha,2,プライバシーを保護しながら位置情報を共有！,従来の位置情報共有アプリでは常に位置情報を共有されてしまいます。これってプライバシーがありませんよね？その問題を解決するために私たちは設定した距離内でのみフレンドと位置情報を共有することができるアプリを作りました。今回出展するにあたり、前回のE展で出展したものを再設計し、より使いやすくしました。,"Python, Go, HTML, CSS, JavaScript, Bootstrap, SQLite, Django, Docker","Canva, Discord, Git, GitHub, VS Code",https://github.com/mattuu0/meecha,,"後呂岡 諒,請関 花恋,松本 悠希","バックエンド、設計,フロントエンド,バックエンド、設計、フロント"
+E++,2,展示作品巡りをスムーズに！企業と学生をつなげるアプリ,"このアプリで、作品の情報と学生プロフィールを一元管理します。
+作品展示会でより多くの人に見に来てもらい、採用活動を目的に来場する企業の方と交流することを目指します。
+作品ジャンルや使用技術での作品検索機能、志望職種や就活状況での学生検索機能、そしてブックマーク機能で気になる作品や学生をチェックしておくことができます。","HTML, CSS, TypeScript, MySQL, Express.js, Docker, Next.js","Discord, Figma, Git, GitHub, Notion, VS Code",https://github.com/Fuuma0000/e-ten,,"福留 正広,出射 光,久乗 建汰,市島 功大,小澤 栞","インフラ、バックエンド,デザイン,フロントエンド,バックエンド,バックエンド"
+Worry Bulletin Board,2,周りに話せない悩みを匿名として打ち明ける,個人情報は年代や性別だけ(匿名)で、知らない人に話せなかった悩みを打ち明け、助言をもらうか、または悩んでいる人に助言をしてあげることができます。コメント機能と個人で応援メッセージも送ることもできます。,"HTML, CSS, JavaScript, MongoDB, React.js, Node.js, SASS（SCSS）, redux","ChatGPT, VS Code",,,藤田 昇,個人開発
