@@ -26,7 +26,11 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import React, { useEffect, useState } from "react";
-import { addHeaderMiddleware, handleExpiredToken, EXPRESS_URL } from "@/lib/apiClient";
+import {
+  addHeaderMiddleware,
+  handleExpiredToken,
+  EXPRESS_URL,
+} from "@/lib/apiClient";
 import { useParams, useRouter } from "next/navigation";
 import axios, { AxiosResponse } from "axios";
 
@@ -88,10 +92,12 @@ export default function Event() {
   const [errorMessage, setErrorMessage] = useState();
 
   const [searchGenres, setSearchGenres] = useState<GENRE[]>([]);
-  const [searchTechnologies, setSearchTechnologies] = useState<TECHNOLOGIE[]>([]);
+  const [searchTechnologies, setSearchTechnologies] = useState<TECHNOLOGIE[]>(
+    []
+  );
   const [searchJobs, setSearchJobs] = useState<JOBS[]>([]);
   const [searchGraduation_year, setSearchGraduation_year] = useState<number>(0);
-  const [searchJobHuntingState, setSearchJobHuntingState] = useState<number>(0)
+  const [searchJobHuntingState, setSearchJobHuntingState] = useState<number>(0);
 
   const params = useParams();
   const router = useRouter();
@@ -141,22 +147,30 @@ export default function Event() {
           });
 
         // TODO:確認したら消す
-        console.log(profilesResponse);
+        console.log(eventResponse);
 
         setTechnologies(technologiesResponse);
         setJobs(jobsResponse);
         setEventsData(eventsResponse);
         setProfilesData(profilesResponse);
+        setEventData(eventResponse);
 
         setViewEventsData(sliceByNumber(eventsResponse, 18));
         setViewProfilesData(sliceByNumber(profilesResponse, 18));
       } catch (e) {
         if (axios.isAxiosError(e) && e.response) {
           // アクセストークンの有効期限が切れていた時
-          if (e.response.status === 401 && e.response.data.message === "トークンの有効期限が切れています") {
-            const response = await axios.post(`${EXPRESS_URL}/refresh`, {}, {
-              withCredentials: true
-            });
+          if (
+            e.response.status === 401 &&
+            e.response.data.message === "トークンの有効期限が切れています"
+          ) {
+            const response = await axios.post(
+              `${EXPRESS_URL}/refresh`,
+              {},
+              {
+                withCredentials: true,
+              }
+            );
 
             // 複数のエンドポイント叩いてるからべた書きしてる
             try {
@@ -173,7 +187,9 @@ export default function Event() {
                   return data;
                 });
               const eventsResponse = await axiosClient
-                .get(`/events/${dynamicRoutingId}/works`, { withCredentials: true })
+                .get(`/events/${dynamicRoutingId}/works`, {
+                  withCredentials: true,
+                })
                 .then((res: AxiosResponse<WORK[]>) => {
                   const { data, status } = res;
                   return data;
@@ -197,7 +213,7 @@ export default function Event() {
               setJobs(jobsResponse);
               setEventsData(eventsResponse);
               setProfilesData(profilesResponse);
-        
+
               setViewEventsData(sliceByNumber(eventsResponse, 18));
               setViewProfilesData(sliceByNumber(profilesResponse, 18));
             } catch (e) {
@@ -249,7 +265,7 @@ export default function Event() {
             paddingX: "8px",
           }}
         >
-          {eventData?.description}
+          {eventData?.name}
         </Typography>
         <Typography
           component={"div"}
@@ -279,9 +295,17 @@ export default function Event() {
                 marginLeft: "8px",
               }}
             >
-              {eventData?.start_at + " ～ " + eventData?.end_at}
+              {"2024/2/7" + " ～ " + "2024/2/9"}
             </Typography>
           </Stack>
+          <Typography
+            component={"p"}
+            sx={{
+              marginTop: "8px",
+            }}
+          >
+            {eventData?.description}
+          </Typography>
         </Typography>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
@@ -558,41 +582,41 @@ export default function Event() {
               }}
             >
               <Autocomplete
-                  multiple
-                  limitTags={3}
-                  id="multiple-jobs-tags"
-                  isOptionEqualToValue={(option, v) => option.id === v.id}
-                  options={jobs}
-                  getOptionLabel={(option) => option.name}
-                  defaultValue={[]}
-                  renderOption={(props, option) => {
-                    return (
-                      <li {...props} key={option.id}>
-                        {option.name}
-                      </li>
-                    );
-                  }}
-                  renderTags={(tagValue, getTagProps) => {
-                    return tagValue.map((option, index) => (
-                      <Chip
-                        {...getTagProps({ index })}
-                        key={option.id}
-                        label={option.name}
-                      />
-                    ));
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="希望職種"
-                      placeholder="Favorites"
+                multiple
+                limitTags={3}
+                id="multiple-jobs-tags"
+                isOptionEqualToValue={(option, v) => option.id === v.id}
+                options={jobs}
+                getOptionLabel={(option) => option.name}
+                defaultValue={[]}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} key={option.id}>
+                      {option.name}
+                    </li>
+                  );
+                }}
+                renderTags={(tagValue, getTagProps) => {
+                  return tagValue.map((option, index) => (
+                    <Chip
+                      {...getTagProps({ index })}
+                      key={option.id}
+                      label={option.name}
                     />
-                  )}
-                  sx={{ width: "80%" }}
-                  onChange={(event, newValue) => {
-                    setSearchJobs(newValue);
-                  }}
-                />
+                  ));
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="希望職種"
+                    placeholder="Favorites"
+                  />
+                )}
+                sx={{ width: "80%" }}
+                onChange={(event, newValue) => {
+                  setSearchJobs(newValue);
+                }}
+              />
               <Stack
                 sx={{
                   flexDirection: { md: "row" },
@@ -679,7 +703,7 @@ export default function Event() {
                   // if (searchJobHuntingState != 0){
                   //   newProfilesData = newProfilesData.filter((value) => {
                   //     if(searchJobHuntingState == 1){
-                  //       return value.jobHuntingState; 
+                  //       return value.jobHuntingState;
                   //     }
                   //     return !value.jobHuntingState;
                   //   })
@@ -700,9 +724,8 @@ export default function Event() {
                   //     return flag;
                   //   });
 
-
                   setViewProfilesData(sliceByNumber(newProfilesData, 18));
-                  
+
                   console.log(searchJobs);
                   console.log(newProfilesData);
                 }}
