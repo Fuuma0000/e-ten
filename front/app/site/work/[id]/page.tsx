@@ -35,14 +35,9 @@ type WORK = {
   images: string[];
   is_bookmarked: boolean;
   movie_url: any;
-  technologies: TECHNOLOGIE[];
+  technologies: string[];
   users: USER[];
   works_url: any;
-};
-
-type TECHNOLOGIE = {
-  id: any;
-  name: any;
 };
 
 type USER = {
@@ -192,6 +187,7 @@ export default function Event() {
           marginX: "auto",
           marginTop: "24px",
           marginBottom: "160px",
+          alignItems: "start",
         }}
       >
         <Typography
@@ -248,10 +244,9 @@ export default function Event() {
           </Typography>
         </Stack>
         <Stack
-          direction={"row"}
           sx={{
-            alignItems: "center",
-            gap: "16px",
+            flexDirection: { xs: "col", md: "row" },
+            alignItems: { xs: "start", md: "center" },
             marginTop: "16px",
           }}
         >
@@ -264,30 +259,25 @@ export default function Event() {
               borderRadius: "8px",
               fontWeight: { md: "bold" },
               fontSize: { xs: "0.9rem", md: "1rem" },
+              flexShrink: "0",
             }}
           >
             技術
           </Typography>
-          {detailWorksData?.technologies != undefined &&
-          detailWorksData?.technologies.length
-            ? detailWorksData.technologies.map((value) => (
-                <Typography
-                  component={"p"}
-                  sx={{
-                    textAlign: "center",
-                    fontSize: { xs: "p", md: "h5.fontSize" },
-                  }}
-                >
-                  {value.name}
-                </Typography>
-              ))
-            : ""}
+          <Typography
+            component={"p"}
+            sx={{
+              fontSize: { xs: "p", md: "h5.fontSize" },
+              marginLeft: "16px",
+            }}
+          >
+            {detailWorksData?.technologies.join(", ")}
+          </Typography>
         </Stack>
         <Stack
-          direction={"row"}
           sx={{
-            alignItems: "center",
-            gap: "16px",
+            flexDirection: { xs: "col", md: "row" },
+            alignItems: { xs: "start", md: "center" },
             marginTop: "16px",
           }}
         >
@@ -300,16 +290,18 @@ export default function Event() {
               borderRadius: "8px",
               fontWeight: { md: "bold" },
               fontSize: { xs: "0.9rem", md: "1rem" },
+              flexShrink: "0",
             }}
           >
             作品リンク
           </Typography>
           <Typography
             component={"a"}
-            href="/"
+            href={detailWorksData?.works_url}
             sx={{
               textAlign: "center",
               fontSize: { xs: "p", md: "h5.fontSize" },
+              marginLeft: "16px",
             }}
           >
             {detailWorksData?.works_url}
@@ -327,6 +319,7 @@ export default function Event() {
         <Typography
           component={"p"}
           sx={{
+            width: "100%",
             borderBottom: "8px solid",
             paddingLeft: "8px",
             fontSize: "h4.fontSize",
@@ -390,6 +383,7 @@ export default function Event() {
         <Typography
           component={"p"}
           sx={{
+            width: "100%",
             borderBottom: "8px solid",
             paddingLeft: "8px",
             fontSize: "h4.fontSize",
@@ -438,6 +432,13 @@ export default function Event() {
                     component={"p"}
                     sx={{
                       marginTop: "8px",
+                      display: "-webkit-box",
+                      fontSize: "p.fontSize",
+                      wordBreak: "break-word",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 3,
+                      overflow: "hidden",
+                      minHeight: "4.5em",
                     }}
                   >
                     <Typography

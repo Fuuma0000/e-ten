@@ -80,8 +80,8 @@ export default function SiteLayout({
             href="/site/bookmark"
             sx={{
               display: "inline-block",
-              height: "64px",
-              width: "64px",
+              height: {xs: "40px", md:"64px"},
+              width: {xs: "40px", md:"64px"},
               marginX: "8px",
             }}
           >
@@ -98,8 +98,8 @@ export default function SiteLayout({
             href="/site/my-profile/view"
             sx={{
               display: "inline-block",
-              height: "64px",
-              width: "64px",
+              height: {xs: "40px", md:"64px"},
+              width: {xs: "40px", md:"64px"},
               marginX: "8px",
             }}
           >
